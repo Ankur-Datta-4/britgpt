@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { BRIT_DATA } from '@/lib/data';
-import { answerQuestion, isInstantOnlyQuestion, wantsFullResearch } from '@/lib/qa';
+import { answerQuestion, wantsFullResearch } from '@/lib/qa';
 import { enrichQAAnswer, hasLlmKeyAsync } from '@/lib/llm';
 import { runAction as executeAction } from '@/lib/actions';
 import { hasApiKey } from '@/lib/config-client';
@@ -11,7 +11,6 @@ import {
   ReportModal,
   DetailPanel,
   ApiKeySettings,
-  DatasetBreakdown,
   SUGGESTIONS,
   matchResearchScript,
   BootBlock,
@@ -34,6 +33,12 @@ import {
 
 const DEFAULT_RESEARCH_Q =
   BRIT_DATA?.defaultResearchQuery || "Top flavour trends by state across India";
+
+const getDefaultResearchHero = () => {
+  const presets = BRIT_DATA?.predefinedQuestions || SUGGESTIONS;
+  const research = presets.filter((p) => p.research !== false);
+  return research[0] || { tag: "States", q: DEFAULT_RESEARCH_Q, hint: "11 states · sweet & savory top 5" };
+};
 
 /* ============================================================
    Sidebar
@@ -203,7 +208,29 @@ function MessageView({ m, ctx }) {
         )}
         {m.kind === "action_result" && <ActionResultPanel payload={m.payload} />}
         {m.kind === "qa"       && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
+        {m.kind === "research_reco" && (
+          <ResearchRecoCard
+            tag={m.tag}
+            query={m.query}
+            hint={m.hint}
+            onStart={ctx.onStartResearch}
+          />
+        )}
       </div>
+    </div>
+  );
+}
+
+function ResearchRecoCard({ tag, query, hint, onStart }) {
+  return (
+    <div className="research-reco-wrap">
+      <p className="research-reco-lead">Ready to go deeper? Run the full research pipeline on this study:</p>
+      <button type="button" className="welcome-hero research-reco-inline" onClick={() => onStart(query)}>
+        <span className="hero-tag">{tag} · recommended</span>
+        <span className="hero-q">{query}</span>
+        {hint && <span className="hero-hint">{hint}</span>}
+        <span className="hero-cta">Start research →</span>
+      </button>
     </div>
   );
 }
@@ -285,7 +312,7 @@ export default function BritApp() {
     });
   };
 
-  const replyWithQA = async (text, intro) => {
+  const replyWithQA = async (text, intro, opts = {}) => {
     push({ role: "user", text });
     if (intro) pushDelayed({ role: "asst", kind: "text", text: intro }, 200);
     pushDelayed({ role: "asst", kind: "typing", text: "Searching Flavor Insights India…" }, intro ? 450 : 280);
@@ -309,6 +336,19 @@ export default function BritApp() {
       }
       return copy;
     });
+
+    if (opts.showResearchReco) {
+      const hero = getDefaultResearchHero();
+      pushDelayed({
+        role: "asst",
+        kind: "research_reco",
+        tag: hero.tag,
+        query: hero.q,
+        hint: hero.hint,
+      }, 300);
+      return;
+    }
+
     pushDelayed({
       role: "asst",
       kind: "actions",
@@ -327,15 +367,9 @@ export default function BritApp() {
   };
 
   const handleUserSubmit = (text) => {
-    const instantOnly = isInstantOnlyQuestion?.(text) ?? false;
-
     if (phase === "idle") {
-      if (instantOnly) {
-        setPhase("qa");
-        replyWithQA(text, "Here's what the dataset says (1,53,496 conversations).");
-      } else {
-        startResearchPipeline(text);
-      }
+      setPhase("qa");
+      replyWithQA(text, null, { showResearchReco: true });
       return;
     }
 
@@ -500,6 +534,7 @@ export default function BritApp() {
     onTimelineDone,
     onOpenReport: () => setReportOpen(true),
     onPickRelated: (q) => handleUserSubmit(q),
+    onStartResearch: (q) => startResearchPipeline(q),
     onAction: handleAction,
     actionBusy,
     s3Configured,
@@ -538,7 +573,7 @@ export default function BritApp() {
 
         <div className="thread" ref={threadRef}>
           {messages.length === 0 ? (
-            <WelcomeView onPick={handleUserSubmit} onStartDefault={() => handleUserSubmit(DEFAULT_RESEARCH_Q)} />
+            <WelcomeView />
           ) : (
             <div className="thread-inner">
               {messages.map((m, i) => (
@@ -572,53 +607,13 @@ export default function BritApp() {
   );
 }
 
-function WelcomeView({ onPick, onStartDefault }) {
-  const presets = BRIT_DATA?.predefinedQuestions || SUGGESTIONS;
-  const instant = presets.filter((p) => p.research === false);
-  const research = presets.filter((p) => p.research !== false);
-  const hero = research[0] || { tag: "Default", q: DEFAULT_RESEARCH_Q, hint: "11 states · sweet & savory" };
-
+function WelcomeView() {
   return (
-    <div className="welcome">
+    <div className="welcome welcome-minimal">
       <div className="badge">Flavor Insights India · {BRIT_DATA?.meta?.date || "20 May 2026"}</div>
       <h1>What would you like to <em>discover</em> today?</h1>
-      <p>
-        Run a full consumer research study on Flavor Insights India — or jump straight to a quick answer on Biscoff, states, extensions, and more.
-      </p>
-
-      <button type="button" className="welcome-hero" onClick={onStartDefault}>
-        <span className="hero-tag">{hero.tag} · recommended</span>
-        <span className="hero-q">{hero.q}</span>
-        <span className="hero-hint">{hero.hint || "Boot → scope → cards → exec → actions"}</span>
-        <span className="hero-cta">Start research →</span>
-      </button>
-
-      <DatasetBreakdown />
-
-      <div className="welcome-label">More research runs</div>
-      <div className="suggest-grid">
-        {research.slice(1).map((s, i) => (
-          <div key={s.id || "r"+i} className="suggest suggest-research" onClick={() => onPick(s.q)} role="button" tabIndex={0}>
-            <span className="tag">{s.tag}</span>
-            <span className="q">{s.q}</span>
-            {s.hint && <span className="suggest-hint">{s.hint}</span>}
-          </div>
-        ))}
-      </div>
-
-      <div className="welcome-label">Quick answers</div>
-      <div className="suggest-grid suggest-grid-wide">
-        {instant.map((s, i) => (
-          <div key={s.id || i} className="suggest suggest-qa" onClick={() => onPick(s.q)} role="button" tabIndex={0}>
-            <span className="tag">{s.tag}</span>
-            <span className="q">{s.q}</span>
-            {s.hint && <span className="suggest-hint">{s.hint}</span>}
-          </div>
-        ))}
-      </div>
-
-      <p className="welcome-foot">
-        Flavor Insights India · 1,53,496 conversations · Consuma AI · 20 May 2026
+      <p className="welcome-sub">
+        Ask anything about Flavor Insights India — Biscoff, states, extensions, trends, and more.
       </p>
     </div>
   );

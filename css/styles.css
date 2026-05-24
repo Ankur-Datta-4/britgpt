@@ -1690,6 +1690,33 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 600;
   color: var(--red);
 }
+
+/* Minimal welcome — question-first flow */
+.welcome-minimal {
+  padding-bottom: 40px;
+}
+.welcome-minimal .welcome-sub {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Post-Q&A research recommendation */
+.research-reco-wrap {
+  margin-top: 8px;
+}
+.research-reco-lead {
+  font-size: 14px;
+  color: var(--fg-mid);
+  margin: 0 0 12px;
+}
+.research-reco-inline {
+  margin: 0;
+  max-width: 100%;
+}
+.research-reco-inline .hero-q {
+  font-size: 20px;
+}
+
 .credit-pill.key-on {
   border-color: var(--red);
   color: var(--red);
