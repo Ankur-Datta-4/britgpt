@@ -1,0 +1,7 @@
+@import "../css/styles.css";
+
+html {
+  --f-display: var(--font-display), "Instrument Serif", Georgia, serif;
+  --f-sans: var(--font-sans), "Inter", system-ui, sans-serif;
+  --f-mono: var(--font-mono), "JetBrains Mono", ui-monospace, monospace;
+}
