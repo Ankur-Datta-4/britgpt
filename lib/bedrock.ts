@@ -139,7 +139,7 @@ export const generateBedrockImage = async (
       });
     }
   } catch {
-    /* use default template */
+    /* use default template. */
   }
 
   return fallback();
