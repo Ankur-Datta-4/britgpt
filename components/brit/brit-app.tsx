@@ -578,7 +578,7 @@ export default function BritApp() {
     let answer = answerFromDataset(text);
     const liveLlm = await hasLlmKeyAsync();
     if (liveLlm) {
-      setTypingText("Refining with live search…");
+      setTypingText("Refining answer…");
       try {
         answer = await enrichQAAnswer(text, answer);
       } catch {
@@ -932,24 +932,12 @@ export default function BritApp() {
       }
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "l") {
         e.preventDefault();
-        const on = toggleLlmLive();
-        setLlmLiveOn(on);
-        if (on) {
-          hasLlmKeyAsync().then((ready) => {
-            showToast(
-              ready
-                ? "Live LLM search on"
-                : "Live search on — add API key in .env.local for real LLM"
-            );
-          });
-        } else {
-          showToast("Demo mode — dataset answers only");
-        }
+        setLlmLiveOn(toggleLlmLive());
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [reportOpen, settingsOpen, detail, showToast]);
+  }, [reportOpen, settingsOpen, detail]);
 
   const ctx = {
     onDataConfig,
@@ -996,9 +984,10 @@ export default function BritApp() {
             <span className="pill">Run #4821</span>
           </div>
           <div className="topbar-right">
-            {llmLiveOn && <span className="credit-pill llm-live-pill">live search</span>}
+            {llmLiveOn && (
+              <span className="engine-mode-dot" title="Live LLM search (⌃⇧L to toggle)" />
+            )}
             <span className="credit-pill">credits <b>1,820</b></span>
-            <span className="credit-pill" style={{ cursor: "pointer" }} onClick={reset}>↺ restart</span>
           </div>
         </div>
 

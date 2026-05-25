@@ -1226,9 +1226,14 @@ button { font-family: inherit; cursor: pointer; }
 .side-ctx-danger:hover {
   background: var(--red-soft);
 }
-.credit-pill.llm-live-pill {
-  border-color: var(--green);
-  color: var(--green);
+.engine-mode-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px oklch(0.55 0.13 155 / 0.2);
+  flex-shrink: 0;
 }
 .film-job-card {
   width: 100%;
