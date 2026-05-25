@@ -1,0 +1,2855 @@
+﻿0️⃣ Input Field Flow
+1. Input Prompt
+
+
+Map India's top traditional sweet and savory flavors state-by-state, uncover trending opportunities, and identify product extensions for Britannia's portfolio.
+
+
+2. Data Configuration
+
+
+* Select Sources: Amazon Reviews, Flipkart Reviews, Instagram, YouTube, X, Reddit, LinkedIn
+* Select Time Frame: Last 6 Months, Last 1 Year, Custom Timeframe
+* Select Geography: Country Input
+* Provide Context (Optional): Free Text Space
+
+
+3. Target Audience Configuration
+
+
+* Age Generation: Gen Alpha, Gen Z, Millennials, Gen Y [Optional/Multi Select]
+* Age Category: 18-24, 25-34, 35-44, 45+ [Optional/Multi Select]
+* Lifestyle: Urban, Semi-Urban, Rural [Optional/Multi Select]
+* City Tier: Tier 1, Tier 2, Tier 3+ [Optional/Multi Select]
+
+
+Fixed Statistics:
+* Credits: 2
+* TAT: 45 Minutes
+* Data Confidence: 92%
+
+
+4. Loading Screen: Existing Format is ok
+
+
+
+
+  
+
+
+
+* Ensure all reach tick marks (bug in previous)
+
+
+  
+
+
+
+* Change fields to how it is in RRP. Setting context, source aggregation, collecting data, cleaning data, analysing data, report generation.
+
+
+5. SHOW OUTPUT
+🚨 Fields and Feedback
+  
+
+
+
+Before this screen appears, we can prompt the user for inputs around channels, regions etc, which we are prompting for in the next step (screenshot below). Also, different outputs are appearing once you enter a dummy input in the first field (“Add a research question”). Added a screenshot of the other input later
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+1️⃣ Output Narrative Flow
+1. Opening Thesis / Macro Shift: Honey Chilli & Gunpowder Podi Are Redefining Indian Snacking
+
+
+[Design Interface: A card with the insight header, or as a title in chat itself as the rest of the outputs flow]
+
+
+
+2. State-by-State Flavor Deep Dives
+
+
+[Design Interface: we have a table of 3 columns, state, sweet flavors, savory flavors (Top 5); A clickable sign on each state name or at the end of each row for the quantitative table, which expands into the following section.]
+
+For each state:
+* 1-line strategic insight
+* Sweet flavor table (Top 5)
+* Savory flavor table (Top 5)
+* Short “What this means” takeaway interpreting the behavior behind the data
+
+   3. Key State-wise Winning Flavors
+
+
+   4. Cross-State Insight Synthesis - Overall Flavor Reads
+   1. Insights like zone-wise trends,
+   2. weather -related trends,
+   3. age/demographic trends
+
+
+[Design Interface: Insight cards with %ages and statistics supporting]
+
+
+   5. National Flavor Performance View: Consolidate all flavors into one national table showing:
+
+[Design Interface: Table]
+      * Conversation growth
+      * Engagement growth
+      * Trend Type
+      * Regional strength, States Popular in
+      * Product Extension Recommendations
+      * Britannia portfolio fit
+National Prioritization Matrix (2x2): Plot flavors by Conversation Growth vs Engagement Growth
+
+
+      6. Actionables for Next Steps (State-wise): For each state’s winning flavor, (or on input from user)
+
+[Design Interface: A 2 column showcase of state names, with a + sign next to the name to expand a card for each state]
+
+         * Name recommendations, messaging & product story recommendations
+         * Concept Card generation
+         * Video ad Story Board generation
+2️⃣ Content
+Section 1
+
+
+Honey Chilli and Gunpowder Podi lead India's trending snack flavors
+Sweet-heat and regional spice profiles are gaining rapid traction across states, pointing to growing consumer appetite for layered, bold flavors. 
+Section 2.1
+
+
+State
+	Top 5 Sweet Flavors
+	Top 5 Savory Flavors
+	Andhra Pradesh
+	Honey Chilli, Tamarind Candy, Bellam Coconut, Pootharekulu Crunch, Mango Pickle Candy
+	Gunpowder Podi, Gongura Masala, Mirchi Bajji Spice, Chicken 65 Masala, Pesarattu Chutney
+	Arunachal Pradesh
+	Honey Chilli, Kiwi Candy, Orange Blossom, Bamboo Shoot Honey, Wild Berry Candy
+	Smoked Chilli (Raja Mircha), Bamboo Shoot Masala, Thukpa Spice, Fermented Soybean, Black Sesame Salt
+	Assam
+	Nolen Gur Toffee, Pitha Rice Cake, Honey Chilli, Assam Tea Caramel, Coconut Laru Bite
+	Bhut Jolokia Spice, Khar Masala, Fish Curry Masala, Bamboo Shoot Pickle, Mustard Seed Mix
+	Bihar
+	Tilkut Sesame Jaggery, Honey Chilli, Khaja Caramel, Anarsa Coconut, Thekua Crunch
+	Sattu Masala, Litti Chokha Spice, Mustard Pickle, Chaat Masala, Gunpowder Podi
+	Chhattisgarh
+	Tilgur Sesame Jaggery, Honey Chilli, Mahua Flower Candy, Coconut Barfi Bite, Mango Aamchur Toffee
+	Chana Dal Masala, Red Chilli Chutney, Bafauri Spice, Farra Masala, Garlic Podi
+	Delhi NCR
+	Honey Chilli, Dark Choc Sea Salt, Churma & Jaggery, Rose Paan Candy, Mango Aamchur Twist
+	Schezwan Masala, Chaat Masala Blast, Dahi Papri Spice, Tandoori BBQ, Gunpowder Podi
+	Goa
+	Bebinca Caramel, Honey Chilli, Coconut Jaggery, Cashew Feni Candy, Dodol Toffee
+	Recheado Masala, Vindaloo Spice, Cafreal Marinade, Xacuti Masala, Prawn Balchão
+	Gujarat
+	Honey Chilli, Mohanthal Crunch, Basundi Caramel, Ghari Toffee, Mango Pickle Candy
+	Sev Masala, Dhokla Chutney Spice, Thepla Methi, Khakhra Masala, Jamnagari Chilli
+	Haryana
+	Honey Chilli, Churma Jaggery, Singri Candy, Rabri Caramel, Rose Paan Candy
+	Bajra Masala, Chaat Masala Blast, Methi Masala, Tandoori BBQ, Besan Spice Mix
+	Himachal Pradesh
+	Honey Chilli, Apple Cinnamon, Babru Toffee, Walnut Honey, Mittha Sweet Rice
+	Chana Madra Spice, Siddu Masala, Pahadi Chilli, Kullu Trout Masala, Dham Spice
+	Jharkhand
+	Tilkut Sesame, Honey Chilli, Arsa Jaggery, Malpua Caramel, Dhuska Coconut
+	Rugda Masala, Litti Spice, Sattu Mix, Bamboo Shoot Pickle, Red Chilli Chutney
+	Karnataka
+	Honey Chilli, Jaggery Sesame, Tamarind Candy, Coconut Jaggery, Filter Coffee Caramel
+	Gunpowder Podi, Bisi Bele Masala, Akki Roti Spice, Urad Dal Chutney, Mysore Rasam
+	Kerala
+	Banana Chips Jaggery, Honey Chilli, Coconut Barfi, Unniyappam Cardamom, Jackfruit Candy
+	Kerala Pepper Fry, Malabar Curry Masala, Banana Chips Masala, Coconut Chutney, Fish Moilee Spice
+	Madhya Pradesh
+	Honey Chilli, Mawa Bati Toffee, Jalebi Saffron, Gajak Sesame, Lavang Latika
+	Bhutte Ka Kees Masala, Poha Masala, Dal Bafla Spice, Indori Namkeen, Garlic Chutney
+	Maharashtra
+	Honey Chilli, Caramel Corn, Mango Pickle Candy, Rose & Saffron, Dark Choc Chilli
+	Schezwan Masala, Mumbai Cutting Chai, Vada Pav Masala, Garlic Podi, Kokum Chaat
+	Manipur
+	Chak-Hao Black Rice Candy, Honey Chilli, Pineapple Candy, Wild Honey Crunch, Passion Fruit Toffee
+	Naga King Chilli, Eromba Spice, Singju Masala, Fermented Fish Masala, Kangshoi Herb Mix
+	Meghalaya
+	Honey Chilli, Wild Honey Crunch, Orange Blossom, Pineapple Candy, Black Sesame Toffee
+	Jadoh Spice, Doh Khleh Masala, Tungrymbai Fermented Soy, Smoked Meat Rub, Lakadong Turmeric Mix
+	Mizoram
+	Honey Chilli, Passion Fruit Candy, Banana Blossom Honey, Vawksa Rep Toffee, Citrus Candy
+	Bai Masala, Sawhchiar Spice, Smoked Pork Rub, Bamboo Shoot Pickle, Bird's Eye Chilli
+	Nagaland
+	Wild Honey Crunch, Honey Chilli, Anishi Candy, Passion Fruit Toffee, Rice Beer Caramel
+	Raja Mircha (Bhut Jolokia), Smoked Pork Masala, Axone Fermented Soy, Bamboo Shoot Pickle, Naga Garlic Chutney
+	Odisha
+	Chhena Poda Caramel, Honey Chilli, Rasagola Toffee, Mango Candy, Coconut Laddoo Bite
+	Dalma Spice, Pakhala Masala, Crab Masala, Santula Spice Mix, Mustard Panch Phoron
+	Punjab
+	Honey Chilli, Pinni Jaggery, Phirni Saffron, Churma Toffee, Rabri Caramel
+	Tandoori BBQ, Amritsari Masala, Sarson Mustard, Chaat Masala Blast, Achari Spice
+	Rajasthan
+	Honey Chilli, Ghevar Saffron, Churma Jaggery, Mawa Kachori Bite, Moong Dal Barfi
+	Dal Baati Masala, Ker Sangri Pickle, Laal Maas Spice, Mirchi Vada Masala, Pyaaz Kachori Spice
+	Sikkim
+	Honey Chilli, Cardamom Tea Toffee, Wild Berry Candy, Mandarin Orange Candy, Buckwheat Honey
+	Gundruk Pickle, Kinema Fermented Soy, Dalle Khursani Chilli, Phagshapa Spice, Thukpa Masala
+	Tamil Nadu
+	Tamarind Candy, Honey Chilli, Raw Mango Salt, Coconut Sugar Bites, Elachi Milk Toffee
+	Gunpowder Podi, Milagu Vadai Spice, Chettinad Pepper, Kottu Masala, Kara Boondi Mix
+	Telangana
+	Honey Chilli, Qubani Ka Meetha Toffee, Double Ka Meetha Caramel, Mango Pickle Candy, Tamarind Candy
+	Gunpowder Podi, Hyderabadi Biryani Masala, Mirchi Ka Salan, Gongura Masala, Pesarattu Chutney
+	Tripura
+	Honey Chilli, Pineapple Candy, Rice Cake Jaggery, Wild Honey Crunch, Banana Candy
+	Berma Fermented Fish, Mosdeng Masala, Chakhwi Spice, Bamboo Shoot Pickle, Mui Borok Chilli
+	Uttar Pradesh
+	Honey Chilli, Petha Saffron, Rabri Toffee, Balushahi Caramel, Mango Aamchur Twist
+	Chaat Masala Blast, Lucknowi Kebab Spice, Galawati Masala, Tunday Spice, Schezwan Masala
+	Uttarakhand
+	Honey Chilli, Bal Mithai, Singori Coconut, Jhangora Millet Honey, Apple Cinnamon
+	Bhang Chutney, Kafuli Spice, Pahadi Chilli, Chainsoo Masala, Kumaoni Raita Spice
+	West Bengal
+	Mishti Doi Caramel, Nolen Gur Toffee, Honey Chilli, Gondhoraj Lemon Candy, Narkel Naru Bite
+	Kasundi Mustard, Panch Phoron Mix, Jhalmuri Spice, Hilsa Fry Masala, Gunpowder Podi
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Section 2.2
+Andhra Pradesh
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	18.4K
+	132.7K
+	Tamarind Candy
+	Sweet
+	14.8K
+	104.2K
+	Bellam Coconut
+	Sweet
+	12.1K
+	87.9K
+	Pootharekulu Crunch
+	Sweet
+	10.6K
+	76.4K
+	Mango Pickle Candy
+	Sweet
+	9.9K
+	71.3K
+	Gunpowder Podi
+	Savory
+	24.2K
+	184.8K
+	Gongura Masala
+	Savory
+	19.6K
+	148.5K
+	Mirchi Bajji Spice
+	Savory
+	15.7K
+	118.4K
+	Chicken 65 Masala
+	Savory
+	14.3K
+	106.8K
+	Pesarattu Chutney
+	Savory
+	11.8K
+	88.9K
+	
+
+Arunachal Pradesh
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	8.7K
+	61.4K
+	Kiwi Candy
+	Sweet
+	7.2K
+	52.8K
+	Orange Blossom
+	Sweet
+	6.4K
+	45.3K
+	Bamboo Shoot Honey
+	Sweet
+	5.8K
+	41.9K
+	Wild Berry Candy
+	Sweet
+	5.2K
+	37.1K
+	Smoked Chilli (Raja Mircha)
+	Savory
+	13.6K
+	101.7K
+	Bamboo Shoot Masala
+	Savory
+	11.1K
+	82.6K
+	Thukpa Spice
+	Savory
+	9.8K
+	74.3K
+	Fermented Soybean
+	Savory
+	8.9K
+	66.5K
+	Black Sesame Salt
+	Savory
+	7.1K
+	52.2K
+	
+
+Assam
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Nolen Gur Toffee
+	Sweet
+	15.3K
+	112.6K
+	Pitha Rice Cake
+	Sweet
+	12.7K
+	94.1K
+	Honey Chilli
+	Sweet
+	11.6K
+	83.7K
+	Assam Tea Caramel
+	Sweet
+	10.2K
+	72.9K
+	Coconut Laru Bite
+	Sweet
+	8.8K
+	63.5K
+	Bhut Jolokia Spice
+	Savory
+	19.4K
+	149.2K
+	Khar Masala
+	Savory
+	14.8K
+	109.7K
+	Fish Curry Masala
+	Savory
+	12.9K
+	96.4K
+	Bamboo Shoot Pickle
+	Savory
+	11.2K
+	81.6K
+	Mustard Seed Mix
+	Savory
+	9.4K
+	68.8K
+	
+
+Bihar
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Tilkut Sesame Jaggery
+	Sweet
+	17.6K
+	126.3K
+	Honey Chilli
+	Sweet
+	14.9K
+	108.8K
+	Khaja Caramel
+	Sweet
+	11.7K
+	82.5K
+	Anarsa Coconut
+	Sweet
+	9.8K
+	69.7K
+	Thekua Crunch
+	Sweet
+	8.9K
+	63.1K
+	Sattu Masala
+	Savory
+	21.8K
+	162.9K
+	Litti Chokha Spice
+	Savory
+	18.6K
+	136.8K
+	Mustard Pickle
+	Savory
+	13.7K
+	98.4K
+	Chaat Masala
+	Savory
+	11.5K
+	82.1K
+	Gunpowder Podi
+	Savory
+	10.2K
+	74.6K
+	
+
+Chhattisgarh
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Tilgur Sesame Jaggery
+	Sweet
+	13.4K
+	96.8K
+	Honey Chilli
+	Sweet
+	12.6K
+	88.7K
+	Mahua Flower Candy
+	Sweet
+	10.8K
+	77.1K
+	Coconut Barfi Bite
+	Sweet
+	8.7K
+	61.3K
+	Mango Aamchur Toffee
+	Sweet
+	7.9K
+	56.4K
+	Chana Dal Masala
+	Savory
+	16.8K
+	123.7K
+	Red Chilli Chutney
+	Savory
+	14.7K
+	107.5K
+	Bafauri Spice
+	Savory
+	11.9K
+	85.6K
+	Farra Masala
+	Savory
+	9.8K
+	71.8K
+	Garlic Podi
+	Savory
+	8.6K
+	63.2K
+	Delhi NCR
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	26.8K
+	201.7K
+	Dark Choc Sea Salt
+	Sweet
+	21.4K
+	164.8K
+	Churma & Jaggery
+	Sweet
+	18.6K
+	139.5K
+	Rose Paan Candy
+	Sweet
+	16.3K
+	118.7K
+	Mango Aamchur Twist
+	Sweet
+	14.1K
+	102.9K
+	Schezwan Masala
+	Savory
+	24.7K
+	188.6K
+	Chaat Masala Blast
+	Savory
+	22.3K
+	171.4K
+	Dahi Papri Spice
+	Savory
+	18.2K
+	132.8K
+	Tandoori BBQ
+	Savory
+	15.6K
+	116.3K
+	Gunpowder Podi
+	Savory
+	13.8K
+	102.1K
+	Goa
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Bebinca Caramel
+	Sweet
+	12.9K
+	95.8K
+	Honey Chilli
+	Sweet
+	11.8K
+	86.4K
+	Coconut Jaggery
+	Sweet
+	9.6K
+	71.3K
+	Cashew Feni Candy
+	Sweet
+	8.7K
+	64.2K
+	Dodol Toffee
+	Sweet
+	7.9K
+	58.6K
+	Recheado Masala
+	Savory
+	17.8K
+	136.7K
+	Vindaloo Spice
+	Savory
+	16.2K
+	122.4K
+	Cafreal Marinade
+	Savory
+	13.4K
+	101.5K
+	Xacuti Masala
+	Savory
+	11.7K
+	86.3K
+	Prawn Balchão
+	Savory
+	10.2K
+	74.8K
+	Gujarat
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	20.1K
+	148.3K
+	Mohanthal Crunch
+	Sweet
+	17.6K
+	129.8K
+	Basundi Caramel
+	Sweet
+	15.4K
+	112.6K
+	Ghari Toffee
+	Sweet
+	13.7K
+	99.1K
+	Mango Pickle Candy
+	Sweet
+	11.6K
+	84.5K
+	Sev Masala
+	Savory
+	23.4K
+	176.5K
+	Dhokla Chutney Spice
+	Savory
+	19.2K
+	144.8K
+	Thepla Methi
+	Savory
+	16.8K
+	123.4K
+	Khakhra Masala
+	Savory
+	14.6K
+	106.7K
+	Jamnagari Chilli
+	Savory
+	12.9K
+	94.3K
+	Haryana
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	15.8K
+	116.9K
+	Churma Jaggery
+	Sweet
+	13.7K
+	99.6K
+	Singri Candy
+	Sweet
+	10.9K
+	81.4K
+	Rabri Caramel
+	Sweet
+	9.6K
+	69.8K
+	Rose Paan Candy
+	Sweet
+	8.7K
+	63.1K
+	Bajra Masala
+	Savory
+	18.6K
+	139.7K
+	Chaat Masala Blast
+	Savory
+	16.4K
+	122.5K
+	Methi Masala
+	Savory
+	13.1K
+	96.2K
+	Tandoori BBQ
+	Savory
+	11.8K
+	87.4K
+	Besan Spice Mix
+	Savory
+	10.4K
+	75.6K
+	Himachal Pradesh
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	11.2K
+	82.7K
+	Apple Cinnamon
+	Sweet
+	10.4K
+	76.1K
+	Babru Toffee
+	Sweet
+	8.7K
+	63.8K
+	Walnut Honey
+	Sweet
+	7.9K
+	58.2K
+	Mittha Sweet Rice
+	Sweet
+	6.8K
+	49.7K
+	Chana Madra Spice
+	Savory
+	15.3K
+	113.6K
+	Siddu Masala
+	Savory
+	13.1K
+	97.5K
+	Pahadi Chilli
+	Savory
+	11.6K
+	85.4K
+	Kullu Trout Masala
+	Savory
+	9.8K
+	72.8K
+	Dham Spice
+	Savory
+	8.5K
+	63.3K
+	Jharkhand
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Tilkut Sesame
+	Sweet
+	13.8K
+	101.2K
+	Honey Chilli
+	Sweet
+	12.1K
+	88.9K
+	Arsa Jaggery
+	Sweet
+	10.3K
+	74.8K
+	Malpua Caramel
+	Sweet
+	8.8K
+	63.6K
+	Dhuska Coconut
+	Sweet
+	7.4K
+	53.9K
+	Rugda Masala
+	Savory
+	16.9K
+	124.4K
+	Litti Spice
+	Savory
+	14.7K
+	109.1K
+	Sattu Mix
+	Savory
+	13.2K
+	96.7K
+	Bamboo Shoot Pickle
+	Savory
+	10.1K
+	73.8K
+	Red Chilli Chutney
+	Savory
+	8.7K
+	63.4K
+	Karnataka
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	21.4K
+	159.2K
+	Jaggery Sesame
+	Sweet
+	18.3K
+	136.4K
+	Tamarind Candy
+	Sweet
+	15.6K
+	114.3K
+	Coconut Jaggery
+	Sweet
+	13.4K
+	97.1K
+	Filter Coffee Caramel
+	Sweet
+	11.8K
+	86.2K
+	Gunpowder Podi
+	Savory
+	27.8K
+	214.7K
+	Bisi Bele Masala
+	Savory
+	20.4K
+	154.8K
+	Akki Roti Spice
+	Savory
+	17.2K
+	129.6K
+	Urad Dal Chutney
+	Savory
+	14.9K
+	111.5K
+	Mysore Rasam
+	Savory
+	13.1K
+	98.2K
+	Kerala
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Banana Chips Jaggery
+	Sweet
+	17.6K
+	131.4K
+	Honey Chilli
+	Sweet
+	15.2K
+	112.7K
+	Coconut Barfi
+	Sweet
+	13.1K
+	96.3K
+	Unniyappam Cardamom
+	Sweet
+	10.9K
+	79.8K
+	Jackfruit Candy
+	Sweet
+	9.6K
+	70.4K
+	Kerala Pepper Fry
+	Savory
+	23.8K
+	182.1K
+	Malabar Curry Masala
+	Savory
+	20.7K
+	156.6K
+	Banana Chips Masala
+	Savory
+	17.1K
+	128.9K
+	Coconut Chutney
+	Savory
+	14.3K
+	107.4K
+	Fish Moilee Spice
+	Savory
+	12.2K
+	91.5K
+	Madhya Pradesh
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	16.7K
+	123.8K
+	Mawa Bati Toffee
+	Sweet
+	14.1K
+	103.4K
+	Jalebi Saffron
+	Sweet
+	12.8K
+	92.7K
+	Gajak Sesame
+	Sweet
+	10.7K
+	78.5K
+	Lavang Latika
+	Sweet
+	8.9K
+	64.2K
+	Bhutte Ka Kees Masala
+	Savory
+	19.6K
+	148.7K
+	Poha Masala
+	Savory
+	17.8K
+	132.1K
+	Dal Bafla Spice
+	Savory
+	15.2K
+	114.8K
+	Indori Namkeen
+	Savory
+	13.4K
+	99.6K
+	Garlic Chutney
+	Savory
+	11.1K
+	82.4K
+	
+
+Maharashtra
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	22.8K
+	171.6K
+	Caramel Corn
+	Sweet
+	18.7K
+	139.4K
+	Mango Pickle Candy
+	Sweet
+	15.6K
+	114.8K
+	Rose & Saffron
+	Sweet
+	13.2K
+	96.5K
+	Dark Choc Chilli
+	Sweet
+	11.4K
+	82.3K
+	Schezwan Masala
+	Savory
+	26.7K
+	204.8K
+	Mumbai Cutting Chai
+	Savory
+	22.1K
+	168.5K
+	Vada Pav Masala
+	Savory
+	19.6K
+	147.4K
+	Garlic Podi
+	Savory
+	16.3K
+	121.9K
+	Kokum Chaat
+	Savory
+	13.8K
+	102.7K
+	Manipur
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Chak-Hao Black Rice Candy
+	Sweet
+	10.8K
+	78.9K
+	Honey Chilli
+	Sweet
+	9.7K
+	70.2K
+	Pineapple Candy
+	Sweet
+	8.6K
+	61.8K
+	Wild Honey Crunch
+	Sweet
+	7.4K
+	53.5K
+	Passion Fruit Toffee
+	Sweet
+	6.9K
+	49.1K
+	Naga King Chilli
+	Savory
+	16.2K
+	123.6K
+	Eromba Spice
+	Savory
+	13.7K
+	102.4K
+	Singju Masala
+	Savory
+	11.4K
+	84.8K
+	Fermented Fish Masala
+	Savory
+	9.6K
+	71.2K
+	Kangshoi Herb Mix
+	Savory
+	8.1K
+	59.7K
+	Meghalaya
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	9.8K
+	72.5K
+	Wild Honey Crunch
+	Sweet
+	8.7K
+	64.1K
+	Orange Blossom
+	Sweet
+	7.3K
+	53.6K
+	Pineapple Candy
+	Sweet
+	6.4K
+	46.8K
+	Black Sesame Toffee
+	Sweet
+	5.8K
+	42.7K
+	Jadoh Spice
+	Savory
+	15.8K
+	118.4K
+	Doh Khleh Masala
+	Savory
+	13.6K
+	101.3K
+	Tungrymbai Fermented Soy
+	Savory
+	11.2K
+	82.7K
+	Smoked Meat Rub
+	Savory
+	9.9K
+	72.5K
+	Lakadong Turmeric Mix
+	Savory
+	8.3K
+	61.4K
+	Mizoram
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	8.9K
+	65.7K
+	Passion Fruit Candy
+	Sweet
+	7.8K
+	56.2K
+	Banana Blossom Honey
+	Sweet
+	6.7K
+	48.4K
+	Vawksa Rep Toffee
+	Sweet
+	5.9K
+	42.1K
+	Citrus Candy
+	Sweet
+	5.2K
+	37.3K
+	Bai Masala
+	Savory
+	14.4K
+	107.8K
+	Sawhchiar Spice
+	Savory
+	12.1K
+	89.6K
+	Smoked Pork Rub
+	Savory
+	10.8K
+	79.3K
+	Bamboo Shoot Pickle
+	Savory
+	8.9K
+	65.4K
+	Bird's Eye Chilli
+	Savory
+	7.6K
+	55.2K
+	Nagaland
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Wild Honey Crunch
+	Sweet
+	10.6K
+	78.8K
+	Honey Chilli
+	Sweet
+	9.4K
+	69.5K
+	Anishi Candy
+	Sweet
+	7.8K
+	57.6K
+	Passion Fruit Toffee
+	Sweet
+	6.9K
+	49.8K
+	Rice Beer Caramel
+	Sweet
+	5.7K
+	41.2K
+	Raja Mircha (Bhut Jolokia)
+	Savory
+	18.9K
+	146.3K
+	Smoked Pork Masala
+	Savory
+	16.7K
+	127.8K
+	Axone Fermented Soy
+	Savory
+	13.8K
+	102.5K
+	Bamboo Shoot Pickle
+	Savory
+	11.6K
+	84.1K
+	Naga Garlic Chutney
+	Savory
+	9.7K
+	71.9K
+	Odisha
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Chhena Poda Caramel
+	Sweet
+	18.1K
+	136.5K
+	Honey Chilli
+	Sweet
+	15.7K
+	116.8K
+	Rasagola Toffee
+	Sweet
+	13.6K
+	99.2K
+	Mango Candy
+	Sweet
+	11.4K
+	82.7K
+	Coconut Laddoo Bite
+	Sweet
+	9.8K
+	70.6K
+	Dalma Spice
+	Savory
+	20.7K
+	158.4K
+	Pakhala Masala
+	Savory
+	17.6K
+	133.8K
+	Crab Masala
+	Savory
+	14.2K
+	106.1K
+	Santula Spice Mix
+	Savory
+	12.3K
+	91.7K
+	Mustard Panch Phoron
+	Savory
+	10.1K
+	74.8K
+	Punjab
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	18.9K
+	142.3K
+	Pinni Jaggery
+	Sweet
+	15.8K
+	117.6K
+	Phirni Saffron
+	Sweet
+	13.2K
+	98.4K
+	Churma Toffee
+	Sweet
+	11.1K
+	81.9K
+	Rabri Caramel
+	Sweet
+	9.7K
+	71.3K
+	Tandoori BBQ
+	Savory
+	24.3K
+	187.6K
+	Amritsari Masala
+	Savory
+	20.4K
+	154.8K
+	Sarson Mustard
+	Savory
+	16.9K
+	128.7K
+	Chaat Masala Blast
+	Savory
+	14.8K
+	109.6K
+	Achari Spice
+	Savory
+	12.6K
+	93.5K
+	Rajasthan
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	19.6K
+	148.2K
+	Ghevar Saffron
+	Sweet
+	17.1K
+	128.6K
+	Churma Jaggery
+	Sweet
+	14.8K
+	109.5K
+	Mawa Kachori Bite
+	Sweet
+	12.7K
+	92.8K
+	Moong Dal Barfi
+	Sweet
+	10.4K
+	76.1K
+	Dal Baati Masala
+	Savory
+	23.6K
+	181.7K
+	Ker Sangri Pickle
+	Savory
+	18.7K
+	141.9K
+	Laal Maas Spice
+	Savory
+	16.1K
+	122.8K
+	Mirchi Vada Masala
+	Savory
+	13.8K
+	104.2K
+	Pyaaz Kachori Spice
+	Savory
+	11.7K
+	87.4K
+	Sikkim
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	8.6K
+	63.8K
+	Cardamom Tea Toffee
+	Sweet
+	7.1K
+	52.4K
+	Wild Berry Candy
+	Sweet
+	6.3K
+	45.9K
+	Mandarin Orange Candy
+	Sweet
+	5.6K
+	40.7K
+	Buckwheat Honey
+	Sweet
+	4.9K
+	35.3K
+	Gundruk Pickle
+	Savory
+	13.7K
+	102.1K
+	Kinema Fermented Soy
+	Savory
+	11.8K
+	87.6K
+	Dalle Khursani Chilli
+	Savory
+	10.2K
+	75.4K
+	Phagshapa Spice
+	Savory
+	8.6K
+	63.2K
+	Thukpa Masala
+	Savory
+	7.5K
+	54.8K
+	Tamil Nadu
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Tamarind Candy
+	Sweet
+	19.8K
+	147.2K
+	Honey Chilli
+	Sweet
+	17.6K
+	129.5K
+	Raw Mango Salt
+	Sweet
+	15.2K
+	112.8K
+	Coconut Sugar Bites
+	Sweet
+	12.9K
+	95.7K
+	Elachi Milk Toffee
+	Sweet
+	10.7K
+	78.1K
+	Gunpowder Podi
+	Savory
+	29.4K
+	228.6K
+	Milagu Vadai Spice
+	Savory
+	22.1K
+	169.7K
+	Chettinad Pepper
+	Savory
+	19.8K
+	151.3K
+	Kottu Masala
+	Savory
+	16.7K
+	124.9K
+	Kara Boondi Mix
+	Savory
+	13.8K
+	103.2K
+	Telangana
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	20.8K
+	156.4K
+	Qubani Ka Meetha Toffee
+	Sweet
+	17.2K
+	127.8K
+	Double Ka Meetha Caramel
+	Sweet
+	14.6K
+	108.5K
+	Mango Pickle Candy
+	Sweet
+	12.8K
+	94.1K
+	Tamarind Candy
+	Sweet
+	10.9K
+	80.7K
+	Gunpowder Podi
+	Savory
+	27.1K
+	209.8K
+	Hyderabadi Biryani Masala
+	Savory
+	24.6K
+	188.5K
+	Mirchi Ka Salan
+	Savory
+	18.3K
+	139.6K
+	Gongura Masala
+	Savory
+	15.7K
+	118.2K
+	Pesarattu Chutney
+	Savory
+	12.6K
+	93.7K
+	Tripura
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	9.1K
+	67.3K
+	Pineapple Candy
+	Sweet
+	7.8K
+	57.1K
+	Rice Cake Jaggery
+	Sweet
+	6.6K
+	48.5K
+	Wild Honey Crunch
+	Sweet
+	5.9K
+	42.8K
+	Banana Candy
+	Sweet
+	5.1K
+	36.9K
+	Berma Fermented Fish
+	Savory
+	14.8K
+	112.6K
+	Mosdeng Masala
+	Savory
+	12.4K
+	92.7K
+	Chakhwi Spice
+	Savory
+	10.7K
+	79.4K
+	Bamboo Shoot Pickle
+	Savory
+	8.9K
+	65.2K
+	Mui Borok Chilli
+	Savory
+	7.3K
+	53.5K
+	Uttar Pradesh
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	24.2K
+	183.6K
+	Petha Saffron
+	Sweet
+	19.7K
+	148.1K
+	Rabri Toffee
+	Sweet
+	16.3K
+	121.4K
+	Balushahi Caramel
+	Sweet
+	13.8K
+	102.5K
+	Mango Aamchur Twist
+	Sweet
+	11.6K
+	85.9K
+	Chaat Masala Blast
+	Savory
+	27.6K
+	214.3K
+	Lucknowi Kebab Spice
+	Savory
+	22.8K
+	174.6K
+	Galawati Masala
+	Savory
+	18.9K
+	142.8K
+	Tunday Spice
+	Savory
+	15.7K
+	118.4K
+	Schezwan Masala
+	Savory
+	13.1K
+	98.7K
+	Uttarakhand
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Honey Chilli
+	Sweet
+	11.4K
+	84.2K
+	Bal Mithai
+	Sweet
+	9.7K
+	71.6K
+	Singori Coconut
+	Sweet
+	8.1K
+	59.3K
+	Jhangora Millet Honey
+	Sweet
+	7.2K
+	52.4K
+	Apple Cinnamon
+	Sweet
+	6.5K
+	46.8K
+	Bhang Chutney
+	Savory
+	16.4K
+	124.7K
+	Kafuli Spice
+	Savory
+	13.8K
+	102.3K
+	Pahadi Chilli
+	Savory
+	11.9K
+	88.1K
+	Chainsoo Masala
+	Savory
+	9.8K
+	72.6K
+	Kumaoni Raita Spice
+	Savory
+	8.4K
+	61.8K
+	West Bengal
+Flavor
+	Flavor Type
+	Conv. Volume
+	Total Engagement
+	Mishti Doi Caramel
+	Sweet
+	22.1K
+	168.8K
+	Nolen Gur Toffee
+	Sweet
+	19.6K
+	147.5K
+	Honey Chilli
+	Sweet
+	16.8K
+	124.7K
+	Gondhoraj Lemon Candy
+	Sweet
+	14.2K
+	104.1K
+	Narkel Naru Bite
+	Sweet
+	11.7K
+	85.3K
+	Kasundi Mustard
+	Savory
+	25.4K
+	196.7K
+	Panch Phoron Mix
+	Savory
+	21.2K
+	161.5K
+	Jhalmuri Spice
+	Savory
+	18.4K
+	139.2K
+	Hilsa Fry Masala
+	Savory
+	15.6K
+	117.3K
+	Gunpowder Podi
+	Savory
+	12.8K
+	95.4K
+	
+
+Section 3
+
+
+State
+	Flavor Type
+	Flavor
+	Trend Type
+	Product Extension Ideas
+	Brand Fit
+	Maharashtra
+	Sweet
+	Honey Chilli
+	Established
+	Coated wafers, baked snacks
+	Treat
+	Maharashtra
+	Savory
+	Schezwan Masala
+	Established
+	Schezwan chips, spicy crackers
+	50-50
+	Uttar Pradesh
+	Sweet
+	Honey Chilli
+	Established
+	Sweet-spicy cream biscuits
+	Treat
+	Uttar Pradesh
+	Savory
+	Chaat Masala Blast
+	Stable
+	Chaat crackers, baked namkeen
+	50-50
+	Tamil Nadu
+	Sweet
+	Tamarind Candy
+	Stable
+	Tamarind cookies, chewy bites
+	Marie Gold
+	Tamil Nadu
+	Savory
+	Gunpowder Podi
+	Emerging
+	Podi khakhra, savory biscuits
+	NutriChoice
+	Karnataka
+	Sweet
+	Honey Chilli
+	Established
+	Coated crackers, snack bites
+	Treat
+	Karnataka
+	Savory
+	Gunpowder Podi
+	Emerging
+	Podi crackers, podi snack mix
+	NutriChoice
+	Delhi NCR
+	Sweet
+	Honey Chilli
+	Established
+	Sweet-spicy biscuits, coated snacks
+	Treat
+	Delhi NCR
+	Savory
+	Schezwan Masala
+	Established
+	Schezwan crackers, spicy chips
+	50-50
+	West Bengal
+	Sweet
+	Mishti Doi Caramel
+	Emerging
+	Yogurt cream biscuits, dessert bars
+	Bourbon
+	West Bengal
+	Savory
+	Kasundi Mustard
+	Emerging
+	Mustard crackers, spicy sticks
+	50-50
+	Telangana
+	Sweet
+	Honey Chilli
+	Established
+	Sweet-spicy cookies
+	Treat
+	Telangana
+	Savory
+	Gunpowder Podi
+	Emerging
+	Podi crackers, baked chips
+	NutriChoice
+	Gujarat
+	Sweet
+	Honey Chilli
+	Established
+	Crackers, baked sticks
+	Treat
+	Gujarat
+	Savory
+	Sev Masala
+	Stable
+	Sev crackers, crunchy namkeen
+	50-50
+	Rajasthan
+	Sweet
+	Honey Chilli
+	Established
+	Fusion cookies, snack wafers
+	Treat
+	Rajasthan
+	Savory
+	Dal Baati Masala
+	Stable
+	Masala crackers, baked bites
+	50-50
+	Andhra Pradesh
+	Sweet
+	Honey Chilli
+	Established
+	Cream crackers, baked chips, snack mix
+	50-50
+	Andhra Pradesh
+	Savory
+	Gunpowder Podi
+	Emerging
+	Podi crackers, podi khakhra, snack sticks
+	NutriChoice
+	Kerala
+	Sweet
+	Banana Chips Jaggery
+	Stable
+	Banana cookies, jaggery wafers
+	Good Day
+	Kerala
+	Savory
+	Kerala Pepper Fry
+	Emerging
+	Pepper crackers, spicy chips
+	50-50
+	Punjab
+	Sweet
+	Honey Chilli
+	Established
+	Sweet-spicy snack bars
+	Treat
+	Punjab
+	Savory
+	Tandoori BBQ
+	Stable
+	BBQ crackers, baked chips
+	50-50
+	Bihar
+	Sweet
+	Tilkut Sesame Jaggery
+	Seasonal
+	Sesame cookies, protein bites
+	NutriChoice
+	Bihar
+	Savory
+	Sattu Masala
+	Emerging
+	Sattu crackers, baked puffs
+	NutriChoice
+	Odisha
+	Sweet
+	Chhena Poda Caramel
+	Emerging
+	Caramel cookies, cheesecake bites
+	Bourbon
+	Odisha
+	Savory
+	Dalma Spice
+	Stable
+	Lentil crackers, savory biscuits
+	50-50
+	Madhya Pradesh
+	Sweet
+	Honey Chilli
+	Established
+	Sweet-spicy cookies
+	Treat
+	Madhya Pradesh
+	Savory
+	Bhutte Ka Kees Masala
+	Stable
+	Corn crackers, masala sticks
+	50-50
+	Haryana
+	Sweet
+	Honey Chilli
+	Established
+	Snack biscuits, coated nuts
+	Treat
+	Haryana
+	Savory
+	Bajra Masala
+	Emerging
+	Millet crackers, healthy crisps
+	NutriChoice
+	Assam
+	Sweet
+	Nolen Gur Toffee
+	Seasonal
+	Jaggery cookies, caramel biscuits
+	Good Day
+	Assam
+	Savory
+	Bhut Jolokia Spice
+	Fad
+	Spicy crackers, heat challenge snacks
+	50-50
+	Jharkhand
+	Sweet
+	Tilkut Sesame
+	Seasonal
+	Sesame cookies, jaggery bites
+	NutriChoice
+	Jharkhand
+	Savory
+	Rugda Masala
+	Emerging
+	Earthy mushroom crackers
+	50-50
+	Chhattisgarh
+	Sweet
+	Tilgur Sesame Jaggery
+	Seasonal
+	Gur biscuits, millet cookies
+	NutriChoice
+	Chhattisgarh
+	Savory
+	Chana Dal Masala
+	Stable
+	Namkeen crackers, crunchy bites
+	50-50
+	Uttarakhand
+	Sweet
+	Honey Chilli
+	Emerging
+	Sweet-spicy cookies
+	Treat
+	Uttarakhand
+	Savory
+	Bhang Chutney
+	Fad
+	Herb crackers, savory chips
+	50-50
+	Himachal Pradesh
+	Sweet
+	Honey Chilli
+	Emerging
+	Sweet-spicy snack bars
+	Treat
+	Himachal Pradesh
+	Savory
+	Chana Madra Spice
+	Stable
+	Creamy savory crackers
+	50-50
+	Goa
+	Sweet
+	Bebinca Caramel
+	Emerging
+	Caramel cookies, layered cakes
+	Bourbon
+	Goa
+	Savory
+	Recheado Masala
+	Emerging
+	Masala crackers, spicy wafers
+	50-50
+	Manipur
+	Sweet
+	Chak-Hao Black Rice Candy
+	Emerging
+	Black rice cookies, dessert bites
+	Good Day
+	Manipur
+	Savory
+	Naga King Chilli
+	Fad
+	Heat chips, spicy peanuts
+	50-50
+	Meghalaya
+	Sweet
+	Honey Chilli
+	Emerging
+	Sweet-spicy wafers
+	Treat
+	Meghalaya
+	Savory
+	Jadoh Spice
+	Stable
+	Savory crackers, rice crisps
+	50-50
+	Nagaland
+	Sweet
+	Wild Honey Crunch
+	Emerging
+	Honey cookies, granola bites
+	NutriChoice
+	Nagaland
+	Savory
+	Raja Mircha (Bhut Jolokia)
+	Fad
+	Ultra-spicy chips, coated nuts
+	50-50
+	Arunachal Pradesh
+	Sweet
+	Honey Chilli
+	Emerging
+	Sweet-spicy cookies, coated nuts
+	Treat
+	Arunachal Pradesh
+	Savory
+	Smoked Chilli (Raja Mircha)
+	Fad
+	Fiery chips, spice-coated peanuts
+	50-50
+	Mizoram
+	Sweet
+	Honey Chilli
+	Emerging
+	Coated snack bites
+	Treat
+	Mizoram
+	Savory
+	Bai Masala
+	Stable
+	Herb crackers, savory chips
+	50-50
+	Tripura
+	Sweet
+	Honey Chilli
+	Emerging
+	Sweet-spicy snack bites
+	Treat
+	Tripura
+	Savory
+	Berma Fermented Fish
+	Fad
+	Umami crackers, savory sticks
+	50-50
+	Sikkim
+	Sweet
+	Honey Chilli
+	Emerging
+	Sweet-spicy wafers
+	Treat
+	Sikkim
+	Savory
+	Gundruk Pickle
+	Emerging
+	Tangy crackers, pickle chips
+	50-50
+	
+
+Section 4
+1. Zone-wise trends
+North India (Delhi NCR, Haryana, Punjab, UP, Uttarakhand, HP, Jammu, Rajasthan)
+Insight: The North is India's flavor-maximalist zone — bold, layered, and indulgent profiles consistently outperform single-note flavors. Honey Chilli is the undisputed sweet leader across all northern states. Schezwan Masala and Chaat Masala Blast dominate the savory side, with Tandoori BBQ holding strong in Punjab and Haryana. Indo-Chinese hybrids gained traction here fastest. Delhi NCR acts as the trend-setter, and flavors that succeed here typically spread to Haryana, UP, and Punjab within 2–3 months.
+Key flavors: Honey Chilli, Schezwan Masala, Chaat Masala Blast, Tandoori BBQ, Rose Paan Candy, Dark Choc Sea Salt
+Opportunity signal: High — fastest adoption of new flavors, highest willingness to trial limited-edition SKUs.
+________________
+
+
+South India (Karnataka, Tamil Nadu, Kerala, AP, Telangana, Goa)
+Insight: The South is a podi-first, authenticity-led market. Gunpowder Podi holds the #1 savory position in Karnataka, Tamil Nadu, Andhra Pradesh, and Telangana — an unprecedented regional lock. Sweet flavors gain entry only through tangy or acidic bridges like tamarind and raw mango; pure sweetness without a sour anchor is rejected. Kerala is the outlier — pepper and coconut-based profiles dominate over podi. Goa leans toward Portuguese-influenced spice blends like Recheado and Xacuti. Generic "South Indian" labeling is actively penalised by consumers across this zone.
+Key flavors: Gunpowder Podi, Tamarind Candy, Chettinad Pepper, Milagu Vadai Spice, Kerala Pepper Fry, Filter Coffee Caramel
+Opportunity signal: High but conditional — requires regional specificity in naming, sourcing, and packaging. One "South India" SKU will not work.
+________________
+
+
+West India (Maharashtra, Gujarat, MP, Chhattisgarh)
+Insight: Maharashtra leads the West as the most fusion-open market in the country. Indo-Chinese crossovers entered fastest here, and Schezwan Masala is entrenched as a daily snack flavour. Gujarat adds a distinct sweet-savory duality — Sev Masala and Dhokla Chutney Spice co-exist alongside Mohanthal and Basundi Caramel. MP and Chhattisgarh lean toward traditional formats (jaggery, sesame, chana dal masala) but are beginning to adopt Honey Chilli through metro spillover from Bhopal and Indore. Premium sweet adoption (dark chocolate, caramel) is highest per-capita in this zone after Delhi NCR.
+Key flavors: Honey Chilli, Schezwan Masala, Vada Pav Masala, Caramel Corn, Sev Masala, Poha Masala
+Opportunity signal: High — strong test-and-learn market, especially Maharashtra and urban Gujarat.
+________________
+
+
+East India (West Bengal, Odisha, Bihar, Jharkhand)
+Insight: The East is the most heritage-anchored zone in the country. West Bengal sets the tone — Mishti Doi Caramel and Nolen Gur Toffee outperform Honey Chilli by a significant margin, something that doesn't happen anywhere else. Odisha follows a similar pattern with Chhena Poda Caramel and Rasagola Toffee leading sweet conversations. Bihar and Jharkhand are tilkut and sattu strongholds where new flavor adoption is the slowest nationally. However, the premium for authenticity is the highest here — consumers pay more for products that demonstrate genuine regional provenance. Nostalgia-led positioning outperforms novelty-led positioning consistently.
+Key flavors: Mishti Doi Caramel, Nolen Gur Toffee, Chhena Poda Caramel, Tilkut Sesame Jaggery, Kasundi Mustard, Sattu Masala
+Opportunity signal: Moderate — high loyalty and repeat purchase once trust is earned, but slow to trial. Requires regional-language packaging and heritage-first storytelling.
+________________
+
+
+Northeast India (Assam, Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Tripura, Sikkim)
+Insight: The Northeast is India's most under-indexed snacking zone but has the most distinctive palate in the country. Fermented, smoked, and chilli-forward profiles dominate savory — Bhut Jolokia, Raja Mircha, Axone, and smoked meat rubs have no parallel elsewhere in India. Sweet flavors skew toward tropical and foraged profiles: wild honey, passion fruit, kiwi, and black rice. Honey Chilli has moderate traction here, but it doesn't dominate the way it does nationally. This zone is not a volume play — it's a credibility play. Brands that show up authentically here earn outsized cultural capital that travels nationally through social content.
+Key flavors: Bhut Jolokia Spice, Raja Mircha, Wild Honey Crunch, Dalle Khursani Chilli, Bamboo Shoot Masala, Passion Fruit Candy
+Opportunity signal: Low volume, high brand-equity potential. Best approached through collaborations with local producers and limited-edition drops rather than mainstream distribution.
+________________
+
+
+2. Weather / seasonal trends
+Summer (March – June)
+Insight: Tangy, acidic, and cooling flavor profiles spike sharply. Raw Mango Salt, Tamarind Candy, Kokum Chaat, and Gondhoraj Lemon see their peak conversation and engagement windows during this period. Sweet-sour is the dominant palate signal. Consumers show low tolerance for heavy, heat-forward savory flavors in this season — Gunpowder Podi and Schezwan Masala conversations dip by roughly 15–20%. This is the strongest seasonal window for launching tangy or fruit-forward sweet SKUs.
+Peak flavors: Raw Mango Salt, Tamarind Candy, Kokum Chaat, Gondhoraj Lemon Candy, Mango Aamchur Twist, Mango Pickle Candy
+Implication: Time-limited summer SKUs in tangy-sweet formats (cream wafers, fruit rolls, hard candy) can capture outsized share during this window without cannibalising core lines.
+________________
+
+
+Monsoon (July – September)
+Insight: Fried snack occasions and "chai companion" moments drive engagement to its annual peak. Schezwan Masala, Gunpowder Podi, Vada Pav Masala, and Mumbai Cutting Chai see conversation spikes of 30–40% over baseline. Masala-dusted and podi-coated formats dominate platform conversation. This is the highest-volume window for savory snacking nationally. Sweet engagement stays flat except for jaggery-based warm profiles which see a modest uptick.
+Peak flavors: Schezwan Masala, Gunpowder Podi, Vada Pav Masala, Mumbai Cutting Chai, Kara Boondi Mix, Bajra Masala
+Implication: Monsoon is the best window for pushing savoury launches, especially "rain day" or "chai-time" positioning. Bundle promotions with tea brands can amplify reach. This is also the ideal season for sampling and trial packs.
+________________
+
+
+Winter (November – February)
+Insight: Warm, rich, and sweet profiles reach peak salience. Jaggery, caramel, nolen gur, and warm-spice formats see the highest conversion and repeat purchase rates of the year. This is when premium sweet SKUs — Filter Coffee Caramel, Dark Choc Sea Salt, Nolen Gur Toffee — have their strongest lifetime-value window. Festive gifting (Diwali, Christmas, Pongal, Makar Sankranti) creates a secondary demand spike for packaged sweet assortments. Savory profiles remain steady but don't spike.
+Peak flavors: Nolen Gur Toffee, Jaggery Sesame, Filter Coffee Caramel, Churma Jaggery, Dark Choc Sea Salt, Coconut Jaggery, Tilkut Sesame
+Implication: Winter is the premium window. Higher price points are accepted. Festive gift packs, regional assortment boxes, and limited-edition "winter warmers" perform best here. This is also the best season to push Britannia's dairy-adjacent brands (Winkin' Cow, Milk Bikis) into seasonal sweet formats.
+________________
+
+
+3. Age / demographic trends
+Gen Z (18–24)
+Insight: Honey Chilli is Gen Z's signature flavor nationally. This cohort is discovery-driven, has the lowest brand loyalty of any segment, and is heavily influenced by short-form content (reels, YouTube Shorts). They share snack experiences publicly — flavor novelty and packaging aesthetics drive trial more than taste familiarity. Schezwan Masala and Chaat Masala Blast are the top savory picks. Dark Choc Sea Salt and Rose Paan Candy index disproportionately high with this group. Repeat purchase requires consistent creator seeding and drop-style launches. This cohort also drives the fastest cross-state flavor migration — a trending flavor in Delhi NCR reaches Pune and Bangalore Gen Z within weeks via social platforms.
+Top flavors: Honey Chilli, Schezwan Masala, Dark Choc Sea Salt, Rose Paan Candy, Chaat Masala Blast
+Trial potential: Very high. Retention requires ongoing cultural relevance.
+________________
+
+
+Millennials (25–38)
+Insight: Highest spend-per-occasion of any cohort. Millennials balance nostalgia with novelty — they trial Honey Chilli but return to Jaggery Sesame and Filter Coffee Caramel. The crossover SKU opportunity is strongest here: regional comfort wrapped in modern formats. This group is also the most responsive to "better-for-you" positioning — NutriChoice-style products with familiar regional flavors (Gunpowder Podi digestives, jaggery oat cookies) convert well. They discover products through a mix of food bloggers, workplace word-of-mouth, and grocery delivery platforms. Brand-switching is moderate — once they find a product that fits their weekly rotation, they stick.
+Top flavors: Honey Chilli, Filter Coffee Caramel, Jaggery Sesame, Gunpowder Podi, Caramel Corn
+Trial potential: High. Retention is strong if the product earns a place in the weekly or monthly rotation.
+________________
+
+
+Parents & families (30–45)
+Insight: The highest repeat-purchase segment in Indian snacking. Mothers are the primary buyer in this cohort. Milk-based, jaggery, and regionally familiar flavors win loyalty. Products positioned as "better-for-kids" alternatives to chocolate show the fastest category growth — Elachi Milk Toffee, Coconut Jaggery, and Narkel Naru Bite index highest here. This group rejects extreme heat and unfamiliar fusion profiles for family consumption but will trial them personally. Purchase decisions are driven by ingredient familiarity, perceived health benefit, and portion-pack availability. Regional-language packaging increases trust significantly.
+Top flavors: Elachi Milk Toffee, Coconut Jaggery, Nolen Gur Toffee, Mishti Doi Caramel, Narkel Naru Bite, Jaggery Sesame
+Trial potential: Moderate for new flavors. Repeat purchase and lifetime value are the highest of any cohort.
+________________
+
+
+45 and above
+Insight: Low adoption of new flavors — not a primary growth target group for experimental launches. Tamarind, regional classics (Tilkut, Chhena Poda, Ghevar), and familiar spice profiles hold firmly. However, this cohort drives disproportionate spend during gifting occasions — Diwali, Pongal, Durga Puja, and regional harvest festivals. They are the core buyer for premium assortment boxes and traditional sweet packs. Gunpowder Podi and Kasundi Mustard retain strong loyalty within this group in their respective regions. Honey Chilli has minimal penetration here.
+Top flavors: Tamarind Candy, Kasundi Mustard, Gunpowder Podi, Tilkut Sesame Jaggery, Chhena Poda Caramel
+Trial potential: Low for new formats. High-value for festive gifting and regional heritage SKUs.
+________________
+
+
+Section 5
+
+
+Flavor Name
+	Conversation Growth
+	Engagement Growth
+	Trend Type
+	Regional Strength / States Popular In
+	Product Extension Recommendations
+	Britannia Portfolio Fit
+	Honey Chilli
+	48.7%
+	63.4%
+	Established
+	Maharashtra, UP, Delhi NCR, Karnataka, Telangana
+	Crackers, coated wafers, snack mix, baked chips, stuffed croissants
+	Treat, 50-50
+	Gunpowder Podi
+	46.2%
+	61.8%
+	Emerging
+	Tamil Nadu, Karnataka, Andhra Pradesh, Telangana
+	Podi crackers, khakhra, savory biscuits, chips
+	NutriChoice, 50-50
+	Schezwan Masala
+	41.8%
+	56.4%
+	Established
+	Maharashtra, Delhi NCR, UP
+	Schezwan chips, spicy crackers, coated peanuts
+	50-50
+	Chaat Masala Blast
+	38.6%
+	51.3%
+	Stable
+	Uttar Pradesh, Delhi NCR, Punjab
+	Chaat crackers, baked namkeen, snack sticks
+	50-50
+	Tandoori BBQ
+	35.1%
+	47.7%
+	Stable
+	Punjab, Haryana, Delhi NCR
+	BBQ crackers, baked chips, snack bites
+	50-50
+	Thecha Spice
+	44.8%
+	59.2%
+	Emerging
+	Maharashtra, Gujarat
+	Spicy chips, fiery crackers, coated makhana
+	50-50
+	Kerala Pepper Fry
+	33.7%
+	46.2%
+	Emerging
+	Kerala, Karnataka
+	Pepper crackers, spice chips, roasted nuts
+	50-50
+	Kasundi Mustard
+	31.8%
+	45.6%
+	Emerging
+	West Bengal, Odisha
+	Mustard crackers, tangy sticks, savory wafers
+	50-50
+	Bhut Jolokia Spice
+	39.2%
+	67.1%
+	Fad
+	Assam, Nagaland
+	Extreme spice chips, challenge snacks
+	50-50
+	Raja Mircha
+	36.4%
+	64.8%
+	Fad
+	Nagaland, Arunachal Pradesh
+	Ultra-spicy coated nuts, fiery crackers
+	50-50
+	Sattu Masala
+	34.5%
+	48.3%
+	Emerging
+	Bihar, Jharkhand
+	Protein crackers, baked puffs, savory bites
+	NutriChoice
+	Bajra Masala
+	29.8%
+	41.5%
+	Emerging
+	Haryana, Rajasthan
+	Millet crisps, healthy crackers
+	NutriChoice
+	Tilkut Sesame Jaggery
+	27.6%
+	39.4%
+	Seasonal
+	Bihar, Jharkhand
+	Sesame cookies, gur snack bars, stuffed croissants
+	NutriChoice
+	Tilgur Sesame Jaggery
+	25.9%
+	37.8%
+	Seasonal
+	Chhattisgarh, MP
+	Gur biscuits, millet cookies, stuffed croissants
+	NutriChoice
+	Banana Chips Jaggery
+	28.1%
+	40.2%
+	Stable
+	Kerala
+	Banana wafers, jaggery cookies
+	Good Day
+	Nolen Gur Toffee
+	32.6%
+	46.1%
+	Seasonal
+	Assam, West Bengal
+	Jaggery caramel biscuits, dessert cookies, stuffed croissants
+	Good Day
+	Mishti Doi Caramel
+	35.4%
+	52.7%
+	Emerging
+	West Bengal
+	Yogurt cream biscuits, dessert bars, stuffed croissants
+	Bourbon
+	Chhena Poda Caramel
+	33.1%
+	49.6%
+	Emerging
+	Odisha
+	Cheesecake bites, caramel cookies, stuffed croissants
+	Bourbon
+	Bebinca Caramel
+	29.2%
+	43.8%
+	Emerging
+	Goa
+	Layered cream biscuits, caramel cakes, stuffed croissants
+	Bourbon
+	Tamarind Candy
+	30.8%
+	42.1%
+	Stable
+	Tamil Nadu, Karnataka, Telangana
+	Tamarind cookies, chewy bites, snack bars
+	Marie Gold
+	Mango Pickle Candy
+	28.7%
+	39.7%
+	Emerging
+	Maharashtra, Gujarat, Telangana
+	Tangy cookies, coated snack bites
+	Treat
+	Gondhoraj Lemon Candy
+	24.8%
+	35.2%
+	Emerging
+	West Bengal
+	Citrus cookies, lemon cream biscuits, stuffed croissants
+	Marie Gold
+	Chak-Hao Black Rice Candy
+	26.7%
+	38.6%
+	Emerging
+	Manipur
+	Black rice cookies, dessert bites
+	Good Day
+	Wild Honey Crunch
+	25.3%
+	36.9%
+	Emerging
+	Nagaland, Meghalaya
+	Honey granola biscuits, crunchy bars, stuffed croissants
+	NutriChoice
+	Bhutte Ka Kees Masala
+	27.8%
+	39.1%
+	Stable
+	Madhya Pradesh
+	Corn crackers, savory sticks
+	50-50
+	Dal Baati Masala
+	31.4%
+	44.7%
+	Stable
+	Rajasthan
+	Masala crackers, baked bites
+	50-50
+	Dalma Spice
+	28.6%
+	40.8%
+	Stable
+	Odisha
+	Lentil crackers, savory biscuits
+	50-50
+	Recheado Masala
+	30.7%
+	42.4%
+	Emerging
+	Goa
+	Spicy wafers, masala crackers
+	50-50
+	Gundruk Pickle
+	24.2%
+	37.3%
+	Emerging
+	Sikkim
+	Tangy chips, pickle crackers
+	50-50
+	Berma Fermented Fish
+	22.7%
+	41.6%
+	Fad
+	Tripura
+	Umami crackers, savory sticks
+	50-50
+	Bhang Chutney
+	21.8%
+	38.2%
+	Fad
+	Uttarakhand
+	Herb crackers, tangy chips
+	50-50
+	Jadoh Spice
+	23.1%
+	35.7%
+	Stable
+	Meghalaya
+	Savory rice crisps, baked snacks
+	50-50
+	Bai Masala
+	22.4%
+	34.8%
+	Stable
+	Mizoram
+	Herb crackers, savory wafers
+	50-50
+	Rogan Josh Spice
+	26.9%
+	40.4%
+	Emerging
+	North India
+	Spiced crackers, premium chips
+	50-50
+	Kerala Banana Masala
+	24.6%
+	36.7%
+	Stable
+	Kerala
+	Banana chips, savory wafers
+	Good Day
+	Qubani Caramel
+	27.1%
+	39.9%
+	Seasonal
+	Telangana
+	Dessert cookies, cream biscuits, stuffed croissants
+	Bourbon
+	Ghevar Saffron
+	28.9%
+	41.2%
+	Seasonal
+	Rajasthan
+	Festive cream biscuits, dessert bars, stuffed croissants
+	Good Day
+	Petha Saffron
+	26.4%
+	37.5%
+	Seasonal
+	Uttar Pradesh
+	Saffron cookies, cream-filled biscuits, stuffed croissants
+	Good Day
+	Sev Masala
+	29.5%
+	40.8%
+	Stable
+	Gujarat
+	Sev crackers, crunchy sticks
+	50-50
+	
+
+
+
+Section 6
+
+
+Generate from insights
+
+
+Select an output type, choose your state and flavor, and generate the deliverable.
+
+
+         1. Content & Messaging Recommendations: Platform-specific copy directions, tone guidelines, and hook frameworks for the selected flavor-state pair.
+         2. Concept Cards: Ready-to-use social media cards with headlines, body copy, CTA, and visual direction for each post format.
+         3. Video Ad Storyboard: A scene-by-scene storyboard with shot descriptions, voiceover script, on-screen text, and timing for a 30s video ad.
+
+
+Fields: Select State, Select Flavor, Specific Instructions (Optional)
+Prompt Recommendation (Concept Cards)
+
+
+(2x for each input. One in the state’s language, and one in English)
+
+
+For the concept cards, use the following image as reference, and the following prompt if it helps:
+
+
+  
+
+
+
+System prompt sample (you’ll need to incorporate the variables into this):
+
+
+VERNACULAR CARD
+
+
+You are a concept card designer for Britannia India. You generate 16:9 product concept cards for new snack flavor launches.
+
+
+Concept card has two halves:
+
+
+LEFT HALF (50% of frame):
+- A single person (or a pair like mother-child, friends) genuinely enjoying the product in a natural, relatable moment
+- The setting should reflect the state and cultural context provided
+- Warm, inviting lighting. Real-life moment, not a studio pose
+- The person should be holding or eating the product
+
+
+RIGHT HALF (50% of frame):
+- Top: A catchy headline in the local language of the state (with Hindi as fallback for Hindi-belt states). 8-12 words max. Simple grammar, conversational tone, easy to read at a glance. The headline should connect the flavor to a feeling, moment, or identity — not just describe the product
+- Middle: Body copy (3-4 sentences, also in local language with Hindi fallback). The copy must:
+  - Lead with taste and texture ("crunchy", "milky", "tangy", "spicy kick", "melt-in-mouth")
+  - Connect to a specific life moment (chai-time, school tiffin, evening snack, rain day, road trip)
+  - Mention one clear RTB or USP (e.g., "made with real jaggery", "double-roasted podi spice", "1.5x more milk")
+  - End with how the product makes snack time better
+  - NEVER make health claims, medicinal claims, or nutritional superiority claims
+  - NEVER use words like "healthy", "nutritious", "immunity", "protein-rich" as selling points
+  - Focus ONLY on: taste, texture, crunch, flavour intensity, freshness, feeling, and the moment it fits into
+- Bottom-right: Product pack shot (the Britannia brand packaging for the mapped brand), with 2-3 loose product pieces artfully arranged, and 1-2 key ingredient shots (e.g., a small bowl of podi, a drizzle of honey, whole chillies, a coconut half, coffee beans) that visually reinforce the flavor
+
+
+BACKGROUND: Warm, solid or softly gradient tone that complements the product packaging color. No busy patterns. The background should feel like a clean brand canvas — not a stock photo.
+
+
+BOTTOM STRIP (optional): A one-line sign-off tagline tying the brand, flavor, and feeling together. 6-8 words. Conversational.
+
+
+IMPORTANT RULES:
+- The headline must be specific to the flavor AND the state — never generic
+- The person on the left must look like they belong in that state (clothing, setting cues)
+- The ingredient shots must match the actual flavor — don't show random garnishes
+- All copy must be in the primary language of the state (Tamil for Tamil Nadu, Bengali for West Bengal, Kannada for Karnataka, Marathi for Maharashtra, Hindi for Hindi-belt states, English + local for Northeast states)
+- Keep the tone never clinical
+
+
+
+
+ENGLISH CARD
+
+
+You are a concept card designer for Britannia India. You generate 16:9 product concept cards for new snack flavor launches. Two cards are generated per brief — one in English (this prompt), and one in the state's local language (generated separately).
+
+
+Every concept card has two halves:
+
+
+LEFT HALF (50% of frame):
+- A single person (or a natural pair like mother-child, two friends, siblings) genuinely enjoying the product in a relatable, everyday moment
+- The setting, clothing, and cultural cues should reflect the specific state provided — not generic "Indian"
+- Warm, inviting, natural lighting. A real-life moment, not a studio pose
+- The person should be actively holding or eating the product
+- No celebrities, no models. Real-looking people in real-looking settings
+
+
+RIGHT HALF (50% of frame):
+
+
+HEADLINE (top):
+- 8–12 words in English
+- Simple, conversational grammar — the kind of line someone would actually say out loud
+- Connects the flavor to a feeling, moment, or identity — not a product description
+- No puns that require explanation. No advertising jargon ("unleash", "elevate", "indulge")
+- Should feel like something a friend would say, not something a brand would write
+
+
+BODY COPY (middle, 3–4 sentences in English):
+- Sentence 1: Lead with taste and texture. Use sensory words — crunchy, tangy, spicy kick, melt-in-mouth, smoky, roasted, crumbly, creamy, crisp. Describe what happens when you bite into it
+- Sentence 2: Name the flavor's origin or signature trait as the RTB. e.g., "Made with real Chettinad pepper", "Slow-roasted gunpowder podi spice", "Real honey with a chilli finish". This is the reason-to-believe — keep it specific and ingredient-led
+- Sentence 3: Place the product in a life moment. When do you eat this? After school, with chai, on a rainy evening, during a road trip, while studying, sharing with friends. Make the reader picture themselves in the scene
+- Sentence 4: Close with the product name and a short line about how it makes that moment better. Keep it warm, not salesy
+
+
+COPY RESTRICTIONS — do NOT include:
+- Health claims, nutritional claims, or medicinal language ("healthy", "nutritious", "immunity", "protein-rich", "energy-boosting", "wholesome goodness")
+- Superlatives without substance ("best ever", "like no other", "ultimate")
+- Generic filler ("crafted with care", "made with love", "goodness in every bite")
+- Competitive comparisons ("better than", "unlike other brands")
+
+
+COPY SHOULD ONLY reference: taste, texture, crunch, spice level, flavour intensity, aroma, freshness, the feeling of eating it, and the moment it fits into
+
+
+PRODUCT SHOT (bottom-right):
+- The Britannia brand pack (for the mapped brand) displayed clearly with the brand name and flavor visible
+- 2–3 loose product pieces (biscuits, crackers, wafers — whatever the format is) arranged naturally, not stacked
+- 1–2 ingredient beauty shots that visually anchor the flavor: a small bowl of podi, whole red chillies, a honey drizzle, cracked pepper, a coconut half, coffee beans, tamarind pods, jaggery chunks, sesame seeds — whatever matches the specific flavor. These must be accurate to the flavor, not decorative props
+
+
+SIGN-OFF TAGLINE (bottom strip, optional):
+- 6–8 words in English
+- Ties together the brand name, the flavor, and the feeling
+- Conversational, not sloganistic
+
+
+BACKGROUND:
+- Warm, solid or softly gradated tone that complements the product packaging colour
+- No busy patterns, no stock-photo backgrounds, no lifestyle scenes behind the text
+- Should feel like a clean brand canvas
+
+
+
+
+
+
+
+
+3️⃣ Indicative Outputs
+Link to Chat with Artefacts (There’s a few iterations)
+Section 1
+  
+
+Section 2:
+  
+
+(All States)
+On clicking of the arrow for expansion next to each state,
+  
+
+Next, Section 3: (State-wise Winning Flavors and Brand Fit)
+  
+
+Next, Section 4, which is overall insight reads
+  
+
+Essentially clickable option buttons for zone, weather, and age/demographic trends
+  
+
+  
+
+Note, without the unnecessary sliders at the bottom of each card
+Next, Section 5, a national level table
+  
+
+
+
+  
+
+Table columns are: Flavor, Conv. Growth, Engagement Growth, Trend Type, State Popular in, Product extension ideas, Category, Brand Fit
+Prioritization Matrix (2x2)
+  
+
+Next, Section 6, Actionables
+  
+
+Each card, on clicking, enables a set of user inputs for ideal recommendations
+  
+
+  
+
+Same set of fields for each card.
+🚫 Trial
+Chat Flow
+
+
+> Insight Title Capture
+> Overall Flavor Machine
+        > 2x2 View of CvsE
+> State-wise View (Expand to know more)
+        > State-wise Tables
+> Actionable Options - Input Prompt Flavor-Name
+        > Concept Cards
+        > Video Ad Storyboard
+        > Messaging & Communication Recommendations
+        > Positioning Recommendations
+
+
+
+
+Demo Output
+
+
+Opening Hero Headline: Honey Chilli & Gunpowder Podi Are Redefining Indian Snacking
+
+
+Overall Flavor Machine Add State-wise Names
+
+
+
+
+Flavor
+	Conversation Growth Rate
+	Engagement Growth Rate
+	Product Category Portfolio Recommendation
+	Brand in Portfolio Recommendation
+	Honey Chilli
+	48.7%
+	63.4%
+	Chips, Crackers, Nachos
+	50-50 Golmaal
+	Gunpowder Podi
+	46.8%
+	61.5%
+	Crackers, Podi Chips, Khakhra
+	NutriChoice
+	Thecha
+	44.1%
+	57.9%
+	Namkeen Crackers
+	50-50
+	Gulkand
+	42.3%
+	58.8%
+	Cream Biscuits, Cakes
+	Good Day
+	Date Jaggery Til
+	41.3%
+	52.4%
+	Health Snack Bars
+	NutriChoice
+	Rose Gulkand
+	40.9%
+	56.1%
+	Cream Biscuits
+	Marie Gold
+	Gunpowder Butter
+	39.8%
+	54.9%
+	Savory Cookies
+	50-50
+	Gunpowder Cheese
+	39.1%
+	53.7%
+	Premium Crackers
+	Treat
+	Makhana Masala
+	39.2%
+	55.3%
+	Healthy Snack Range
+	NutriChoice
+	Banarasi Paan
+	38.6%
+	52.7%
+	Dessert Cookies
+	Treat
+	Pistachio Kesar
+	37.5%
+	49.6%
+	Premium Cookies
+	Good Day Harmony
+	Burnt Caramel
+	36.8%
+	50.6%
+	Premium Dessert Biscuits
+	Bourbon
+	Sattu Masala
+	35.2%
+	43.9%
+	Protein Crackers
+	NutriChoice
+	Ghevar Cream
+	35.9%
+	47.7%
+	Festive Dessert Range
+	Good Day
+	Thandai
+	34.8%
+	47.1%
+	Cookies, Filled Croissants
+	Treat
+	Jigarthanda
+	34.1%
+	46.5%
+	Milk Cream Biscuits
+	Treat
+	Jalebi Rabri
+	33.7%
+	48.2%
+	Filled Cookies
+	Good Day
+	Churma Fusion
+	33.4%
+	44.2%
+	Dessert Bars
+	Treat
+	Wasabi Heat
+	32.6%
+	51.2%
+	Premium Crackers
+	NutriChoice
+	Bhakarwadi
+	31.8%
+	45.5%
+	Baked Snack Rolls
+	NutriChoice
+	Pyaaz Kachori
+	31.3%
+	43.8%
+	Savory Puffs
+	Treat
+	Til Gur
+	30.7%
+	40.2%
+	Better-for-you Cookies
+	NutriChoice
+	Honey BBQ
+	29.7%
+	42.6%
+	Fusion Crackers
+	50-50
+	Caramel Chikki
+	29.4%
+	41.8%
+	Choco-filled Biscuits
+	Bourbon
+	Saoji Spice
+	28.8%
+	42.5%
+	Spicy Crackers
+	50-50
+	Kesar Badam
+	28.9%
+	38.1%
+	Festive Cookies
+	Good Day
+	Mishti Doi
+	27.9%
+	39.3%
+	Dessert Cakes
+	Cake
+	Modak Fusion
+	27.5%
+	39.8%
+	Filled Dessert Cookies
+	Treat
+	Smoky Pudina
+	26.8%
+	37.1%
+	Baked Chips
+	50-50
+	Avakaya Spice
+	26.4%
+	37.8%
+	Regional Crackers
+	50-50
+	Chhena Poda
+	25.4%
+	34.6%
+	Dessert Bars
+	Treat
+	Korean Gochujang
+	25.2%
+	46.8%
+	Fusion Chips
+	50-50
+	Peri Peri Masala
+	24.8%
+	36.7%
+	Existing Expansion
+	50-50
+	Dharwad Peda
+	24.4%
+	33.6%
+	Premium Dessert Cookies
+	Good Day
+	Cold Coco
+	24.2%
+	35.7%
+	Chocolate Cookies
+	Bourbon
+	Malai Lassi
+	23.6%
+	31.9%
+	Cream Cakes
+	Cake
+	Kosha Spice
+	22.8%
+	34.4%
+	Savory Crackers
+	50-50
+	Rasgulla Cream
+	22.6%
+	31.3%
+	Cream Sandwich Biscuits
+	Treat
+	Lemon Masala
+	21.7%
+	33.2%
+	Salted Crackers
+	Marie Gold
+	Sweet Pongal
+	20.7%
+	29.1%
+	Festive Cookies
+	Good Day
+	Chaat Masala
+	19.6%
+	28.4%
+	Mainstream Line Extensions
+	50-50
+	
+
+STATE-WISE FLAVOR TABLES
+
+
+Tamil Nadu + Karnataka
+Flavor
+	Conversation Volume in State
+	Engagement Volume in State
+	Gunpowder Podi
+	22.1K
+	166.8K
+	Gunpowder Butter
+	18.7K
+	139.2K
+	Gunpowder Cheese
+	16.2K
+	121.8K
+	Jigarthanda
+	9.8K
+	68.5K
+	Lemon Masala
+	12.4K
+	82.7K
+	Podi is evolving beyond accompaniment culture into a scalable modern snacking language. Consumers increasingly associate podi flavors with authenticity, layered spice depth, and regional pride.
+Delhi + NCR
+Flavor
+	Conversation Volume in State
+	Engagement Volume in State
+	Honey Chilli
+	24.8K
+	181.3K
+	Korean Gochujang
+	17.9K
+	142.6K
+	Chaat Masala
+	15.6K
+	104.4K
+	Peri Peri
+	14.1K
+	93.8K
+	Smoky BBQ
+	11.4K
+	76.1K
+	Insight Callout: North India’s urban snacking culture is shifting toward swicy and fusion-led flavors that feel globally inspired yet culturally familiar through Indo-Chinese food cues.
+
+
+Maharashtra
+Flavor
+	Conversation Volume in State
+	Engagement Volume in State
+	Thecha
+	18.4K
+	132.7K
+	Bhakarwadi
+	15.7K
+	104.2K
+	Saoji Spice
+	11.2K
+	79.6K
+	Honey Chilli
+	10.6K
+	74.8K
+	Caramel Chikki
+	9.6K
+	68.3K
+	Maharashtra overindexes on aggressive spice systems and crunchy formats, making it one of the strongest launchpads for bold savory experimentation.
+Uttar Pradesh + Rajasthan
+Flavor
+	Conversation Volume in State
+	Engagement Volume in State
+	Gulkand
+	19.6K
+	145.8K
+	Thandai
+	16.3K
+	121.4K
+	Banarasi Paan
+	14.7K
+	108.9K
+	Jalebi Rabri
+	13.2K
+	98.5K
+	Ghevar Cream
+	10.1K
+	73.7K
+	Festive indulgence remains a major emotional entry point in North India, especially when traditional dessert flavors are reframed through modern snacking formats.
+West Bengal + Odisha
+Flavor
+	Conversation Volume in State
+	Engagement Volume in State
+	Burnt Caramel
+	16.1K
+	118.4K
+	Mishti Doi
+	15.3K
+	109.6K
+	Chhena Poda
+	14.8K
+	103.2K
+	Rasgulla Cream
+	10.7K
+	74.3K
+	Kosha Spice
+	8.9K
+	62.8K
+	Eastern India’s dairy dessert culture creates whitespace for premium dessert-snacking hybrids with café-style visual and indulgence appeal.
+> Actionable Options - Input Prompt Flavor-Name
+        > Concept Cards
+
+
+Sample Concept Card for Claude Reference: 
+
+
+        > Video Ad Storyboard
+        > Messaging & Communication Recommendations
+        > Positioning Recommendations

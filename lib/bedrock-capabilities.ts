@@ -1,4 +1,5 @@
 import {
+  BEDROCK_IMAGE_MODEL,
   BEDROCK_LLM_MODEL,
   BEDROCK_S3_OUTPUT_URI,
   BEDROCK_S3_PUBLIC_URL,
@@ -12,6 +13,7 @@ export type MediaCapabilities = {
   s3OutputUri: string | null;
   s3PublicUrl: string;
   llmModel: string;
+  imageModel: string;
   videoModel: string;
   canGenerateImages: boolean;
   canGenerateVideo: boolean;
@@ -31,6 +33,7 @@ export const getMediaCapabilities = (): MediaCapabilities => {
     s3OutputUri: BEDROCK_S3_OUTPUT_URI,
     s3PublicUrl: BEDROCK_S3_PUBLIC_URL,
     llmModel: BEDROCK_LLM_MODEL,
+    imageModel: BEDROCK_IMAGE_MODEL,
     videoModel: BEDROCK_VIDEO_MODEL,
     canGenerateImages: bedrockConfigured,
     canGenerateVideo: bedrockConfigured,

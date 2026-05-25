@@ -9,6 +9,7 @@ export const GET = () => {
     s3OutputUri: caps.s3OutputUri,
     s3PublicUrl: caps.s3PublicUrl,
     llmModel: caps.llmModel,
+    imageModel: caps.imageModel,
     videoModel: caps.videoModel,
     canGenerateImages: caps.canGenerateImages,
     canGenerateVideo: caps.canGenerateVideo,

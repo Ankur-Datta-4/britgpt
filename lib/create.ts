@@ -4,22 +4,25 @@ import {
   generateBedrockImage,
 } from "@/lib/bedrock";
 import { checkBedrockConfigured } from "@/lib/api-status";
-import { runActionWithLLM } from "@/lib/llm";
+import { runActionWithLLM, buildHeroFilmPrompt } from "@/lib/llm";
 import { getBedrockKey } from "@/lib/config-client";
 import { resolveFilmPlaybackUrl } from "@/lib/film-url";
 
-const imagePromptFor = (concept: { sku: string; lane: string }, region: string) =>
-  `Premium FMCG product packshot, Britannia India snack biscuit aisle, studio lighting, shallow depth of field. ` +
-  `Product: ${concept.sku}. Style: ${concept.lane}. Region: ${region}. ` +
-  `Modern Indian premium packaging, appetizing, no readable text or logos.`;
+const imagePromptFor = (concept: { sku: string; lane: string; title?: string }, region: string) =>
+  `Professional product photography, premium Indian FMCG biscuit snack pack on clean studio backdrop. ` +
+  `Product: ${concept.title || concept.sku}. Flavor lane: ${concept.lane}. Market: ${region}. ` +
+  `Britannia-style retail packaging, appetizing, sharp focus, soft shadow, no readable text or logos.`;
 
 const videoPromptFor = (
-  concept: { sku: string },
+  concept: { sku: string; title?: string; lane: string },
   insight: string,
-  region: string
+  region: string,
+  scriptTitle?: string
 ) =>
-  `6 second cinematic product film, slow pan, warm retail lighting. ${concept.sku}. ${insight}. ${region}. ` +
-  `Premium FMCG, Britannia India, shallow depth of field.`;
+  `6-second cinematic hero shot of packaged ${concept.title || concept.sku} snack biscuit carton on an Indian supermarket shelf. ` +
+  `Slow dolly-in, warm retail lighting, shallow depth of field. ${concept.lane} flavor for ${region}. ` +
+  `Research theme: ${scriptTitle || "Flavor Insights India"}. ${insight}. ` +
+  `Show only the product pack and shelf — no honey pour, no syrup, no liquid drizzle, no people, no generic food b-roll.`;
 
 export const pickConceptSkus = (ctx: {
   script?: {
@@ -103,10 +106,12 @@ export const generateHeroFilm = async (
     ctx.params?.region || script.scopeDefaults?.region || "Pan-India";
   const ex = script.exec || {};
   const concepts = pickConceptSkus(ctx);
+  const hero = concepts[0];
   let filmPrompt = videoPromptFor(
-    concepts[0],
-    (ex.p || ex.h2 || "").slice(0, 160),
-    region
+    hero,
+    (ex.p || ex.h2 || script.title || "").slice(0, 200),
+    region,
+    script.title
   );
   const bedrockKey = getBedrockKey();
   const ready = await checkBedrockConfigured();
@@ -116,18 +121,15 @@ export const generateHeroFilm = async (
       type: "create_film",
       mode: "setup_required",
       filmPrompt,
-      message: "Add BEDROCK_API_KEY in .env.local.",
+      message: "Connect Bedrock to create hero films.",
     };
   }
 
   onProgress?.("Writing film brief…");
   try {
-    const llm = await runActionWithLLM("concept_cards", ctx);
-    if (llm?.videoPrompt && typeof llm.videoPrompt === "string") {
-      filmPrompt = llm.videoPrompt;
-    }
+    filmPrompt = await buildHeroFilmPrompt(ctx, hero);
   } catch {
-    /* default prompt */
+    /* keep default prompt */
   }
 
   onProgress?.("Creating hero film…");
@@ -142,8 +144,9 @@ export const generateHeroFilm = async (
       filmHref,
       filmIsS3: true,
       sku: concepts[0]?.sku,
+      productName: hero?.title || hero?.sku,
       region,
-      message: "Hero film ready — play below (signed S3 link, 1h).",
+      message: `Hero film ready — ${hero?.title || hero?.sku}.`,
     };
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -171,39 +174,21 @@ export const generateConceptCards = async (
   const script = ctx.script || {};
   const region =
     ctx.params?.region || script.scopeDefaults?.region || "Pan-India";
-  const ex = script.exec || {};
   let concepts = pickConceptSkus(ctx);
-  let filmPrompt = videoPromptFor(
-    concepts[0],
-    (ex.p || ex.h2 || "").slice(0, 160),
-    region
-  );
   const bedrockKey = getBedrockKey();
-  const hasMediaKey = await checkBedrockConfigured();
+  const bedrockReady = await checkBedrockConfigured();
 
-  if (hasMediaKey) {
+  if (bedrockReady) {
     onProgress?.("Writing concepts…");
     try {
       const llm = await runActionWithLLM("concept_cards", ctx);
       concepts = mergeLlmConcepts(concepts, llm, region);
-      if (llm?.videoPrompt && typeof llm.videoPrompt === "string") {
-        filmPrompt = llm.videoPrompt;
-      }
     } catch (e) {
       console.warn("Concept copy failed, using defaults:", e);
     }
   }
 
-  if (!hasMediaKey) {
-    return {
-      mode: "preview" as const,
-      filmPrompt,
-      concepts,
-      message: "Preview ready. Add Bedrock API key to create images and film.",
-    };
-  }
-
-  let imageCount = 0;
+  let generatedCount = 0;
   let lastImageError: string | undefined;
 
   onProgress?.("Creating packshots…");
@@ -211,7 +196,7 @@ export const generateConceptCards = async (
     concepts.map(async (c, i) => {
       try {
         onProgress?.(`Packshot ${i + 1} of 3…`);
-        const imageUri = await generateBedrockImage(
+        const { uri, generated } = await generateBedrockImage(
           {
             prompt: c.imagePrompt || imagePromptFor(c, region),
             title: c.title,
@@ -221,8 +206,8 @@ export const generateConceptCards = async (
           },
           bedrockKey
         );
-        imageCount++;
-        return { ...c, imageUri, packshotReady: true };
+        if (generated) generatedCount++;
+        return { ...c, imageUri: uri, packshotReady: true, generated };
       } catch (e) {
         lastImageError = e instanceof Error ? e.message : String(e);
         const { buildPackshotDataUrl } = await import("@/lib/packshot-visual");
@@ -235,51 +220,21 @@ export const generateConceptCards = async (
             gradient: c.gradient,
           }),
           packshotReady: true,
+          generated: false,
         };
       }
     })
   );
 
-  let hero = withImages[0];
-  let filmNote: string | undefined;
-  if (typeof window !== "undefined") {
-    try {
-      onProgress?.("Hero film…");
-      const videoUri = await generateBedrockFilm(filmPrompt, onProgress, bedrockKey);
-      if (videoUri) {
-        let filmHref = videoUri;
-        try {
-          filmHref = await resolveFilmPlaybackUrl(videoUri);
-        } catch {
-          /* folder link only */
-        }
-        hero = {
-          ...hero,
-          videoUri,
-          filmHref,
-          hasFilm: true,
-          filmIsS3: true,
-        };
-      }
-    } catch (e) {
-      filmNote = e instanceof Error ? e.message : String(e);
-      console.warn("Film failed:", e);
-    }
-  }
-
-  const final = withImages.map((c, i) => (i === 0 ? hero : c));
-  const hasFilm = !!(final[0] as { videoUri?: string })?.videoUri;
-  const mode = imageCount > 0 || hasFilm ? ("created" as const) : ("preview" as const);
+  const mode = "created" as const;
 
   return {
     mode,
-    filmPrompt,
-    concepts: final,
-    error: imageCount === 0 && !hasFilm ? lastImageError : undefined,
-    filmNote,
+    concepts: withImages,
+    error: generatedCount === 0 ? lastImageError : undefined,
     message:
-      mode === "created"
-        ? `Created ${imageCount} packshot${imageCount !== 1 ? "s" : ""}${hasFilm ? " + hero film" : filmNote ? ` · ${filmNote}` : ""}.`
-        : lastImageError || "Could not create packshots.",
+      generatedCount > 0
+        ? `${generatedCount} packshot${generatedCount !== 1 ? "s" : ""} ready.`
+        : "Concept cards ready — AI images unavailable, showing styled previews.",
   };
 };

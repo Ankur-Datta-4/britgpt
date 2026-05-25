@@ -1,44 +1,39 @@
 // @ts-nocheck
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { BRIT_DATA } from '@/lib/data';
-import { answerQuestion, wantsFullResearch } from '@/lib/qa';
+import { answerQuestion } from '@/lib/qa';
 import { enrichQAAnswer, hasLlmKeyAsync } from '@/lib/llm';
 import { runAction as executeAction } from '@/lib/actions';
-import { hasApiKey } from '@/lib/config-client';
+import {
+  DEFAULT_RESEARCH_PROMPT,
+  DataConfigForm,
+  AudienceConfigForm,
+  DocStateTableCard,
+  DocWinningClustersCard,
+  DocCrossStateCard,
+  DocNationalCard,
+  DocActionablesCard,
+} from '@/components/brit/doc-flow-cards';
 import {
   ReportModal,
   DetailPanel,
   ApiKeySettings,
   SUGGESTIONS,
   matchResearchScript,
-  BootBlock,
-  ScopeForm,
   TimelineBlock,
   InsightBlock,
   RegionCard,
-  StatesCard,
-  ExtensionsCard,
   SentimentCard,
   TrendCard,
   FlavourCard,
   QuotesCard,
   FullSummaryCard,
   ExecBlock,
-  ActionsRecommendations,
   ActionResultPanel,
   QAResponse,
 } from '@/components/brit/chat-ui';
-
-const DEFAULT_RESEARCH_Q =
-  BRIT_DATA?.defaultResearchQuery || "Top flavour trends by state across India";
-
-const getDefaultResearchHero = () => {
-  const presets = BRIT_DATA?.predefinedQuestions || SUGGESTIONS;
-  const research = presets.filter((p) => p.research !== false);
-  return research[0] || { tag: "States", q: DEFAULT_RESEARCH_Q, hint: "11 states · sweet & savory top 5" };
-};
 
 /* ============================================================
    Sidebar
@@ -184,53 +179,34 @@ function MessageView({ m, ctx }) {
             {m.text || "Working…"}
           </div>
         )}
-        {m.kind === "boot"     && <BootBlock onComplete={() => ctx.onBootDone(m.id)} />}
-        {m.kind === "scope"    && <ScopeForm defaults={m.defaults} locked={m.locked} onRun={(p) => ctx.onScopeRun(m.id, p)} />}
-        {m.kind === "timeline" && <TimelineBlock onDone={() => ctx.onTimelineDone(m.id)} />}
-        {m.kind === "insight"  && <InsightBlock params={m.params} script={m.script} />}
-        {m.kind === "region"   && <RegionCard script={m.script} />}
-        {m.kind === "states"  && <StatesCard />}
-        {m.kind === "extensions" && <ExtensionsCard />}
-        {m.kind === "sentiment"&& <SentimentCard script={m.script} />}
-        {m.kind === "trend"    && <TrendCard script={m.script} />}
-        {m.kind === "flavour"  && <FlavourCard script={m.script} />}
-        {m.kind === "quotes"   && <QuotesCard script={m.script} />}
-        {m.kind === "summary"  && <FullSummaryCard script={m.script} onOpenReport={ctx.onOpenReport} />}
-        {m.kind === "exec"     && <ExecBlock script={m.script} onOpenReport={ctx.onOpenReport} />}
-        {m.kind === "actions"  && (
-          <ActionsRecommendations
-            script={m.script}
-            params={m.params}
-            busy={ctx.actionBusy}
-            onAction={ctx.onAction}
-            s3Configured={ctx.s3Configured}
-          />
+        {m.kind === "data_config" && (
+          <DataConfigForm locked={m.locked} defaults={m.defaults} onConfirm={(d) => ctx.onDataConfig(m.id, d)} />
         )}
+        {m.kind === "audience_config" && (
+          <AudienceConfigForm locked={m.locked} defaults={m.defaults} onConfirm={(d) => ctx.onAudienceConfig(m.id, d)} />
+        )}
+        {m.kind === "timeline" && <TimelineBlock onDone={() => ctx.onTimelineDone(m.id)} />}
+        {m.kind === "insight" && <InsightBlock params={m.params} script={m.script} />}
+        {m.kind === "doc_states" && <DocStateTableCard />}
+        {m.kind === "doc_winning" && <DocWinningClustersCard />}
+        {m.kind === "region" && <RegionCard script={m.script} />}
+        {m.kind === "doc_cross" && <DocCrossStateCard />}
+        {m.kind === "sentiment" && <SentimentCard script={m.script} />}
+        {m.kind === "trend" && <TrendCard script={m.script} />}
+        {m.kind === "doc_national" && <DocNationalCard />}
+        {m.kind === "flavour" && <FlavourCard script={m.script} />}
+        {m.kind === "quotes" && <QuotesCard script={m.script} />}
+        {m.kind === "doc_actionables" && (
+          <DocActionablesCard onRunDeliverable={ctx.onRunDeliverable} busy={ctx.actionBusy} />
+        )}
+        {m.kind === "summary" && <FullSummaryCard script={m.script} onOpenReport={ctx.onOpenReport} />}
+        {m.kind === "exec" && <ExecBlock script={m.script} onOpenReport={ctx.onOpenReport} />}
         {m.kind === "action_result" && <ActionResultPanel payload={m.payload} />}
-        {m.kind === "qa"       && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
+        {m.kind === "qa" && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
         {m.kind === "research_reco" && (
-          <ResearchRecoCard
-            tag={m.tag}
-            query={m.query}
-            hint={m.hint}
-            onStart={ctx.onStartResearch}
-          />
+          <ResearchRecoCard tag={m.tag} query={m.query} hint={m.hint} onStart={ctx.onStartResearch} />
         )}
       </div>
-    </div>
-  );
-}
-
-function ResearchRecoCard({ tag, query, hint, onStart }) {
-  return (
-    <div className="research-reco-wrap">
-      <p className="research-reco-lead">Ready to go deeper? Run the full research pipeline on this study:</p>
-      <button type="button" className="welcome-hero research-reco-inline" onClick={() => onStart(query)}>
-        <span className="hero-tag">{tag} · recommended</span>
-        <span className="hero-q">{query}</span>
-        {hint && <span className="hero-hint">{hint}</span>}
-        <span className="hero-cta">Start research →</span>
-      </button>
     </div>
   );
 }
@@ -248,6 +224,7 @@ export default function BritApp() {
   const [messages, setMessages] = useState([]);
   const [phase, setPhase] = useState("idle");
   const [params, setParams] = useState(null);
+  const [runConfig, setRunConfig] = useState(null);
   const [activeScript, setActiveScript] = useState(null);
   const [reportOpen, setReportOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -258,7 +235,7 @@ export default function BritApp() {
   const [bedrockConfig, setBedrockConfig] = useState(null);
   const threadRef = useRef(null);
   const scriptRef = useRef(null);
-  const runActionRef = useRef(null);
+  const pipelineDoneRef = useRef(false);
 
   useEffect(() => {
     const handler = (e) => setDetail(e.detail);
@@ -292,9 +269,10 @@ export default function BritApp() {
     setMessages((ms) => [...ms, { ...m, id: nextMsgId() }]);
   const pushDelayed = (m, ms) => setTimeout(() => push(m), ms);
 
-  const actionContext = () => ({
+  const actionContext = (overrides = {}) => ({
     script: scriptRef.current || activeScript,
     params: params || scriptRef.current?.scopeDefaults,
+    ...overrides,
   });
 
   const answerFromDataset = (query: string) => answerQuestion(query);
@@ -337,85 +315,92 @@ export default function BritApp() {
       return copy;
     });
 
-    if (opts.showResearchReco) {
-      const hero = getDefaultResearchHero();
-      pushDelayed({
-        role: "asst",
-        kind: "research_reco",
-        tag: hero.tag,
-        query: hero.q,
-        hint: hero.hint,
-      }, 300);
-      return;
-    }
-
-    pushDelayed({
-      role: "asst",
-      kind: "actions",
-      script: scriptRef.current || activeScript,
-      params: params || scriptRef.current?.scopeDefaults,
-    }, 300);
   };
 
-  const startResearchPipeline = (text) => {
-    const script = matchResearchScript(text);
+  const showResearchReco = (text) => {
+    const query = text?.trim();
+    if (!query) return;
+    const script = matchResearchScript(query);
     scriptRef.current = script;
     setActiveScript(script);
-    setMessages([{ role: "user", text, id: nextMsgId() }]);
-    pushDelayed({ role: "asst", kind: "text", text: "On it. Spinning up the research engine and parsing your question." }, 280);
-    pushDelayed({ role: "asst", kind: "boot" }, 600);
+    push({ role: "user", text: query });
+    pushDelayed({
+      role: "asst",
+      kind: "text",
+      text: "Got it. Here's the recommended study for that question — start when you're ready.",
+    }, 280);
+    pushDelayed({
+      role: "asst",
+      kind: "research_reco",
+      tag: script.title || "Research",
+      query,
+      hint: "29 states · 2 credits · ~45 min",
+    }, 550);
+    setPhase("reco");
+  };
+
+  const startDocPipeline = (text) => {
+    const prompt = (text?.trim() || DEFAULT_RESEARCH_PROMPT);
+    const script = matchResearchScript(prompt);
+    scriptRef.current = script;
+    setActiveScript(script);
+    setParams({ region: "Pan-India", obj: "Product extension" });
+    pushDelayed({
+      role: "asst",
+      kind: "text",
+      text: "I'll run this across your selected sources. Confirm data configuration and audience, then the engine will generate the full narrative.",
+    }, 280);
+    pushDelayed({ role: "asst", kind: "data_config", defaults: { geography: "India" } }, 550);
+    setPhase("data_config");
+  };
+
+  const onDataConfig = (msgId, dataConfig) => {
+    setRunConfig((c) => ({ ...c, dataConfig }));
+    setMessages((ms) => ms.map((m) => (m.id === msgId ? { ...m, locked: true, defaults: dataConfig } : m)));
+    pushDelayed({ role: "asst", kind: "audience_config" }, 350);
+    setPhase("audience_config");
+  };
+
+  const onAudienceConfig = (msgId, audience) => {
+    const full = { ...(runConfig || {}), audience };
+    setRunConfig(full);
+    setMessages((ms) => ms.map((m) => (m.id === msgId ? { ...m, locked: true, defaults: audience } : m)));
+    pushDelayed({ role: "user", text: "Run research with these settings." }, 200);
+    pushDelayed({
+      role: "asst",
+      kind: "text",
+      text: `Running across ${full.dataConfig?.sources?.length || 7} sources · ${full.dataConfig?.timeframe || "Last 1 Year"} · ${full.dataConfig?.geography || "India"}.`,
+    }, 450);
+    pushDelayed({ role: "asst", kind: "timeline" }, 750);
+    setPhase("running");
   };
 
   const handleUserSubmit = (text) => {
     if (phase === "idle") {
-      setPhase("qa");
-      replyWithQA(text, null, { showResearchReco: true });
+      showResearchReco(text);
       return;
     }
-
-    if (phase === "qa" || phase === "done") {
-      if (phase === "qa" && wantsFullResearch?.(text)) {
-        startResearchPipeline(text);
-        setPhase("idle");
-        return;
-      }
+    if (phase === "done") {
       replyWithQA(text);
       return;
     }
   };
 
-  const handleAction = async (actionId) => {
+  const onRunDeliverable = async ({ actionId, state, flavor, instructions }) => {
     if (actionBusy) return;
-    if (!executeAction) {
-      push({
-        role: "asst",
-        kind: "text",
-        text: "Actions failed to load. Hard-refresh the page (Cmd+Shift+R).",
-      });
-      return;
-    }
-    const ctx = actionContext();
     const labels = {
-      concept_cards: "Create",
-      create_film: "Create film",
-      content_engine: "Shoot to content engine",
-      fpd_scout: "Scout for FPD",
-      triangulate_1ds: "Triangulate with 1DS",
+      content_engine: "Content & messaging",
+      concept_cards: "Concept cards",
+      storyboard: "Video ad storyboard",
+      positioning: "Positioning",
     };
-    const typingStart = {
-      concept_cards: "Creating concept cards…",
-      create_film: "Creating hero film (Nova Reel)…",
-      content_engine: "Preparing content engine handoff…",
-      fpd_scout: "Starting FPD scout…",
-      triangulate_1ds: "Running 1DS triangulation…",
-    };
-    push({ role: "user", text: labels[actionId] || `Run: ${actionId}` });
+    push({ role: "user", text: `${labels[actionId] || actionId} · ${flavor} · ${state}` });
     setActionBusy(true);
-    push({ role: "asst", kind: "typing", text: typingStart[actionId] || "Running…" });
-
+    push({ role: "asst", kind: "typing", text: `Generating ${labels[actionId] || actionId}…` });
+    const ctx = actionContext({ state, flavor, instructions });
     try {
       const payload = await executeAction(actionId, ctx, setTypingText);
-      setMessages(ms => {
+      setMessages((ms) => {
         const copy = [...ms];
         for (let i = copy.length - 1; i >= 0; i--) {
           if (copy[i].kind === "typing") {
@@ -426,15 +411,11 @@ export default function BritApp() {
         return copy;
       });
     } catch (err) {
-      setMessages(ms => {
+      setMessages((ms) => {
         const copy = [...ms];
         for (let i = copy.length - 1; i >= 0; i--) {
           if (copy[i].kind === "typing") {
-            copy[i] = {
-              ...copy[i],
-              kind: "text",
-              text: `Action failed: ${err.message}`,
-            };
+            copy[i] = { ...copy[i], kind: "text", text: `Generation failed: ${err.message}` };
             break;
           }
         }
@@ -445,73 +426,52 @@ export default function BritApp() {
     }
   };
 
-  runActionRef.current = handleAction;
-  useEffect(() => {
-    window.__britHandleAction = (actionId) => runActionRef.current?.(actionId);
-    return () => {
-      delete window.__britHandleAction;
-    };
-  }, []);
+  const onTimelineDone = useCallback(() => {
+    if (pipelineDoneRef.current) return;
+    pipelineDoneRef.current = true;
 
-  const onBootDone = () => {
-    pushDelayed({ role: "asst", kind: "text", text: "I parsed the question and matched 6 datasets. Confirm a few details and I'll run the full research pipeline." }, 300);
-    const script = scriptRef.current || matchResearchScript("");
-    pushDelayed({
-      role: "asst",
-      kind: "scope",
-      defaults: script.scopeDefaults,
-      script,
-    }, 700);
-    setTimeout(() => setPhase("scoping"), 720);
-  };
-
-  const onScopeRun = (msgId, p) => {
-    setParams(p);
-    setMessages(ms => ms.map(m => m.id === msgId ? { ...m, locked: true, defaults: p } : m));
-    pushDelayed({ role: "user", text: `Run with these settings.` }, 200);
-    pushDelayed({ role: "asst", kind: "text", text: "Running consumer research across 6 sources. You'll see the orchestration in real time." }, 500);
-    pushDelayed({ role: "asst", kind: "timeline" }, 800);
-    setTimeout(() => setPhase("running"), 820);
-  };
-
-  const onTimelineDone = () => {
-    const script = scriptRef.current || activeScript || matchResearchScript("");
-    const scope = params || script.scopeDefaults || { region: "South" };
+    const script = scriptRef.current || activeScript || matchResearchScript(DEFAULT_RESEARCH_PROMPT);
+    const scope = params || script.scopeDefaults || { region: "Pan-India", obj: "Product extension" };
     let delay = 250;
     const bump = (ms) => { delay += ms; return delay - ms; };
 
-    pushDelayed({ role: "asst", kind: "text", text: "Pipeline complete. Here's the headline." }, bump(250));
+    pushDelayed({ role: "asst", kind: "text", text: "Pipeline complete. Here's the headline thesis." }, bump(250));
     pushDelayed({ role: "asst", kind: "insight", params: scope, script }, bump(350));
-    pushDelayed({ role: "asst", kind: "muted", text: script.muted || "Below are the supporting findings." }, bump(900));
+    pushDelayed({ role: "asst", kind: "muted", text: script.muted || "State tables, clusters, charts, and national performance follow." }, bump(500));
 
-    script.cards.forEach((card) => {
-      pushDelayed({ role: "asst", kind: card, script, params: scope }, bump(400));
+    const docSequence = [
+      "doc_states",
+      "doc_winning",
+      "region",
+      "doc_cross",
+      "sentiment",
+      "trend",
+      "doc_national",
+      "flavour",
+      "quotes",
+      "doc_actionables",
+      "exec",
+    ];
+    docSequence.forEach((kind) => {
+      pushDelayed({ role: "asst", kind, script, params: scope }, bump(420));
     });
 
-    pushDelayed({ role: "asst", kind: "text", text: "Synthesising executive recommendation:" }, bump(500));
-    if (!script.cards.includes("exec")) {
-      pushDelayed({ role: "asst", kind: "exec", script }, bump(400));
-    }
-    pushDelayed({
-      role: "asst",
-      kind: "actions",
-      script,
-      params: scope,
-    }, bump(350));
     pushDelayed({
       role: "asst",
       kind: "muted",
-      text: "Ask a follow-up below, or pick a suggested next step when you're ready.",
-    }, bump(500));
+      text: "Ask a follow-up below, or generate deliverables from the actionables card.",
+    }, bump(400));
     setTimeout(() => setPhase("done"), delay + 100);
-  };
+  }, [activeScript, params]);
 
   const reset = () => {
     setMessages([]);
     setPhase("idle");
     setParams(null);
+    setRunConfig(null);
     setActiveScript(null);
     scriptRef.current = null;
+    pipelineDoneRef.current = false;
     setReportOpen(false);
     setActionBusy(false);
     msgIdRef.current = 0;
@@ -529,19 +489,18 @@ export default function BritApp() {
   }, [reportOpen, settingsOpen]);
 
   const ctx = {
-    onBootDone,
-    onScopeRun,
+    onDataConfig,
+    onAudienceConfig,
     onTimelineDone,
     onOpenReport: () => setReportOpen(true),
     onPickRelated: (q) => handleUserSubmit(q),
-    onStartResearch: (q) => startResearchPipeline(q),
-    onAction: handleAction,
+    onStartResearch: (q) => startDocPipeline(q),
+    onRunDeliverable,
     actionBusy,
-    s3Configured,
   };
 
-  const canPickQuestion = phase === "idle" || phase === "qa" || phase === "done";
-  const hasKey = hasApiKey() || serverBedrock;
+  const canPickQuestion = (phase === "idle" && messages.length === 0) || phase === "done";
+  const composerLocked = ["reco", "data_config", "audience_config", "running"].includes(phase) || actionBusy;
 
   return (
     <div className="app">
@@ -557,17 +516,8 @@ export default function BritApp() {
             <span className="pill">Run #4821</span>
           </div>
           <div className="topbar-right">
-            <span
-              className={"credit-pill " + (hasKey ? "key-on" : "")}
-              style={{ cursor: "pointer" }}
-              onClick={() => setSettingsOpen(true)}
-              title={serverBedrock ? "Bedrock connected (.env.local)" : "Add Bedrock API key"}
-            >
-              {hasKey ? "◆ Bedrock live" : "◇ Add API key"}
-            </span>
-            <span className="credit-pill"><span className="live-dot"></span> engine live</span>
             <span className="credit-pill">credits <b>1,820</b></span>
-            <span className="credit-pill" style={{cursor:'pointer'}} onClick={reset}>↺ restart</span>
+            <span className="credit-pill" style={{ cursor: "pointer" }} onClick={reset}>↺ restart</span>
           </div>
         </div>
 
@@ -585,12 +535,13 @@ export default function BritApp() {
 
         <ComposerInner
           onSubmit={handleUserSubmit}
-          disabled={phase === "scoping" || phase === "running" || actionBusy}
+          disabled={composerLocked}
           placeholder={
-            phase === "scoping" ? "Confirm scope above to continue…" :
-            phase === "running" ? "Engine is running. You'll see updates inline…" :
-            phase === "done"    ? "Ask a follow-up…" :
-            phase === "qa"      ? "Ask a follow-up…" :
+            phase === "reco" ? "Start research from the card above…" :
+            phase === "data_config" ? "Confirm data configuration above…" :
+            phase === "audience_config" ? "Confirm audience above to run research…" :
+            phase === "running" ? "Research is running. You'll see updates inline…" :
+            phase === "done" ? "Ask a follow-up…" :
             "Ask a research question…"
           }
         />
@@ -607,13 +558,27 @@ export default function BritApp() {
   );
 }
 
+function ResearchRecoCard({ tag, query, hint, onStart }) {
+  return (
+    <div className="research-reco-wrap">
+      <p className="research-reco-lead">Ready to run the full research pipeline on this?</p>
+      <button type="button" className="welcome-hero research-reco-inline" onClick={() => onStart?.(query)}>
+        <span className="hero-tag">{tag} · recommended</span>
+        <span className="hero-q">{query}</span>
+        {hint && <span className="hero-hint">{hint}</span>}
+        <span className="hero-cta">Start research →</span>
+      </button>
+    </div>
+  );
+}
+
 function WelcomeView() {
   return (
     <div className="welcome welcome-minimal">
       <div className="badge">Flavor Insights India · {BRIT_DATA?.meta?.date || "20 May 2026"}</div>
       <h1>What would you like to <em>discover</em> today?</h1>
       <p className="welcome-sub">
-        Ask anything about Flavor Insights India — Biscoff, states, extensions, trends, and more.
+        Ask about flavors, states, extensions, or trends — we'll suggest a study, then you confirm sources and audience.
       </p>
     </div>
   );

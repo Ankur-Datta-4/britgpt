@@ -3,9 +3,15 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { BRIT_DATA } from '@/lib/data';
+import { DEMO_STATES, HERO_THESIS } from '@/lib/demo-flow-data';
 import { ACTIONS, runAction } from '@/lib/actions';
 import { getApiKey, setApiKey, hasApiKey } from '@/lib/config-client';
-import { BEDROCK_S3_PUBLIC_URL, s3UriToHttps } from '@/lib/config';
+import {
+  RegionBarChart,
+  SentimentDonutChart,
+  TrendLineChart,
+  FlavorGrowthChart,
+} from '@/components/brit/brit-charts';
 
 const D = () => BRIT_DATA;
 
@@ -32,11 +38,12 @@ const OBJECTIVES = ["Product extension", "New SKU launch", "Pricing strategy", "
 const FILTERS = ["Urban", "Rural", "Premium tier", "Mass tier", "Gen-Z", "Millennials", "Families"];
 
 const TIMELINE_STAGES = [
-  { id: "discovery", title: "Discovery",          desc: "Indexing consumer universe · 1.53L conversations",      dur: 1700 },
-  { id: "signals",   title: "Consumer Signals",   desc: "Quick-search · social listening · panel surveys",   dur: 2100 },
-  { id: "market",    title: "Market Analysis",    desc: "Sales velocity · channel mix · YoY growth",         dur: 1900 },
-  { id: "sources",   title: "Source Aggregation", desc: "Instagram · Reddit · X · YouTube · Amazon · Flipkart",   dur: 1700 },
-  { id: "report",    title: "Report Generation",  desc: "Synthesising executive narrative",                    dur: 1900 },
+  { id: "context", title: "Setting context", desc: "Parsing brief · mapping portfolio scope", dur: 1600 },
+  { id: "aggregate", title: "Source aggregation", desc: "Instagram · Reddit · X · YouTube · Amazon · Flipkart · LinkedIn", dur: 1900 },
+  { id: "collect", title: "Collecting data", desc: "Pulling 1.53L+ conversations across India", dur: 2100 },
+  { id: "clean", title: "Cleaning data", desc: "Deduping · language · spam · entity resolution", dur: 1800 },
+  { id: "analyse", title: "Analysing data", desc: "State flavors · growth · engagement · extensions", dur: 2200 },
+  { id: "report", title: "Report generation", desc: "Synthesising narrative · matrices · actionables", dur: 2000 },
 ];
 
 const SOURCE_NAMES = [
@@ -113,12 +120,12 @@ const RESEARCH_SCRIPTS = {
     muted: "State-level sweet & savory top-5 lists, flavor opportunity scores, and regional snack share.",
     cards: ["states", "flavour", "region", "quotes", "summary", "exec"],
     insight: {
-      highlight: "state-local sweet & savory leaders",
-      body: "Across 11 states, local sweet icons (Mysore Pak, Puran Poli, Mishti Doi) and savory systems (Gunpowder Podi, Thecha, Honey Chilli in Delhi) dominate — national SKUs win by anchoring to these roots.",
+      highlight: "Honey Chilli & Gunpowder Podi",
+      body: HERO_THESIS.body,
       stats: [
-        { k: "States covered", v: "11" },
-        { k: "Honey Chilli (Delhi savory)", v: "Top 5" },
-        { k: "Fusion interest", v: "31.6", suffix: "%" },
+        { k: "States covered", v: "29" },
+        { k: "Honey Chilli conv. growth", v: "48.7", suffix: "%" },
+        { k: "Gunpowder Podi eng. growth", v: "61.8", suffix: "%" },
         { k: "Sample", v: "1.5", suffix: "L" },
       ],
     },
@@ -558,12 +565,9 @@ function TimelineBlock({ onDone }) {
   const [elapsed, setElapsed] = useState(0);
   const [srcCount, setSrcCount] = useState(2);
   const started = useRef(Date.now());
-  const did = useRef(false);
-
-  useEffect(() => {
-    if (did.current) return;
-    did.current = true;
-  }, []);
+  const finished = useRef(false);
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
 
   useEffect(() => {
     if (idx >= stages.length) return;
@@ -577,8 +581,9 @@ function TimelineBlock({ onDone }) {
       else if (idx + 1 < stages.length) {
         setIdx(idx + 1);
         setProg(0);
-      } else {
-        setTimeout(() => onDone && onDone(), 500);
+      } else if (!finished.current) {
+        finished.current = true;
+        setTimeout(() => onDoneRef.current?.(), 500);
       }
     };
     raf = requestAnimationFrame(step);
@@ -682,8 +687,20 @@ function InsightBlock({ params, script }) {
 function RegionCard({ script }) {
   const s = getScript(script);
   const data = s.regionsData || REGIONS_DATA;
-  const [hover, setHover] = useState(null);
-  const [sel, setSel] = useState(null);
+
+  const onBarSelect = (r) => {
+    openDetail({
+      type: "Flavor share",
+      title: r.lbl,
+      subtitle: `${r.val}% of favorite savory flavor conversations`,
+      body: r.lbl === "Honey Chilli"
+        ? D().honeyChilli?.narrative
+        : `Ranked in national favorite snack menus. Peri Peri leads at 22%, Honey Chilli at 18%+. Sample: ${D().meta?.totalSample?.toLocaleString("en-IN")} conversations.`,
+      facts: [{ k: "Share", v: `${r.val}%` }, { k: "Period", v: "Last 12 months" }],
+      source: "Flavor Insights · p.3",
+    });
+  };
+
   return (
     <div className="card">
       <div className="card-h">
@@ -691,34 +708,7 @@ function RegionCard({ script }) {
         <span className="tag">click a bar · % share</span>
       </div>
       <div className="card-body">
-        {data.map((r, i) => (
-          <div key={i}
-               className={"bar-row interactive " + (sel === i ? "sel" : "") + (hover === i ? "hover" : "")}
-               onMouseEnter={() => setHover(i)}
-               onMouseLeave={() => setHover(null)}
-               onClick={() => {
-                 setSel(i);
-                 openDetail({
-                   type: "Flavor share",
-                   title: r.lbl,
-                   subtitle: `${r.val}% of favorite savory flavor conversations`,
-                   body: r.lbl === "Honey Chilli"
-                     ? D().honeyChilli?.narrative
-                     : `Ranked in national favorite snack menus. Peri Peri leads at 22%, Honey Chilli at 18%+. Sample: ${D().meta?.totalSample?.toLocaleString("en-IN")} conversations.`,
-                   facts: [{ k: "Share", v: `${r.val}%` }, { k: "Period", v: "Last 12 months" }],
-                   source: "Flavor Insights · p.3",
-                 });
-               }}>
-            <div className="lbl">{r.lbl}</div>
-            <div className="bar-track">
-              <div className="bar-fill" style={{ width: r.val + "%", transition: "width 0.4s ease" }} />
-            </div>
-            <div className="val">{r.val}%</div>
-          </div>
-        ))}
-        {hover !== null && (
-          <div className="chart-tooltip">{data[hover].lbl}: {data[hover].val}% — click for full detail</div>
-        )}
+        <RegionBarChart data={data} onSelect={onBarSelect} />
       </div>
     </div>
   );
@@ -732,51 +722,29 @@ function SentimentCard({ script }) {
   const sent = sc.sentData || SENT_DATA;
   const center = sc.sentCenter ?? BISCOFF_POSITIVE_PCT;
   const mentions = sc.sentMentions ?? BISCOFF_CONVERSATIONS;
-  const r = 60;
-  const C = 2 * Math.PI * r;
-  let offset = 0;
+
+  const onSegment = (s) => {
+    openDetail({
+      type: "Sentiment",
+      title: `${s.lbl} — ${s.v}%`,
+      body: `Biscoff in sweets: ${D().biscoff?.sentiment?.positive}% positive, ${D().biscoff?.sentiment?.neutral}% neutral, ${D().biscoff?.sentiment?.negative}% negative. Headline positive sentiment ${D().biscoff?.positivePct}%.`,
+      source: `${mentions.toLocaleString("en-IN")} conversations`,
+    });
+  };
+
   return (
     <div className="card">
       <div className="card-h">
         <h3>Sentiment towards Biscoff in sweets</h3>
-        <span className="tag">{mentions.toLocaleString("en-IN")} mentions · click rows</span>
+        <span className="tag">{mentions.toLocaleString("en-IN")} mentions · click chart</span>
       </div>
       <div className="card-body">
-        <div className="sent">
-          <div className="sent-ring">
-            <svg width="150" height="150" viewBox="0 0 150 150" style={{transform: "rotate(-90deg)"}}>
-              <circle cx="75" cy="75" r={r} fill="none" stroke="oklch(0.92 0.005 80)" strokeWidth="12"/>
-              {sent.map((s,i) => {
-                const len = (s.v/100) * C;
-                const da = `${len} ${C - len}`;
-                const dof = -offset;
-                offset += len;
-                return (
-                  <circle key={i} cx="75" cy="75" r={r} fill="none"
-                          stroke={s.color} strokeWidth="12"
-                          strokeDasharray={da} strokeDashoffset={dof}
-                          style={{ cursor: "pointer" }}
-                          onClick={() => openDetail({
-                            type: "Sentiment",
-                            title: `${s.lbl} — ${s.v}%`,
-                            body: `Biscoff in sweets: ${D().biscoff?.sentiment?.positive}% positive, ${D().biscoff?.sentiment?.neutral}% neutral, ${D().biscoff?.sentiment?.negative}% negative. Headline positive sentiment ${D().biscoff?.positivePct}%.`,
-                            source: `${mentions.toLocaleString("en-IN")} conversations`,
-                          })} />
-                );
-              })}
-            </svg>
-            <div className="center">
-              <div>
-                <div className="num">{center}</div>
-                <div className="lbl">Positive %</div>
-              </div>
-            </div>
-          </div>
+        <div className="sent sent-recharts">
+          <SentimentDonutChart segments={sent} center={center} onSelect={onSegment} />
           <div className="sent-list">
-            {sent.map((s,i) => (
-              <div key={i} className="sent-item clickable"
-                   onClick={() => openDetail({ type: "Sentiment", title: s.lbl, body: `${s.v}% of Biscoff sweet conversations.`, source: "Report p.2" })}>
-                <span className="sw" style={{background:s.color}}></span>
+            {sent.map((s, i) => (
+              <div key={i} className="sent-item clickable" onClick={() => onSegment(s)}>
+                <span className="sw" style={{ background: s.color }}></span>
                 <span>{s.lbl}</span>
                 <span className="v">{s.v}%</span>
               </div>
@@ -792,13 +760,13 @@ function SentimentCard({ script }) {
    States card — top flavors by state (PDF)
 ============================================================ */
 function StatesCard() {
-  const rows = D().states || STATES_TABLE;
+  const rows = DEMO_STATES.length ? DEMO_STATES : D().states || STATES_TABLE;
   const [open, setOpen] = useState(null);
   return (
     <div className="card">
       <div className="card-h">
         <h3>Top sweet &amp; savory flavors by state</h3>
-        <span className="tag">click a state · 11 regions</span>
+        <span className="tag">click a state · {rows.length} regions</span>
       </div>
       <div className="card-body state-list">
         {rows.map((row) => (
@@ -907,15 +875,6 @@ const getTrendSeries = (script) => {
 function TrendCard({ script }) {
   const series = getTrendSeries(script);
   const { data, data2, months, label, primaryName, secondaryName } = series;
-  const [hover, setHover] = useState(null);
-  const W = 640, H = 160, P = 22;
-  const all = [...data, ...data2];
-  const yMin = Math.min(...all) - 4;
-  const yMax = Math.max(...all) + 4;
-  const x = (i) => P + (i * (W - P * 2) / (data.length - 1));
-  const y = (v) => H - P - ((v - yMin) / (yMax - yMin)) * (H - P * 2);
-  const path = (arr) => arr.map((v, i) => (i === 0 ? "M" : "L") + x(i) + "," + y(v)).join(" ");
-  const area = path(data) + ` L${x(data.length - 1)},${H - P} L${x(0)},${H - P} Z`;
 
   return (
     <div className="card">
@@ -924,47 +883,21 @@ function TrendCard({ script }) {
         <span className="tag">{label}</span>
       </div>
       <div className="card-body">
-        <div className="chart-legend">
-          <span><i className="leg-solid" /> {primaryName}</span>
-          <span><i className="leg-dash" /> {secondaryName}</span>
-        </div>
-        <svg className="line-chart interactive-chart" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
-          <defs>
-            <linearGradient id="lg2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--red)" stopOpacity="0.18"/>
-              <stop offset="100%" stopColor="var(--red)" stopOpacity="0"/>
-            </linearGradient>
-          </defs>
-          {[0.25, 0.5, 0.75].map((g,i) => (
-            <line key={i} x1={P} x2={W-P} y1={P + g*(H-P*2)} y2={P + g*(H-P*2)}
-                  stroke="oklch(0.88 0.008 70)" strokeDasharray="2 4"/>
-          ))}
-          <path d={area} fill="url(#lg2)"/>
-          <path d={path(data2)} fill="none" stroke="oklch(0.7 0.01 50)" strokeWidth="1.5" strokeDasharray="3 3"/>
-          <path d={path(data)} fill="none" stroke="var(--red)" strokeWidth="2"/>
-          {data.map((v,i) => (
-            <g key={i}
-               onMouseEnter={() => setHover(i)}
-               onMouseLeave={() => setHover(null)}
-               onClick={() => openDetail({
-                 type: "Trend",
-                 title: months[i],
-                 body: `${primaryName}: ${v}%. ${secondaryName}: ${data2[i]}%. Flavor Insights India · last 12 months.`,
-                 source: "1,53,496 conversations · 6 channels",
-               })}
-               style={{ cursor: "pointer" }}>
-              <circle cx={x(i)} cy={y(v)} r={hover === i ? 7 : 4}
-                      fill={hover === i ? "var(--red-glow)" : "var(--red)"} opacity={hover === i ? 1 : 0.85}/>
-            </g>
-          ))}
-          {months.map((m,i) => (
-            <text key={"m"+i} x={x(i)} y={H-4} fontFamily="JetBrains Mono" fontSize="8"
-                  fill={hover === i ? "var(--red)" : "var(--fg-dim)"} textAnchor="middle">{m}</text>
-          ))}
-        </svg>
-        {hover !== null && (
-          <div className="chart-tooltip">{months[hover]}: {data[hover]}% (compare {data2[hover]}%)</div>
-        )}
+        <TrendLineChart
+          months={months}
+          data={data}
+          data2={data2}
+          primaryName={primaryName}
+          secondaryName={secondaryName}
+          onSelect={(row) =>
+            openDetail({
+              type: "Trend",
+              title: row.month,
+              body: `${primaryName}: ${row.primary}%. ${secondaryName}: ${row.secondary}%. Flavor Insights India · last 12 months.`,
+              source: "1,53,496 conversations · 6 channels",
+            })
+          }
+        />
       </div>
     </div>
   );
@@ -978,39 +911,27 @@ function FlavourCard({ script }) {
   const sweet = D().sweetOpportunities || [];
   const savory = D().savoryOpportunities || [];
   const lookup = [...sweet, ...savory].reduce((a, o) => { a[o.flavor] = o; return a; }, {});
+
+  const onFlavor = (f) => {
+    const opp = lookup[f.name] || lookup[f.name.split(" ")[0]];
+    openDetail({
+      type: "Flavor opportunity",
+      title: f.name,
+      subtitle: f.grow,
+      body: opp ? `${opp.proof}. Extensions: ${opp.extensions}` : `Trend signal ${f.grow} from Flavor Insights India.`,
+      facts: opp ? [{ k: "Anchor", v: opp.anchor }] : [],
+      source: "Sweet & savory opportunities · report",
+    });
+  };
+
   return (
     <div className="card">
       <div className="card-h">
         <h3>Flavour trend explorer</h3>
-        <span className="tag">click a flavor · report data</span>
+        <span className="tag">click a bar · growth %</span>
       </div>
       <div className="card-body">
-        <div className="flav-grid">
-          {flavours.map((f,i) => {
-            const opp = lookup[f.name] || lookup[f.name.split(" ")[0]];
-            return (
-              <div key={i} className="flav clickable"
-                   onClick={() => openDetail({
-                     type: "Flavor opportunity",
-                     title: f.name,
-                     subtitle: f.grow,
-                     body: opp ? `${opp.proof}. Extensions: ${opp.extensions}` : `Trend signal ${f.grow} from Flavor Insights India.`,
-                     facts: opp ? [{ k: "Anchor", v: opp.anchor }] : [],
-                     source: "Sweet & savory opportunities · report",
-                   })}>
-                <div className="row">
-                  <div className="name">{f.name}</div>
-                  <div className={"grow " + (f.down ? "down" : "")}>{f.grow}</div>
-                </div>
-                <div className="mini-bar">
-                  {f.bars.map((b,j) => (
-                    <i key={j} style={{ height: (b*2)+"px", opacity: 0.5 + j*0.07 }}></i>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <FlavorGrowthChart flavours={flavours} onSelect={onFlavor} />
       </div>
     </div>
   );
@@ -1075,8 +996,20 @@ const ACTION_BUTTONS = [
 ];
 
 /* In-chat action recommendations (not a pinned dock) */
-function ActionsRecommendations({ onAction, busy, script, params, s3Configured }) {
-  const actions = ACTIONS;
+function ActionsRecommendations({ onAction, busy, script, params, followUp, completedActions = [] }) {
+  const actionMap = Object.fromEntries(ACTIONS.map((a) => [a.id, a]));
+  const completed = new Set(completedActions || []);
+  const suggestedIds = (followUp?.suggestions || []).map((s) => s.actionId);
+  const reasonById = Object.fromEntries(
+    (followUp?.suggestions || []).map((s) => [s.actionId, s.reason])
+  );
+
+  const ordered = followUp?.suggestions?.length
+    ? [
+        ...suggestedIds.map((id) => actionMap[id]).filter(Boolean),
+        ...ACTIONS.filter((a) => !suggestedIds.includes(a.id)),
+      ]
+    : ACTIONS;
 
   const handleClick = (actionId) => {
     if (busy || !onAction) return;
@@ -1086,41 +1019,53 @@ function ActionsRecommendations({ onAction, busy, script, params, s3Configured }
   return (
     <div className="actions-reco">
       <div className="actions-reco-head">
-        <span className="reco-eyebrow">Suggested next steps</span>
+        <span className="reco-eyebrow">
+          {followUp?.llm ? "Smart next steps" : "Suggested next steps"}
+        </span>
         <p className="actions-reco-intro">
-          Turn this insight into downstream work
-          {script?.title ? <strong> · {script.title}</strong> : null}
-          {params?.region ? <span className="reco-meta"> · {params.region}</span> : null}
-        </p>
-        <p className="actions-reco-hint">
-          <strong>Create</strong> = 3 packshots (Nova Pro).
-          <strong> Create film</strong> = 6s video (amazon.nova-reel-v1:1 → S3).
+          {followUp?.intro || (
+            <>
+              Turn this insight into downstream work
+              {script?.title ? <strong> · {script.title}</strong> : null}
+              {params?.region ? <span className="reco-meta"> · {params.region}</span> : null}
+            </>
+          )}
         </p>
       </div>
       <div className="actions-reco-chips">
-        {actions.map((a) => (
+        {ordered.map((a) => {
+          const done = completed.has(a.id);
+          const isTopPick = suggestedIds.includes(a.id);
+          return (
           <button
             key={a.id}
             type="button"
             className={
               "reco-chip " +
-              (a.primary ? "reco-chip-primary" : "") +
-              (a.film ? " reco-chip-film" : "")
+              (a.primary && !followUp ? "reco-chip-primary" : "") +
+              (a.film ? " reco-chip-film" : "") +
+              (isTopPick ? " reco-chip-smart" : "") +
+              (done ? " reco-chip-done" : "")
             }
             disabled={busy}
             onClick={() => handleClick(a.id)}
             aria-busy={busy && (a.primary || a.film)}
-            title={
-              a.film ? `amazon.nova-reel-v1:1 → ${BEDROCK_S3_PUBLIC_URL}/brit-videos/` : undefined
-            }
           >
-            <span className="reco-icon">{a.icon}</span>
+            <span className="reco-icon">{done ? "✓" : a.icon}</span>
             <span className="reco-label-wrap">
-              <span className="reco-label-text">{a.label}</span>
-              {a.sub && <span className="reco-sub">{a.sub}</span>}
+              <span className="reco-label-text">
+                {a.label}
+                {isTopPick && !done && <span className="reco-pick"> · recommended</span>}
+              </span>
+              {reasonById[a.id] ? (
+                <span className="reco-reason">{reasonById[a.id]}</span>
+              ) : (
+                a.sub && <span className="reco-sub">{a.sub}</span>
+              )}
             </span>
           </button>
-        ))}
+          );
+        })}
       </div>
       {busy && (
         <p className="actions-reco-busy">
@@ -1131,59 +1076,118 @@ function ActionsRecommendations({ onAction, busy, script, params, s3Configured }
   );
 }
 
+function ConceptCardImage({ concept }) {
+  const [failed, setFailed] = useState(false);
+  const showImage = concept.imageUri && !failed;
+
+  return (
+    <div
+      className="concept-visual"
+      style={
+        showImage
+          ? undefined
+          : { background: `linear-gradient(135deg, ${concept.gradient}22, ${concept.gradient}88)` }
+      }
+    >
+      {showImage ? (
+        <img
+          className="concept-image"
+          src={concept.imageUri}
+          alt={concept.title}
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <div className="concept-placeholder concept-placeholder-rich">
+          <span className="concept-ph-lane">{concept.lane}</span>
+          <span className="concept-ph-title">{concept.title}</span>
+          <span className="concept-ph-sku">{concept.sku}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function InlineFilmPlayer({ videoUri, filmHref, className = "hero-film-video" }) {
+  const [playUrl, setPlayUrl] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+
+      if (filmHref && (filmHref.includes("X-Amz") || filmHref.includes(".mp4"))) {
+        if (!cancelled) {
+          setPlayUrl(filmHref);
+          setLoading(false);
+        }
+        return;
+      }
+
+      if (!videoUri) {
+        if (!cancelled) {
+          setError("No video URI");
+          setLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/film?uri=${encodeURIComponent(videoUri)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Could not load film");
+        if (!cancelled) setPlayUrl(data.playUrl);
+      } catch (e) {
+        if (!cancelled) setError(e.message || "Could not load film");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [videoUri, filmHref]);
+
+  if (loading) {
+    return <p className="film-loading">Loading hero film…</p>;
+  }
+  if (error || !playUrl) {
+    return <p className="concept-err">{error || "Film not available yet."}</p>;
+  }
+
+  return (
+    <video
+      className={className}
+      src={playUrl}
+      controls
+      playsInline
+      preload="metadata"
+    />
+  );
+}
+
 function ConceptCardsPanel({ payload }) {
-  const { concepts = [], filmPrompt, prompt, mode, message, error } = payload || {};
-  const brief = filmPrompt || prompt;
+  const { concepts = [], mode, message, error } = payload || {};
   const created = mode === "created";
 
   return (
     <div className="card concept-cards-card">
       <div className="card-h">
         <h3>Concept cards</h3>
-        <span className="tag">{created ? "Created" : "Preview"}</span>
+        <span className="tag">{created ? "Ready" : "Preview"}</span>
       </div>
       <div className="card-body">
-        {message && <p className="concept-msg">{message}</p>}
+        {message && !error && <p className="concept-msg">{message}</p>}
         {error && <p className="concept-err">{error}</p>}
-        {brief && (
-          <details className="concept-prompt-details">
-            <summary>Create brief</summary>
-            <p className="concept-prompt">{brief}</p>
-          </details>
-        )}
         <div className="concept-grid">
           {concepts.map((c) => (
             <div key={c.id} className="concept-card">
-              <div
-                className="concept-visual"
-                style={
-                  c.imageUri
-                    ? undefined
-                    : { background: `linear-gradient(135deg, ${c.gradient}22, ${c.gradient}88)` }
-                }
-              >
-                {c.videoUri && c.filmIsS3 ? (
-                  <div className="concept-s3-film">
-                    <span className="concept-ph-icon">▶</span>
-                    <a
-                      href={c.filmHref || s3UriToHttps(c.videoUri)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="concept-s3-link"
-                    >
-                      Hero film ready (S3)
-                    </a>
-                  </div>
-                ) : c.imageUri ? (
-                  <img className="concept-image" src={c.imageUri} alt={c.title} />
-                ) : (
-                  <div className="concept-placeholder concept-placeholder-rich">
-                    <span className="concept-ph-lane">{c.lane}</span>
-                    <span className="concept-ph-title">{c.title}</span>
-                    <span className="concept-ph-sku">{c.sku}</span>
-                  </div>
-                )}
-              </div>
+              <ConceptCardImage concept={c} />
               <div className="concept-meta">
                 <span className="concept-lane">{c.lane}</span>
                 <h4>{c.title}</h4>
@@ -1200,58 +1204,88 @@ function ConceptCardsPanel({ payload }) {
 
 const ACTION_META = {
   content_engine: { label: "Content engine", icon: "↗", accent: "#c45c3e" },
+  storyboard: { label: "Video storyboard", icon: "▶", accent: "#5c4a3e" },
+  positioning: { label: "Positioning", icon: "◇", accent: "#6b3d2e" },
   fpd_scout: { label: "FPD scout", icon: "◎", accent: "#5c3d2e" },
   triangulate_1ds: { label: "1DS triangulation", icon: "△", accent: "#8b2e1a" },
 };
 
 function ActionOutcomeCards({ payload }) {
   const meta = ACTION_META[payload.type] || { label: "Action output", icon: "◆", accent: "#c45c3e" };
-  const shortTitle = meta.label;
-  const summary = (payload.body || "").slice(0, 220);
-  const steps = (payload.bullets || []).slice(0, 3);
-  const tiles = [
-    { id: "summary", title: "Brief", body: summary, icon: meta.icon, wide: true },
-    ...steps.map((b, i) => ({
-      id: `step-${i}`,
-      title: `Output ${i + 1}`,
-      body: String(b).slice(0, 140),
-      icon: ["①", "②", "③"][i] || "·",
-    })),
-    payload.eta
-      ? { id: "eta", title: "ETA", body: payload.eta, icon: "⏱" }
-      : null,
-  ].filter(Boolean);
+  const findings = (payload.bullets || []).slice(0, 5);
+  const recommendations = (payload.recommendations || []).slice(0, 3);
+  const nextSteps = (payload.nextSteps || []).slice(0, 2);
 
   return (
     <div className="card action-outcome-wrap">
       <div className="card-h">
-        <h3>{shortTitle}</h3>
+        <h3>{payload.title || meta.label}</h3>
         <span className="tag">{payload.status || "queued"}</span>
       </div>
       <div className="card-body">
         {payload.message && <p className="concept-msg">{payload.message}</p>}
-        <div className="action-outcome-grid">
-          {tiles.map((t) => (
-            <div
-              key={t.id}
-              className={"action-outcome-card " + (t.wide ? "wide" : "")}
-              style={{ borderColor: meta.accent + "44" }}
-            >
-              <span className="aoc-icon" style={{ color: meta.accent }}>{t.icon}</span>
-              <span className="aoc-title">{t.title}</span>
-              <p className="aoc-body">{t.body}</p>
+        {payload.body && <p className="action-outcome-lead">{payload.body}</p>}
+
+        {findings.length > 0 && (
+          <div className="action-outcome-section">
+            <h4 className="aoc-section-title">Findings</h4>
+            <div className="action-outcome-grid">
+              {findings.map((b, i) => (
+                <div
+                  key={`finding-${i}`}
+                  className="action-outcome-card"
+                  style={{ borderColor: meta.accent + "44" }}
+                >
+                  <span className="aoc-icon" style={{ color: meta.accent }}>
+                    {["①", "②", "③", "④", "⑤"][i] || "·"}
+                  </span>
+                  <p className="aoc-body">{String(b)}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {recommendations.length > 0 && (
+          <div className="action-outcome-section">
+            <h4 className="aoc-section-title">Recommendations</h4>
+            <ul className="action-reco-list">
+              {recommendations.map((r, i) => (
+                <li key={`reco-${i}`}>{String(r)}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {(nextSteps.length > 0 || payload.eta) && (
+          <div className="action-outcome-footer">
+            {nextSteps.length > 0 && (
+              <div className="action-outcome-section compact">
+                <h4 className="aoc-section-title">This week</h4>
+                <ul className="action-next-list">
+                  {nextSteps.map((s, i) => (
+                    <li key={`next-${i}`}>{String(s)}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {payload.eta && (
+              <div className="action-eta-pill">
+                <span>⏱</span> {payload.eta}
+              </div>
+            )}
+          </div>
+        )}
+
+        {payload.llm && <span className="aoc-llm-badge">Live from Nova Pro</span>}
       </div>
     </div>
   );
 }
 
 function HeroFilmPanel({ payload }) {
-  const { filmPrompt, videoUri, filmHref, message, error, setupSteps, sku, region, mode } =
+  const { filmPrompt, videoUri, filmHref, message, error, setupSteps, sku, productName, region, mode } =
     payload || {};
-  const openUrl = filmHref || (videoUri ? s3UriToHttps(videoUri) : null);
   const needsSetup = mode === "setup_required";
 
   return (
@@ -1259,37 +1293,26 @@ function HeroFilmPanel({ payload }) {
       <div className="card-h">
         <h3>Hero film</h3>
         <span className="tag">
-          {needsSetup ? "Setup" : mode === "created" ? "Nova Reel" : "Failed"}
+          {needsSetup ? "Setup" : mode === "created" ? "Ready" : "Failed"}
         </span>
       </div>
       <div className="card-body">
         {message && <p className="concept-msg">{message}</p>}
-        {error && <p className="concept-err">{error}</p>}
-        {(sku || region) && (
+        {error && !needsSetup && <p className="concept-err">{error}</p>}
+        {(productName || sku || region) && (
           <p className="film-meta">
-            {sku && <span>{sku}</span>}
+            {(productName || sku) && <span>{productName || sku}</span>}
             {region && <span> · {region}</span>}
           </p>
         )}
-        {filmPrompt && (
+        {filmPrompt && mode === "failed" && (
           <details className="concept-prompt-details">
-            <summary>Film prompt</summary>
+            <summary>Debug</summary>
             <p className="concept-prompt">{filmPrompt}</p>
           </details>
         )}
-        {openUrl && openUrl.includes(".mp4") && (
-          <video
-            className="hero-film-video"
-            src={openUrl}
-            controls
-            playsInline
-            preload="metadata"
-          />
-        )}
-        {openUrl && (
-          <a href={openUrl} target="_blank" rel="noreferrer" className="film-s3-cta" download>
-            ▶ {openUrl.includes("X-Amz") ? "Download / play film" : "Open in S3"}
-          </a>
+        {(videoUri || filmHref) && (
+          <InlineFilmPlayer videoUri={videoUri} filmHref={filmHref} />
         )}
         {setupSteps?.length > 0 && (
           <ol className="film-setup-steps">
@@ -1328,23 +1351,20 @@ function ApiKeySettings({ open, onClose, serverConnected, config }) {
   const save = () => {
     setApiKey(key);
     setSaved(true);
+    import("@/lib/api-status").then(({ resetBedrockConfigCache }) => resetBedrockConfigCache());
     setTimeout(() => onClose?.(), 600);
   };
-
-  const llm = config?.llmModel || "amazon.nova-pro-v1:0";
-  const video = config?.videoModel || "amazon.nova-reel-v1:1";
-  const s3 = config?.s3PublicUrl || BEDROCK_S3_PUBLIC_URL;
 
   return (
     <div className="modal-bg" onClick={onClose}>
       <div className="modal modal-sm" onClick={(e) => e.stopPropagation()}>
         <div className="modal-h">
           <div>
-            <div className="title">{serverConnected ? "Bedrock connected" : "API key"}</div>
+            <div className="title">{serverConnected ? "Bedrock connected" : "Connect Bedrock"}</div>
             <div className="meta">
               {serverConnected
-                ? "Key loaded from .env.local — no paste needed"
-                : "Add BEDROCK_API_KEY to .env.local or paste below"}
+                ? "Your server key is active."
+                : "Paste your Bedrock API key to enable AI features."}
             </div>
           </div>
           <button type="button" className="modal-close" onClick={onClose}>✕</button>
@@ -1353,16 +1373,8 @@ function ApiKeySettings({ open, onClose, serverConnected, config }) {
           {serverConnected && (
             <div className="settings-connected">
               <p className="settings-status-line">
-                <span className="live-dot" /> Server key active
+                <span className="live-dot" /> Connected and ready
               </p>
-              <ul className="settings-model-list">
-                <li><span>Text / packshots</span><code>{llm}</code></li>
-                <li><span>Hero film</span><code>{video}</code></li>
-                <li><span>S3 output</span><code>{s3}/brit-videos/</code></li>
-                {config?.s3SignedAccess && (
-                  <li><span>Film playback</span><code>presigned URLs enabled</code></li>
-                )}
-              </ul>
               <button
                 type="button"
                 className="btn-ghost settings-override-toggle"
@@ -1532,13 +1544,54 @@ function FullSummaryCard({ script, onOpenReport }) {
 /* ============================================================
    Report modal — full PDF-backed sections, clickable TOC
 ============================================================ */
-function ReportModal({ params, script, onClose }) {
+function ReportModal({ params, script, onClose, initialSection = "exec" }) {
   const s = getScript(script);
   const sections = D().reportSections || [];
-  const [active, setActive] = useState("exec");
   const sweet = D().sweetOpportunities || [];
   const savory = D().savoryOpportunities || [];
-  const activeSec = sections.find((x) => x.id === active) || sections[0];
+  const [active, setActive] = useState(initialSection);
+  const scrollRef = useRef(null);
+  const sectionRefs = useRef({});
+
+  const scrollToSection = useCallback((id) => {
+    setActive(id);
+    const el = sectionRefs.current[id];
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  useEffect(() => {
+    const el = sectionRefs.current[initialSection];
+    if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+  }, [initialSection]);
+
+  useEffect(() => {
+    const root = scrollRef.current;
+    if (!root) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        const id = visible[0]?.target?.id;
+        if (id) setActive(id);
+      },
+      { root, rootMargin: "-12% 0px -55% 0px", threshold: [0.1, 0.35, 0.6] }
+    );
+
+    sections.forEach((sec) => {
+      const el = sectionRefs.current[sec.id];
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [sections]);
+
+  const bindSection = (id) => (el) => {
+    if (el) sectionRefs.current[id] = el;
+  };
+
+  const sectionById = (id) => sections.find((x) => x.id === id);
 
   return (
     <div className="modal-bg" onClick={onClose}>
@@ -1553,70 +1606,119 @@ function ReportModal({ params, script, onClose }) {
             <button type="button" className="modal-close" onClick={onClose}>✕</button>
           </div>
         </div>
-        <div className="report-body">
+        <div className="report-body" ref={scrollRef}>
           <aside className="report-toc">
-            <div className="label">Contents · click to read</div>
+            <div className="label">Contents · click to navigate</div>
             {sections.map((sec) => (
-              <a key={sec.id}
-                 href={"#"+sec.id}
-                 className={active === sec.id ? "active" : ""}
-                 onClick={(e) => { e.preventDefault(); setActive(sec.id); }}>
+              <button
+                key={sec.id}
+                type="button"
+                className={`report-toc-link ${active === sec.id ? "active" : ""}`}
+                onClick={() => scrollToSection(sec.id)}
+              >
                 {sec.title}
-              </a>
+              </button>
             ))}
           </aside>
           <article className="report-main">
-            <div className="deck">Brit GPT · Consuma AI Rapid Research · under 30 minutes</div>
-            <h1>{s.title} — India flavor insights</h1>
-            <p className="report-active-section">{activeSec?.content}</p>
-            <div className="pull">"{D().biscoff?.narrative}"</div>
-            <div className="factbox clickable-factbox">
-              <div onClick={() => openDetail({ type: "Metric", title: "Biscoff positive", body: `${BISCOFF_POSITIVE_PCT}% across ${BISCOFF_CONVERSATIONS.toLocaleString("en-IN")} conversations.`, source: "p.2" })}>
-                <div className="k">Biscoff positive</div><div className="v">{BISCOFF_POSITIVE_PCT}%</div>
-              </div>
-              <div onClick={() => openDetail({ type: "Metric", title: "Honey Chilli", body: `${HONEY_CHILLI_FAV_SHARE}%+ favorite snack share.`, source: "p.3" })}>
-                <div className="k">Honey Chilli</div><div className="v">{HONEY_CHILLI_FAV_SHARE}%+</div>
-              </div>
-              <div onClick={() => openDetail({ type: "Metric", title: "Sample", body: `${TOTAL_CONVERSATIONS.toLocaleString("en-IN")} conversations.`, source: "cover" })}>
-                <div className="k">Total sample</div><div className="v">1.53L</div>
-              </div>
+            <div className="report-hero">
+              <div className="deck">Brit GPT · Consuma AI Rapid Research · under 30 minutes</div>
+              <h1>{s.title} — India flavor insights</h1>
             </div>
 
-            <h2 id="biscoff">Biscoff wins through premium dessert-led trust</h2>
-            <p>{D().biscoff?.narrative} Sentiment in sweets: {SENT_DATA.map(x => `${x.lbl} ${x.v}%`).join(", ")}.</p>
-            <p><b>Extensions:</b> {(D().biscoff?.extensions || BISCOFF_EXTENSIONS).join(" · ")}.</p>
+            <section id="exec" ref={bindSection("exec")} className="report-section">
+              <h2>{sectionById("exec")?.title || "Executive summary"}</h2>
+              <p className="report-section-lead">{sectionById("exec")?.content}</p>
+              <div className="pull">"{D().biscoff?.narrative}"</div>
+              <div className="factbox clickable-factbox">
+                <div onClick={() => openDetail({ type: "Metric", title: "Biscoff positive", body: `${BISCOFF_POSITIVE_PCT}% across ${BISCOFF_CONVERSATIONS.toLocaleString("en-IN")} conversations.`, source: "p.2" })}>
+                  <div className="k">Biscoff positive</div><div className="v">{BISCOFF_POSITIVE_PCT}%</div>
+                </div>
+                <div onClick={() => openDetail({ type: "Metric", title: "Honey Chilli", body: `${HONEY_CHILLI_FAV_SHARE}%+ favorite snack share.`, source: "p.3" })}>
+                  <div className="k">Honey Chilli</div><div className="v">{HONEY_CHILLI_FAV_SHARE}%+</div>
+                </div>
+                <div onClick={() => openDetail({ type: "Metric", title: "Sample", body: `${TOTAL_CONVERSATIONS.toLocaleString("en-IN")} conversations.`, source: "cover" })}>
+                  <div className="k">Total sample</div><div className="v">1.53L</div>
+                </div>
+              </div>
+              <p><b>Recommendation · {params.region}:</b> {s.exec?.h2}</p>
+              <p>{s.exec?.p}</p>
+            </section>
 
-            <h2 id="swicy">Hot Honey Chilli — global swicy heat</h2>
-            <p>{D().honeyChilli?.narrative}</p>
-            <p><b>Signals:</b> {GLOBAL_SPICE_INTEREST}% global spice · {SAVORY_INNOVATION_DEMAND}% savory innovation · {FUSION_FLAVOUR_ENTHUSIASM}% fusion.</p>
-            <p><b>Extensions:</b> {(D().honeyChilli?.extensions || HONEY_CHILLI_EXTENSIONS).join(" · ")}.</p>
-            <p><b>Favorite flavors:</b> {(D().favoriteSavoryShares || []).map(f => `${f.lbl} ${f.val}%`).join(" · ")}.</p>
+            <section id="biscoff" ref={bindSection("biscoff")} className="report-section">
+              <h2>{sectionById("biscoff")?.title || "Biscoff wins"}</h2>
+              <p className="report-section-lead">{sectionById("biscoff")?.content}</p>
+              <p>{D().biscoff?.narrative} Sentiment in sweets: {SENT_DATA.map((x) => `${x.lbl} ${x.v}%`).join(", ")}.</p>
+              <p><b>Extensions:</b> {(D().biscoff?.extensions || BISCOFF_EXTENSIONS).join(" · ")}.</p>
+            </section>
 
-            <h2 id="states">Top flavors by state (11 states)</h2>
-            {(D().states || STATES_TABLE).map((row) => (
-              <p key={row.state} className="report-state-line clickable"
-                 onClick={() => openDetail({ type: "State", title: row.state, facts: [{ k: "Sweet", v: row.sweet.join(", ") }, { k: "Savory", v: row.savory.join(", ") }], source: "State table" })}>
-                <b>{row.state}</b> — Sweet: {row.sweet.join(", ")}. Savory: {row.savory.join(", ")}.
-              </p>
-            ))}
+            <section id="swicy" ref={bindSection("swicy")} className="report-section">
+              <h2>{sectionById("swicy")?.title || "Honey Chilli swicy"}</h2>
+              <p className="report-section-lead">{sectionById("swicy")?.content}</p>
+              <p>{D().honeyChilli?.narrative}</p>
+              <p><b>Signals:</b> {GLOBAL_SPICE_INTEREST}% global spice · {SAVORY_INNOVATION_DEMAND}% savory innovation · {FUSION_FLAVOUR_ENTHUSIASM}% fusion.</p>
+              <p><b>Extensions:</b> {(D().honeyChilli?.extensions || HONEY_CHILLI_EXTENSIONS).join(" · ")}.</p>
+            </section>
 
-            <h2 id="sweet">Sweet flavor opportunities</h2>
-            {sweet.map((o) => (
-              <p key={o.flavor} className="clickable" onClick={() => openDetail({ type: "Sweet", title: o.flavor, body: `${o.proof}. Extensions: ${o.extensions}`, source: o.anchor })}>
-                <b>{o.flavor}</b> ({o.anchor}) — {o.proof}
-              </p>
-            ))}
+            <section id="shares" ref={bindSection("shares")} className="report-section">
+              <h2>{sectionById("shares")?.title || "Favorite savory shares"}</h2>
+              <p className="report-section-lead">{sectionById("shares")?.content}</p>
+              <div className="report-share-grid">
+                {(D().favoriteSavoryShares || []).map((f) => (
+                  <button
+                    key={f.lbl}
+                    type="button"
+                    className="report-share-chip clickable"
+                    onClick={() => openDetail({ type: "Share", title: f.lbl, body: `${f.val}% favorite savory share`, source: "Favorite flavors" })}
+                  >
+                    <span className="rs-label">{f.lbl}</span>
+                    <span className="rs-val">{f.val}%</span>
+                  </button>
+                ))}
+              </div>
+            </section>
 
-            <h2 id="savory">Savory flavor opportunities</h2>
-            {savory.map((o) => (
-              <p key={o.flavor} className="clickable" onClick={() => openDetail({ type: "Savory", title: o.flavor, body: `${o.proof}. Extensions: ${o.extensions}`, source: o.anchor })}>
-                <b>{o.flavor}</b> ({o.anchor}) — {o.proof}
-              </p>
-            ))}
+            <section id="states" ref={bindSection("states")} className="report-section">
+              <h2>{sectionById("states")?.title || "States — top flavors"}</h2>
+              <p className="report-section-lead">{sectionById("states")?.content}</p>
+              {(D().states || STATES_TABLE).map((row) => (
+                <p
+                  key={row.state}
+                  className="report-state-line clickable"
+                  onClick={() => openDetail({ type: "State", title: row.state, facts: [{ k: "Sweet", v: row.sweet.join(", ") }, { k: "Savory", v: row.savory.join(", ") }], source: "State table" })}
+                >
+                  <b>{row.state}</b> — Sweet: {row.sweet.join(", ")}. Savory: {row.savory.join(", ")}.
+                </p>
+              ))}
+            </section>
 
-            <h2 id="exec">Executive recommendation · {params.region}</h2>
-            <p>{s.exec?.h2}</p>
-            <p>{s.exec?.p}</p>
+            <section id="sweet" ref={bindSection("sweet")} className="report-section">
+              <h2>{sectionById("sweet")?.title || "Sweet opportunities"}</h2>
+              <p className="report-section-lead">{sectionById("sweet")?.content}</p>
+              {sweet.map((o) => (
+                <p key={o.flavor} className="clickable" onClick={() => openDetail({ type: "Sweet", title: o.flavor, body: `${o.proof}. Extensions: ${o.extensions}`, source: o.anchor })}>
+                  <b>{o.flavor}</b> ({o.anchor}) — {o.proof}
+                </p>
+              ))}
+            </section>
+
+            <section id="savory" ref={bindSection("savory")} className="report-section">
+              <h2>{sectionById("savory")?.title || "Savory opportunities"}</h2>
+              <p className="report-section-lead">{sectionById("savory")?.content}</p>
+              {savory.map((o) => (
+                <p key={o.flavor} className="clickable" onClick={() => openDetail({ type: "Savory", title: o.flavor, body: `${o.proof}. Extensions: ${o.extensions}`, source: o.anchor })}>
+                  <b>{o.flavor}</b> ({o.anchor}) — {o.proof}
+                </p>
+              ))}
+            </section>
+
+            <section id="method" ref={bindSection("method")} className="report-section">
+              <h2>{sectionById("method")?.title || "Methodology"}</h2>
+              <p className="report-section-lead">{sectionById("method")?.content}</p>
+              <p><b>Channels:</b> {(D().meta?.channels || []).join(" · ")}.</p>
+              <p><b>Sample:</b> {TOTAL_CONVERSATIONS.toLocaleString("en-IN")} conversations · India · last 12 months.</p>
+              <p><b>Platform:</b> Consuma AI Rapid Research · generated in under 30 minutes.</p>
+            </section>
           </article>
         </div>
       </div>

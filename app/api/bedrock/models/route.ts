@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  BEDROCK_IMAGE_MODEL,
   BEDROCK_LLM_MODEL,
   BEDROCK_VIDEO_MODEL,
   getBedrockKeyFromEnv,
@@ -10,8 +11,9 @@ export const GET = () => {
     return NextResponse.json({ error: "No BEDROCK_API_KEY in env" }, { status: 401 });
   }
   return NextResponse.json({
-    models: [BEDROCK_LLM_MODEL, BEDROCK_VIDEO_MODEL],
+    models: [BEDROCK_LLM_MODEL, BEDROCK_IMAGE_MODEL, BEDROCK_VIDEO_MODEL],
     llm: BEDROCK_LLM_MODEL,
+    image: BEDROCK_IMAGE_MODEL,
     video: BEDROCK_VIDEO_MODEL,
   });
 };

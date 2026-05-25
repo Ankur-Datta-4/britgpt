@@ -1,4 +1,7 @@
 import {
+  BEDROCK_IMAGE_FALLBACK_MODEL,
+  BEDROCK_IMAGE_MODEL,
+  BEDROCK_IMAGE_MODELS,
   BEDROCK_LLM_MODEL,
   BEDROCK_REGION,
   BEDROCK_VIDEO_MODEL,
@@ -105,15 +108,54 @@ export type PackshotInput = {
   gradient?: string;
 };
 
-/** Packshot: template visual always; Nova Pro SVG used when returned. */
+/** Packshot: Stability Ultra → Core → SD3.5 → styled template. */
+const isStabilityImageModel = (modelId: string) =>
+  modelId.startsWith("stability.") || modelId.startsWith("us.stability.");
+
+const invokeImageModel = async (
+  modelId: string,
+  prompt: string,
+  clientKey?: string
+) => {
+  const trimmed = String(prompt).slice(0, 4000);
+  const body = isStabilityImageModel(modelId)
+    ? {
+        prompt: trimmed,
+        aspect_ratio: "1:1",
+        output_format: "png",
+        mode: "text-to-image",
+        negative_prompt:
+          "text, logos, watermark, blurry, honey pour, syrup, liquid drizzle, generic food, people, hands",
+      }
+    : {
+        taskType: "TEXT_IMAGE",
+        textToImageParams: { text: trimmed.slice(0, 1024) },
+        imageGenerationConfig: {
+          seed: Math.floor(Math.random() * 858993459),
+          quality: "standard",
+          width: 1024,
+          height: 1024,
+          numberOfImages: 1,
+        },
+      };
+
+  const data = (await bedrockFetch(
+    `/model/${encodeURIComponent(modelId)}/invoke`,
+    body,
+    clientKey
+  )) as { images?: string[]; error?: string };
+
+  const b64 = data.images?.[0];
+  if (b64) return `data:image/png;base64,${b64}`;
+  if (data.error) throw new Error(data.error);
+  throw new Error("No image returned");
+};
+
 export const generateBedrockImage = async (
   input: PackshotInput | string,
   clientKey?: string
-) => {
-  const opts =
-    typeof input === "string"
-      ? { prompt: input }
-      : input;
+): Promise<{ uri: string; generated: boolean }> => {
+  const opts = typeof input === "string" ? { prompt: input } : input;
   const fallback = () =>
     buildPackshotDataUrl({
       title: opts.title,
@@ -122,27 +164,57 @@ export const generateBedrockImage = async (
       gradient: opts.gradient,
     });
 
+  const prompt =
+    opts.prompt ||
+    `Professional FMCG biscuit packshot on white studio backdrop, ${opts.sku || opts.title || "product"}, premium Indian snack packaging, appetizing, no readable text`;
+
+  const models = [...BEDROCK_IMAGE_MODELS];
+  if (!models.includes(BEDROCK_IMAGE_MODEL as (typeof BEDROCK_IMAGE_MODELS)[number])) {
+    models.unshift(BEDROCK_IMAGE_MODEL);
+  }
+  if (
+    BEDROCK_IMAGE_FALLBACK_MODEL &&
+    !models.includes(BEDROCK_IMAGE_FALLBACK_MODEL as (typeof BEDROCK_IMAGE_MODELS)[number])
+  ) {
+    models.push(BEDROCK_IMAGE_FALLBACK_MODEL);
+  }
+
+  let lastError: unknown;
+  for (const modelId of [...new Set(models)]) {
+    try {
+      const uri = await invokeImageModel(modelId, prompt, clientKey);
+      return { uri, generated: true };
+    } catch (e) {
+      lastError = e;
+    }
+  }
+
+  console.warn("All image models failed, using template:", lastError);
+
   try {
     const raw = await converse(
-      `Describe a premium biscuit packshot color palette (2 hex colors, no text) for: ${opts.prompt.slice(0, 400)}`,
+      `Describe a premium biscuit packshot color palette (2 hex colors, no text) for: ${prompt.slice(0, 400)}`,
       "Reply with only two hex colors separated by comma, e.g. #c45c3e,#8b2e1a",
       clientKey
     );
     const hexes = raw.match(/#[0-9a-fA-F]{3,8}/g);
     if (hexes?.length >= 2) {
-      return buildPackshotDataUrl({
-        title: opts.title,
-        sku: opts.sku,
-        lane: opts.lane,
-        gradient: hexes[0],
-        accent: hexes[1],
-      });
+      return {
+        uri: buildPackshotDataUrl({
+          title: opts.title,
+          sku: opts.sku,
+          lane: opts.lane,
+          gradient: hexes[0],
+          accent: hexes[1],
+        }),
+        generated: false,
+      };
     }
   } catch {
-    /* use default template. */
+    /* template fallback */
   }
 
-  return fallback();
+  return { uri: fallback(), generated: false };
 };
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -155,7 +227,7 @@ export const generateBedrockFilm = async (
 ) => {
   const s3Uri = getBedrockS3OutputUri();
 
-  onProgress?.("Starting amazon.nova-reel-v1:1…");
+  onProgress?.("Creating hero film…");
   const seed = Math.floor(Math.random() * 2147483646);
   const start = (await bedrockFetch(
     "/async-invoke",
@@ -181,7 +253,7 @@ export const generateBedrockFilm = async (
 
   const encodedArn = encodeURIComponent(arn);
   for (let i = 0; i < 60; i++) {
-    onProgress?.(`Nova Reel… ${Math.min(92, 10 + i * 3)}%`);
+    onProgress?.(`Rendering film… ${Math.min(92, 10 + i * 3)}%`);
     await sleep(i < 3 ? 5000 : 8000);
 
     const status = (await bedrockFetch(

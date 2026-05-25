@@ -13,6 +13,18 @@ export const BEDROCK_LLM_MODEL = "amazon.nova-pro-v1:0";
 /** Hero film async invoke */
 export const BEDROCK_VIDEO_MODEL = "amazon.nova-reel-v1:1";
 
+/** Packshot images — Stability AI (active; Nova Canvas/Titan are legacy) */
+export const BEDROCK_IMAGE_MODEL = "stability.stable-image-ultra-v1:1";
+export const BEDROCK_IMAGE_FALLBACK_MODEL = "stability.stable-image-core-v1:1";
+/** Try in order — geo IDs route from us-east-1 to us-west-2 when needed */
+export const BEDROCK_IMAGE_MODELS = [
+  "stability.stable-image-ultra-v1:1",
+  "us.stability.stable-image-ultra-v1:1",
+  "stability.stable-image-core-v1:1",
+  "us.stability.stable-image-core-v1:1",
+  "stability.sd3-5-large-v1:0",
+] as const;
+
 /** Nova Reel output — hardcoded (verified bucket) */
 export const BEDROCK_S3_BUCKET = "brit-gpt";
 export const BEDROCK_S3_PREFIX = "brit-videos/";

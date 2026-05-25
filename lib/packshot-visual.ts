@@ -29,6 +29,8 @@ export const buildPackshotDataUrl = (opts: {
   <rect x="95" y="330" width="210" height="14" rx="7" fill="${g2}" opacity="0.5"/>
   <rect x="115" y="355" width="170" height="10" rx="5" fill="${g2}" opacity="0.3"/>
   <circle cx="320" cy="130" r="22" fill="${g1}" opacity="0.85"/>
+  <text x="200" y="420" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="16" font-weight="600">${title.replace(/[<>&"]/g, "")}</text>
+  <text x="200" y="445" text-anchor="middle" fill="#fff" opacity="0.85" font-family="system-ui,sans-serif" font-size="11">${lane.replace(/[<>&"]/g, "")}</text>
 </svg>`;
 
   const b64 =

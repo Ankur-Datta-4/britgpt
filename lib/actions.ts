@@ -1,6 +1,7 @@
+import { BRIT_DATA } from "@/lib/data";
 import { generateConceptCards, generateHeroFilm } from "@/lib/create";
 import { checkBedrockConfigured } from "@/lib/api-status";
-import { runActionWithLLM } from "@/lib/llm";
+import { runActionWithLLM, type ActionContext } from "@/lib/llm";
 
 export const ACTIONS = [
   {
@@ -13,7 +14,7 @@ export const ACTIONS = [
   {
     id: "create_film",
     label: "Create film",
-    sub: "6s hero · Nova Reel",
+    sub: "6s hero film",
     icon: "▶",
     film: true,
   },
@@ -37,6 +38,9 @@ export const ACTIONS = [
   },
 ] as const;
 
+const maharashtra = BRIT_DATA.states?.find((s) => s.state === "Maharashtra");
+const delhi = BRIT_DATA.states?.find((s) => s.state === "Delhi");
+
 const fallback: Record<
   string,
   {
@@ -44,67 +48,168 @@ const fallback: Record<
     title: string;
     body: string;
     bullets: string[];
+    recommendations: string[];
+    nextSteps: string[];
     status: string;
     eta: string;
   }
 > = {
   content_engine: {
     type: "content_engine",
-    title: "Queued for content engine",
-    body: "Brief exported from research run.",
-    bullets: ["Packshot storyboard", "3× Reels scripts", "Copy from verbatims"],
+    title: "Content engine handoff",
+    body: "Exporting Biscoff dessert trust and Honey Chilli swicy angles into shoot-ready scripts from 1.53L conversations.",
+    bullets: [
+      "Hero: Biscoff premium dessert system — 43.1% positive, 73.1% positive in sweets",
+      "Swicy lane: Honey Chilli 18% favorite savory share vs Peri Peri 22%",
+      "State reels: Maharashtra Thecha + Delhi Honey Chilli street-food cues",
+      "Sweet opps: Gulkand fusion 31.62%, Caramel premium pull 62.43%",
+      "Packshot storyboard: 3 hero SKUs tied to exec recommendation",
+    ],
+    recommendations: [
+      "Lead with Biscoff dessert trust for premium sweet content",
+      "Run Honey Chilli swicy Reels for North + Metro audiences",
+      "Localize copy with Maharashtra Thecha and Delhi chaat verbatims",
+    ],
+    nextSteps: [
+      "Approve 3× Reels scripts and packshot storyboard",
+      "Route to content engine with region tags",
+    ],
     status: "queued",
-    eta: "~4 min",
+    eta: "~4 min export",
   },
   fpd_scout: {
     type: "fpd_scout",
-    title: "FPD scout initiated",
-    body: "Scanning trade signals for flavor white-space.",
-    bullets: ["SKU adjacency", "Pack audit", "Field rep brief"],
+    title: "FPD scout brief",
+    body: `Field discovery plan grounded in Flavor Insights (${BRIT_DATA.meta?.date}). Prioritize Maharashtra and Delhi, then expand to South podi cluster.`,
+    bullets: [
+      `Maharashtra sweet: ${maharashtra?.sweet.slice(0, 2).join(", ")} · savory: ${maharashtra?.savory.slice(0, 2).join(", ")}`,
+      `Delhi savory top-5 includes Honey Chilli — validate NCR swicy pack tests`,
+      "Gunpowder Podi cluster (APT, Karnataka, Tamil Nadu): layered spice beyond masala",
+      "Thecha (Maharashtra): 55% global spice interest — scout modern snack adjacency",
+      "Field brief: pack audit + trade interviews in 2 states, May–Jun 2026",
+    ],
+    recommendations: [
+      "Start Maharashtra + Delhi — highest flavor contrast in dataset",
+      "Validate Honey Chilli swicy platform in Delhi trade before national scale",
+      "Map Thecha heat cues to Britannia savory innovation pipeline",
+    ],
+    nextSteps: [
+      "Issue field rep brief with state flavor cheat-sheet",
+      "Schedule 12-store pack audit in Maharashtra and Delhi",
+    ],
     status: "running",
-    eta: "~8 min",
+    eta: "~12 min brief · ~2 week field cycle",
+  },
+  storyboard: {
+    type: "storyboard",
+    title: "Video ad storyboard",
+    body: "30-second scene-by-scene storyboard for the selected flavor-state pair.",
+    bullets: [
+      "Scene 1: Hero pack on shelf — 0–3s",
+      "Scene 2: Flavor cue ingredient beauty — 3–8s",
+      "Scene 3: Relatable snacking moment — 8–18s",
+      "Scene 4: Product crunch close-up — 18–24s",
+      "Scene 5: Brand end frame + CTA — 24–30s",
+    ],
+    recommendations: [
+      "Lead with swicy crunch for urban audiences",
+      "Use regional visual cues from the selected state",
+      "End with Britannia brand lock-up",
+    ],
+    nextSteps: ["Approve storyboard", "Route to production"],
+    status: "ready",
+    eta: "~6 min",
+  },
+  positioning: {
+    type: "positioning",
+    title: "Positioning recommendations",
+    body: "Shelf story and competitive frame for the flavor-state launch.",
+    bullets: [
+      "Primary frame: regional authenticity + modern format",
+      "Secondary: Britannia trust and distribution",
+      "Avoid generic South/North labeling",
+      "Anchor RTB to named ingredients",
+      "Pack architecture: premium cue without health claims",
+    ],
+    recommendations: [
+      "Position as regional hero flavor platform",
+      "Bundle with existing 50-50 or NutriChoice line",
+      "Trial packs for metro lead markets",
+    ],
+    nextSteps: ["Sign off positioning territory", "Brief design team"],
+    status: "ready",
+    eta: "~4 min",
   },
   triangulate_1ds: {
     type: "triangulate_1ds",
-    title: "1DS triangulation started",
-    body: "Linking social flavor themes with sell-out.",
-    bullets: ["State overlay", "Buzz vs velocity", "Confidence uplift"],
+    title: "1DS triangulation",
+    body: "Linking social flavor themes from 1.53L conversations to 1DS sell-out velocity by state.",
+    bullets: [
+      "Overlay Peri Peri 22% and Honey Chilli 18% social share vs regional sell-out",
+      "Maharashtra: Thecha + Bhakarwadi buzz vs savory SKU velocity",
+      "Delhi: Honey Chilli in savory top-5 vs Indo-Chinese snack sell-through",
+      "South podi cluster: Gunpowder Podi social heat in APT, Karnataka, TN",
+      "Confidence uplift: cross-check Biscoff 43.1% sentiment with dessert SKU data",
+    ],
+    recommendations: [
+      "Prioritize Honey Chilli states where social buzz leads sell-out",
+      "Flag Maharashtra Thecha as innovation signal if velocity lags buzz",
+      "Use Biscoff dessert sentiment to validate premium price architecture",
+    ],
+    nextSteps: [
+      "Pull 1DS state-level sell-out for top 5 savory flavors",
+      "Build buzz-vs-velocity matrix for exec readout",
+    ],
     status: "running",
-    eta: "~2 min",
+    eta: "~2 min overlay",
   },
 };
 
 const runWithLlm = async (
   actionId: string,
-  ctx: {
-    script?: { title?: string };
-    params?: { region?: string };
-  }
+  ctx: ActionContext,
+  onProgress?: (t: string) => void
 ) => {
   const base = {
     ...fallback[actionId],
     body: `${fallback[actionId].body} (${ctx.script?.title || "research"} · ${ctx.params?.region || "Pan-India"}).`,
   };
-    const ready = await checkBedrockConfigured();
-    if (!ready) {
-      return { ...base, message: "Preview brief — add Bedrock API key in .env.local or Settings." };
-    }
-    try {
+  const ready = await checkBedrockConfigured();
+  if (!ready) {
+    return { ...base, message: "Preview brief — connect Bedrock in settings to enrich." };
+  }
+
+  onProgress?.("Reading Flavor Insights dataset…");
+  try {
+    onProgress?.("Drafting with Nova Pro…");
     const data = await runActionWithLLM(actionId, ctx);
-    return { type: actionId, ...data, llm: true };
+    onProgress?.("Finalising recommendations…");
+    return {
+      type: actionId,
+      ...data,
+      llm: true,
+      message: ctx.completedActions?.length
+        ? "Follow-up brief — grounded in prior actions and live dataset."
+        : "Live brief from Flavor Insights India via Nova Pro.",
+    };
   } catch (err) {
     return {
       ...base,
       error: err instanceof Error ? err.message : String(err),
-      message: "LLM unavailable — showing preview brief.",
+      message: "LLM unavailable — showing dataset-grounded preview.",
     };
   }
 };
 
 export const runAction = async (
   actionId: string,
-  ctx: {
-    script?: { title?: string; id?: string; exec?: { h2?: string; p?: string }; scopeDefaults?: { region?: string } };
+  ctx: ActionContext & {
+    script?: {
+      title?: string;
+      id?: string;
+      exec?: { h2?: string; p?: string };
+      scopeDefaults?: { region?: string };
+    };
     params?: { region?: string };
   } = {},
   onProgress?: (t: string) => void
@@ -118,8 +223,10 @@ export const runAction = async (
   if (actionId === "create_film") {
     return generateHeroFilm(ctx, onProgress);
   }
-  if (actionId === "content_engine") return runWithLlm("content_engine", ctx);
-  if (actionId === "fpd_scout") return runWithLlm("fpd_scout", ctx);
-  if (actionId === "triangulate_1ds") return runWithLlm("triangulate_1ds", ctx);
+  if (actionId === "content_engine") return runWithLlm("content_engine", ctx, onProgress);
+  if (actionId === "storyboard") return runWithLlm("storyboard", ctx, onProgress);
+  if (actionId === "positioning") return runWithLlm("positioning", ctx, onProgress);
+  if (actionId === "fpd_scout") return runWithLlm("fpd_scout", ctx, onProgress);
+  if (actionId === "triangulate_1ds") return runWithLlm("triangulate_1ds", ctx, onProgress);
   throw new Error(`Unknown action: ${actionId}`);
 };

@@ -1,0 +1,353 @@
+[
+  {
+    "name": "Honey Chilli",
+    "convGrowth": "48.7%",
+    "engGrowth": "63.4%",
+    "trendType": "Established",
+    "states": "Maharashtra, UP, Delhi NCR, Karnataka, Telangana",
+    "extensions": "Crackers, coated wafers, snack mix, baked chips, stuffed croissants",
+    "brandFit": "Treat, 50-50"
+  },
+  {
+    "name": "Gunpowder Podi",
+    "convGrowth": "46.2%",
+    "engGrowth": "61.8%",
+    "trendType": "Emerging",
+    "states": "Tamil Nadu, Karnataka, Andhra Pradesh, Telangana",
+    "extensions": "Podi crackers, khakhra, savory biscuits, chips",
+    "brandFit": "NutriChoice, 50-50"
+  },
+  {
+    "name": "Schezwan Masala",
+    "convGrowth": "41.8%",
+    "engGrowth": "56.4%",
+    "trendType": "Established",
+    "states": "Maharashtra, Delhi NCR, UP",
+    "extensions": "Schezwan chips, spicy crackers, coated peanuts",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Chaat Masala Blast",
+    "convGrowth": "38.6%",
+    "engGrowth": "51.3%",
+    "trendType": "Stable",
+    "states": "Uttar Pradesh, Delhi NCR, Punjab",
+    "extensions": "Chaat crackers, baked namkeen, snack sticks",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Tandoori BBQ",
+    "convGrowth": "35.1%",
+    "engGrowth": "47.7%",
+    "trendType": "Stable",
+    "states": "Punjab, Haryana, Delhi NCR",
+    "extensions": "BBQ crackers, baked chips, snack bites",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Thecha Spice",
+    "convGrowth": "44.8%",
+    "engGrowth": "59.2%",
+    "trendType": "Emerging",
+    "states": "Maharashtra, Gujarat",
+    "extensions": "Spicy chips, fiery crackers, coated makhana",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Kerala Pepper Fry",
+    "convGrowth": "33.7%",
+    "engGrowth": "46.2%",
+    "trendType": "Emerging",
+    "states": "Kerala, Karnataka",
+    "extensions": "Pepper crackers, spice chips, roasted nuts",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Kasundi Mustard",
+    "convGrowth": "31.8%",
+    "engGrowth": "45.6%",
+    "trendType": "Emerging",
+    "states": "West Bengal, Odisha",
+    "extensions": "Mustard crackers, tangy sticks, savory wafers",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Bhut Jolokia Spice",
+    "convGrowth": "39.2%",
+    "engGrowth": "67.1%",
+    "trendType": "Fad",
+    "states": "Assam, Nagaland",
+    "extensions": "Extreme spice chips, challenge snacks",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Raja Mircha",
+    "convGrowth": "36.4%",
+    "engGrowth": "64.8%",
+    "trendType": "Fad",
+    "states": "Nagaland, Arunachal Pradesh",
+    "extensions": "Ultra-spicy coated nuts, fiery crackers",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Sattu Masala",
+    "convGrowth": "34.5%",
+    "engGrowth": "48.3%",
+    "trendType": "Emerging",
+    "states": "Bihar, Jharkhand",
+    "extensions": "Protein crackers, baked puffs, savory bites",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "name": "Bajra Masala",
+    "convGrowth": "29.8%",
+    "engGrowth": "41.5%",
+    "trendType": "Emerging",
+    "states": "Haryana, Rajasthan",
+    "extensions": "Millet crisps, healthy crackers",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "name": "Tilkut Sesame Jaggery",
+    "convGrowth": "27.6%",
+    "engGrowth": "39.4%",
+    "trendType": "Seasonal",
+    "states": "Bihar, Jharkhand",
+    "extensions": "Sesame cookies, gur snack bars, stuffed croissants",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "name": "Tilgur Sesame Jaggery",
+    "convGrowth": "25.9%",
+    "engGrowth": "37.8%",
+    "trendType": "Seasonal",
+    "states": "Chhattisgarh, MP",
+    "extensions": "Gur biscuits, millet cookies, stuffed croissants",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "name": "Banana Chips Jaggery",
+    "convGrowth": "28.1%",
+    "engGrowth": "40.2%",
+    "trendType": "Stable",
+    "states": "Kerala",
+    "extensions": "Banana wafers, jaggery cookies",
+    "brandFit": "Good Day"
+  },
+  {
+    "name": "Nolen Gur Toffee",
+    "convGrowth": "32.6%",
+    "engGrowth": "46.1%",
+    "trendType": "Seasonal",
+    "states": "Assam, West Bengal",
+    "extensions": "Jaggery caramel biscuits, dessert cookies, stuffed croissants",
+    "brandFit": "Good Day"
+  },
+  {
+    "name": "Mishti Doi Caramel",
+    "convGrowth": "35.4%",
+    "engGrowth": "52.7%",
+    "trendType": "Emerging",
+    "states": "West Bengal",
+    "extensions": "Yogurt cream biscuits, dessert bars, stuffed croissants",
+    "brandFit": "Bourbon"
+  },
+  {
+    "name": "Chhena Poda Caramel",
+    "convGrowth": "33.1%",
+    "engGrowth": "49.6%",
+    "trendType": "Emerging",
+    "states": "Odisha",
+    "extensions": "Cheesecake bites, caramel cookies, stuffed croissants",
+    "brandFit": "Bourbon"
+  },
+  {
+    "name": "Bebinca Caramel",
+    "convGrowth": "29.2%",
+    "engGrowth": "43.8%",
+    "trendType": "Emerging",
+    "states": "Goa",
+    "extensions": "Layered cream biscuits, caramel cakes, stuffed croissants",
+    "brandFit": "Bourbon"
+  },
+  {
+    "name": "Tamarind Candy",
+    "convGrowth": "30.8%",
+    "engGrowth": "42.1%",
+    "trendType": "Stable",
+    "states": "Tamil Nadu, Karnataka, Telangana",
+    "extensions": "Tamarind cookies, chewy bites, snack bars",
+    "brandFit": "Marie Gold"
+  },
+  {
+    "name": "Mango Pickle Candy",
+    "convGrowth": "28.7%",
+    "engGrowth": "39.7%",
+    "trendType": "Emerging",
+    "states": "Maharashtra, Gujarat, Telangana",
+    "extensions": "Tangy cookies, coated snack bites",
+    "brandFit": "Treat"
+  },
+  {
+    "name": "Gondhoraj Lemon Candy",
+    "convGrowth": "24.8%",
+    "engGrowth": "35.2%",
+    "trendType": "Emerging",
+    "states": "West Bengal",
+    "extensions": "Citrus cookies, lemon cream biscuits, stuffed croissants",
+    "brandFit": "Marie Gold"
+  },
+  {
+    "name": "Chak-Hao Black Rice Candy",
+    "convGrowth": "26.7%",
+    "engGrowth": "38.6%",
+    "trendType": "Emerging",
+    "states": "Manipur",
+    "extensions": "Black rice cookies, dessert bites",
+    "brandFit": "Good Day"
+  },
+  {
+    "name": "Wild Honey Crunch",
+    "convGrowth": "25.3%",
+    "engGrowth": "36.9%",
+    "trendType": "Emerging",
+    "states": "Nagaland, Meghalaya",
+    "extensions": "Honey granola biscuits, crunchy bars, stuffed croissants",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "name": "Bhutte Ka Kees Masala",
+    "convGrowth": "27.8%",
+    "engGrowth": "39.1%",
+    "trendType": "Stable",
+    "states": "Madhya Pradesh",
+    "extensions": "Corn crackers, savory sticks",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Dal Baati Masala",
+    "convGrowth": "31.4%",
+    "engGrowth": "44.7%",
+    "trendType": "Stable",
+    "states": "Rajasthan",
+    "extensions": "Masala crackers, baked bites",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Dalma Spice",
+    "convGrowth": "28.6%",
+    "engGrowth": "40.8%",
+    "trendType": "Stable",
+    "states": "Odisha",
+    "extensions": "Lentil crackers, savory biscuits",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Recheado Masala",
+    "convGrowth": "30.7%",
+    "engGrowth": "42.4%",
+    "trendType": "Emerging",
+    "states": "Goa",
+    "extensions": "Spicy wafers, masala crackers",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Gundruk Pickle",
+    "convGrowth": "24.2%",
+    "engGrowth": "37.3%",
+    "trendType": "Emerging",
+    "states": "Sikkim",
+    "extensions": "Tangy chips, pickle crackers",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Berma Fermented Fish",
+    "convGrowth": "22.7%",
+    "engGrowth": "41.6%",
+    "trendType": "Fad",
+    "states": "Tripura",
+    "extensions": "Umami crackers, savory sticks",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Bhang Chutney",
+    "convGrowth": "21.8%",
+    "engGrowth": "38.2%",
+    "trendType": "Fad",
+    "states": "Uttarakhand",
+    "extensions": "Herb crackers, tangy chips",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Jadoh Spice",
+    "convGrowth": "23.1%",
+    "engGrowth": "35.7%",
+    "trendType": "Stable",
+    "states": "Meghalaya",
+    "extensions": "Savory rice crisps, baked snacks",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Bai Masala",
+    "convGrowth": "22.4%",
+    "engGrowth": "34.8%",
+    "trendType": "Stable",
+    "states": "Mizoram",
+    "extensions": "Herb crackers, savory wafers",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Rogan Josh Spice",
+    "convGrowth": "26.9%",
+    "engGrowth": "40.4%",
+    "trendType": "Emerging",
+    "states": "North India",
+    "extensions": "Spiced crackers, premium chips",
+    "brandFit": "50-50"
+  },
+  {
+    "name": "Kerala Banana Masala",
+    "convGrowth": "24.6%",
+    "engGrowth": "36.7%",
+    "trendType": "Stable",
+    "states": "Kerala",
+    "extensions": "Banana chips, savory wafers",
+    "brandFit": "Good Day"
+  },
+  {
+    "name": "Qubani Caramel",
+    "convGrowth": "27.1%",
+    "engGrowth": "39.9%",
+    "trendType": "Seasonal",
+    "states": "Telangana",
+    "extensions": "Dessert cookies, cream biscuits, stuffed croissants",
+    "brandFit": "Bourbon"
+  },
+  {
+    "name": "Ghevar Saffron",
+    "convGrowth": "28.9%",
+    "engGrowth": "41.2%",
+    "trendType": "Seasonal",
+    "states": "Rajasthan",
+    "extensions": "Festive cream biscuits, dessert bars, stuffed croissants",
+    "brandFit": "Good Day"
+  },
+  {
+    "name": "Petha Saffron",
+    "convGrowth": "26.4%",
+    "engGrowth": "37.5%",
+    "trendType": "Seasonal",
+    "states": "Uttar Pradesh",
+    "extensions": "Saffron cookies, cream-filled biscuits, stuffed croissants",
+    "brandFit": "Good Day"
+  },
+  {
+    "name": "Sev Masala",
+    "convGrowth": "29.5%",
+    "engGrowth": "40.8%",
+    "trendType": "Stable",
+    "states": "Gujarat",
+    "extensions": "Sev crackers, crunchy sticks",
+    "brandFit": "50-50"
+  }
+]

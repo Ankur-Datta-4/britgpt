@@ -7,6 +7,29 @@ import {
 import { checkBedrockConfigured } from "@/lib/api-status";
 import { getBedrockKey, hasBedrockKey } from "@/lib/config-client";
 
+export type ActionContext = {
+  script?: { title?: string; exec?: { h2?: string; p?: string } };
+  params?: { region?: string; obj?: string; objective?: string };
+  state?: string;
+  flavor?: string;
+  instructions?: string;
+  completedActions?: string[];
+  priorResults?: Array<{
+    actionId: string;
+    title?: string;
+    bullets?: string[];
+    recommendations?: string[];
+  }>;
+};
+
+const ACTION_IDS = [
+  "concept_cards",
+  "create_film",
+  "content_engine",
+  "fpd_scout",
+  "triangulate_1ds",
+] as const;
+
 export const hasLlmKey = () => hasBedrockKey() || hasBedrockAccess();
 
 export const hasLlmKeyAsync = () => checkBedrockConfigured();
@@ -22,52 +45,191 @@ export const generateJSON = async (userPrompt: string, systemPrompt: string) => 
   return generateBedrockJSON(userPrompt, systemPrompt, getBedrockKey());
 };
 
-const researchContext = (ctx: {
-  script?: { title?: string; exec?: { h2?: string; p?: string } };
-  params?: { region?: string; obj?: string; objective?: string };
-}) => {
+const formatStateFlavors = () =>
+  (BRIT_DATA.states || [])
+    .map(
+      (s) =>
+        `${s.state}: sweet [${s.sweet.slice(0, 3).join(", ")}]; savory [${s.savory.slice(0, 3).join(", ")}]`
+    )
+    .join("\n");
+
+const formatOpportunities = () => {
+  const sweet = (BRIT_DATA.sweetOpportunities || [])
+    .map((o) => `${o.flavor} (${o.anchor}) — ${o.proof?.slice(0, 80)}`)
+    .join("\n");
+  const savory = (BRIT_DATA.savoryOpportunities || [])
+    .map((o) => `${o.flavor} (${o.anchor}) — ${o.proof?.slice(0, 80)}`)
+    .join("\n");
+  return `Sweet opportunities:\n${sweet}\n\nSavory opportunities:\n${savory}`;
+};
+
+const researchContext = (ctx: ActionContext) => {
   const script = ctx.script || {};
   const params = ctx.params || {};
   const ex = script.exec || {};
+  const savoryShares = (BRIT_DATA.favoriteSavoryShares || [])
+    .slice(0, 6)
+    .map((f) => `${f.flavor} ${f.pct}%`)
+    .join(", ");
+
   return [
     `Research title: ${script.title || "Flavor Insights"}`,
-    `Region: ${params.region || "Pan-India"}`,
+    `Region focus: ${params.region || "Pan-India"}`,
     `Objective: ${params.obj || params.objective || "Product extension"}`,
-    `Recommendation: ${ex.h2 || ""}`,
+    `Executive recommendation: ${ex.h2 || ""}`,
     `Detail: ${ex.p || ""}`,
-    `Dataset: ${BRIT_DATA.meta?.totalSample?.toLocaleString("en-IN")} conversations, India, 12 months.`,
-    `Biscoff: ${BRIT_DATA.biscoff?.positivePct}% positive, ${BRIT_DATA.biscoff?.conversations} convos.`,
-    `Honey Chilli: ${BRIT_DATA.honeyChilli?.favSharePct}%+ favorite snack share.`,
+    `Report date: ${BRIT_DATA.meta?.date || "May 2026"} — all timelines must be May 2026 onward; never cite 2023, 2024, or Q4 2023.`,
+    `Dataset: ${BRIT_DATA.meta?.totalSample?.toLocaleString("en-IN")} conversations across 6 channels, India, last 12 months.`,
+    `Biscoff: ${BRIT_DATA.biscoff?.positivePct}% positive sentiment, ${BRIT_DATA.biscoff?.conversations?.toLocaleString("en-IN")} conversations.`,
+    `Honey Chilli: ${BRIT_DATA.honeyChilli?.favSharePct}%+ favorite snack share, ${BRIT_DATA.honeyChilli?.conversations?.toLocaleString("en-IN")} conversations.`,
+    `Favorite savory shares: ${savoryShares}.`,
+    `State flavor profiles (top 3 sweet + savory each):\n${formatStateFlavors()}`,
+    formatOpportunities(),
+    ctx.completedActions?.length
+      ? `Actions already completed this session: ${ctx.completedActions.join(", ")}.`
+      : "",
+    ctx.priorResults?.length
+      ? `Prior action outputs this session:\n${ctx.priorResults
+          .map(
+            (r) =>
+              `- ${r.actionId}: ${r.title || "done"} — ${(r.bullets || []).slice(0, 3).join("; ")}`
+          )
+          .join("\n")}`
+      : "",
+    ctx.state ? `Selected state: ${ctx.state}` : "",
+    ctx.flavor ? `Selected flavor: ${ctx.flavor}` : "",
+    ctx.instructions ? `User instructions: ${ctx.instructions}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+};
+
+const ACTION_OUTPUT_SCHEMA = `Output JSON only with these fields:
+- title (max 6 words)
+- body (max 2 sentences — must cite specific state names, flavor names, and percentages from the dataset)
+- bullets (exactly 5 short findings grounded in Flavor Insights data)
+- recommendations (exactly 3 strategic recommendations for the brand/innovation team)
+- nextSteps (exactly 2 immediate tasks for this week)
+- status ("running" or "queued")
+- eta (time estimate only, e.g. "~15 min" or "~2 week field cycle" — never calendar quarters or years before 2026)`;
+
+const followUpNote = (ctx: ActionContext) => {
+  if (!ctx.completedActions?.length && !ctx.priorResults?.length) return "";
+  return [
+    "",
+    "IMPORTANT: This is a follow-up after prior actions in this session.",
+    `Completed: ${(ctx.completedActions || []).join(", ") || "none yet"}.`,
+    "Go deeper — add NEW insights from the dataset. Do not repeat generic advice or prior bullets.",
+    "Cross-link states, opportunities, and what is still missing from prior outputs.",
   ].join("\n");
+};
+
+export const buildHeroFilmPrompt = async (
+  ctx: {
+    script?: { title?: string; exec?: { h2?: string; p?: string } };
+    params?: { region?: string };
+  },
+  hero: { sku: string; title?: string; lane: string }
+) => {
+  const script = ctx.script || {};
+  const ex = script.exec || {};
+  const region = ctx.params?.region || "Pan-India";
+  const fallback = [
+    `6-second hero shot: packaged ${hero.title || hero.sku} on Indian retail shelf.`,
+    `${hero.lane} · ${region}.`,
+    ex.h2 || script.title || "",
+    "Slow dolly-in, warm lighting, product pack only — no liquid pours or generic food.",
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .slice(0, 512);
+
+  if (!(await hasLlmKeyAsync())) return fallback;
+
+  try {
+    const text = await generateContent(
+      [
+        researchContext(ctx),
+        "",
+        `Hero SKU: ${hero.sku}`,
+        `Display name: ${hero.title || hero.sku}`,
+        `Lane: ${hero.lane}`,
+        "",
+        "Write ONE video prompt (max 480 characters) for a 6-second product hero film.",
+        "Must show the exact packaged biscuit/snack product on an Indian supermarket shelf.",
+        "Do NOT include honey pours, syrup drizzle, liquid close-ups, cooking, or people.",
+        "Output only the prompt text — no quotes, labels, or JSON.",
+      ].join("\n"),
+      "You write precise FMCG product film prompts for Nova Reel. The video must match the named SKU and research insight."
+    );
+    const cleaned = text?.trim().replace(/^["']|["']$/g, "") || "";
+    return cleaned.length > 40 ? cleaned.slice(0, 512) : fallback;
+  } catch {
+    return fallback;
+  }
 };
 
 export const runActionWithLLM = async (
   actionId: string,
-  ctx: {
-    script?: { title?: string; exec?: { h2?: string; p?: string } };
-    params?: { region?: string; obj?: string; objective?: string };
-  } = {}
+  ctx: ActionContext = {}
 ) => {
   const context = researchContext(ctx);
+  const extra = followUpNote(ctx);
+
   const systems: Record<string, string> = {
     concept_cards:
-      "You are a Britannia India innovation strategist. Output JSON: concepts (array of 3: title, sku, lane, tagline, imagePrompt for packshot photo), videoPrompt (string, 6s product film for hero SKU). Ground in Flavor Insights data only.",
-    content_engine:
-      "You are a content strategist for Britannia. Output JSON only: title (max 6 words), body (max 2 sentences), bullets (exactly 3 short strings, max 12 words each), status ('queued'), eta (string like '~4 min').",
-    fpd_scout:
-      "You are an FMCG field product discovery lead. Output JSON only: title (max 6 words), body (max 2 sentences), bullets (3 short strings), status ('running'), eta.",
-    triangulate_1ds:
-      "You are a data triangulation analyst linking social flavor insights to 1DS sales. Output JSON only: title (max 6 words), body (max 2 sentences), bullets (3 short strings), status ('running'), eta.",
+      "You are a Britannia India innovation strategist. Output JSON: concepts (array of 3: title, sku, lane, tagline, imagePrompt for professional packshot photo). Ground in Flavor Insights data only.",
+    content_engine: `You are a content strategist for Britannia India. ${ACTION_OUTPUT_SCHEMA}`,
+    fpd_scout: `You are an FMCG field product discovery lead for Britannia India. ${ACTION_OUTPUT_SCHEMA} For FPD, prioritize 2–3 states from the dataset with concrete flavor white-space and field validation plans.`,
+    triangulate_1ds: `You are a data triangulation analyst linking social flavor insights to 1DS sales for Britannia India. ${ACTION_OUTPUT_SCHEMA} Link social buzz metrics to sell-out hypotheses by state.`,
+    storyboard: `You are a video creative director for Britannia India. ${ACTION_OUTPUT_SCHEMA} bullets should be 5 scene beats for a 30s video ad (shot, VO, on-screen text, timing). recommendations should be messaging hooks.`,
+    positioning: `You are a brand strategist for Britannia India. ${ACTION_OUTPUT_SCHEMA} Focus on shelf story, competitive frame, and Britannia portfolio fit for the selected flavor-state pair.`,
   };
 
   const prompts: Record<string, string> = {
-    concept_cards: `Create 3 product concept cards with image prompts and one short film prompt for the hero.\n\n${context}`,
-    content_engine: `Draft a content engine handoff from this research run.\n\n${context}`,
-    fpd_scout: `Draft an FPD (field product discovery) scout brief.\n\n${context}`,
-    triangulate_1ds: `Draft a 1DS triangulation plan.\n\n${context}`,
+    concept_cards: `Create 3 product concept cards with detailed packshot image prompts.\n\n${context}${extra}`,
+    content_engine: `Draft platform-specific messaging: copy directions, tone guidelines, and hook frameworks for the selected flavor-state pair.\n\n${context}${extra}`,
+    fpd_scout: `Draft an FPD (field product discovery) scout brief. Name specific states, sweet/savory flavors from the dataset, and what field reps should validate in trade.\n\n${context}${extra}`,
+    triangulate_1ds: `Draft a 1DS triangulation plan linking social flavor themes to sell-out velocity by state.\n\n${context}${extra}`,
+    storyboard: `Draft a 30-second video ad storyboard for the selected flavor and state. Scene-by-scene with shot descriptions, voiceover, on-screen text, and timing.\n\n${context}${extra}`,
+    positioning: `Draft positioning and product story recommendations for the selected flavor-state pair.\n\n${context}${extra}`,
   };
 
   return generateJSON(prompts[actionId] || prompts.concept_cards, systems[actionId]);
+};
+
+export const generateFollowUpRecommendations = async (ctx: ActionContext) => {
+  if (!(await hasLlmKeyAsync())) return null;
+
+  const completed = ctx.completedActions || [];
+  const remaining = ACTION_IDS.filter((id) => !completed.includes(id));
+  if (remaining.length === 0) return null;
+
+  try {
+    const data = await generateJSON(
+      [
+        researchContext(ctx),
+        "",
+        `User completed actions: ${completed.join(", ") || "none"}.`,
+        `Suggest the best next 2–3 actions from ONLY this list: ${remaining.join(", ")}.`,
+        "Prioritize what creates the most downstream value given what's already done.",
+        "If they ran FPD scout, suggest triangulation or content engine. If they created concepts, suggest film or FPD.",
+      ].join("\n"),
+      `Output JSON only:
+- intro (1 sentence — why these next steps, grounded in the research)
+- suggestions (array of 2–3 objects: actionId must be one of [${remaining.join(", ")}], reason max 20 words, priority 1–3 where 1 is highest)`
+    );
+    if (!data?.suggestions?.length) return null;
+    return {
+      intro: data.intro || "Based on what you've done, here's what to run next.",
+      suggestions: data.suggestions.filter((s: { actionId?: string }) =>
+        remaining.includes(s.actionId as (typeof ACTION_IDS)[number])
+      ),
+      llm: true,
+    };
+  } catch {
+    return null;
+  }
 };
 
 export const enrichQAAnswer = async (
