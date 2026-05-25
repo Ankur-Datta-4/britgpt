@@ -1,6 +1,7 @@
 import { BRIT_DATA } from "@/lib/data";
 import { generateConceptCards, generateHeroFilm } from "@/lib/create";
 import { checkBedrockConfigured } from "@/lib/api-status";
+import { isLlmLiveEnabled } from "@/lib/llm-mode";
 import { runActionWithLLM, type ActionContext } from "@/lib/llm";
 
 export const ACTIONS = [
@@ -174,14 +175,22 @@ const runWithLlm = async (
     ...fallback[actionId],
     body: `${fallback[actionId].body} (${ctx.script?.title || "research"} · ${ctx.params?.region || "Pan-India"}).`,
   };
+  if (!isLlmLiveEnabled()) {
+    return {
+      type: actionId,
+      ...base,
+      message: "Demo brief from Flavor Insights dataset.",
+    };
+  }
+
   const ready = await checkBedrockConfigured();
   if (!ready) {
-    return { ...base, message: "Preview brief — connect Bedrock in settings to enrich." };
+    return { ...base, message: "Preview brief — add your API key in settings to enrich." };
   }
 
   onProgress?.("Reading Flavor Insights dataset…");
   try {
-    onProgress?.("Drafting with Nova Pro…");
+    onProgress?.("Drafting brief…");
     const data = await runActionWithLLM(actionId, ctx);
     onProgress?.("Finalising recommendations…");
     return {
@@ -190,7 +199,7 @@ const runWithLlm = async (
       llm: true,
       message: ctx.completedActions?.length
         ? "Follow-up brief — grounded in prior actions and live dataset."
-        : "Live brief from Flavor Insights India via Nova Pro.",
+        : "Live brief from Flavor Insights India.",
     };
   } catch (err) {
     return {

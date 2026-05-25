@@ -4,6 +4,8 @@ import {
   generateBedrockImage,
 } from "@/lib/bedrock";
 import { checkBedrockConfigured } from "@/lib/api-status";
+import { isLlmLiveEnabled } from "@/lib/llm-mode";
+import { sleep } from "@/lib/film-job";
 import { runActionWithLLM, buildHeroFilmPrompt } from "@/lib/llm";
 import { getBedrockKey } from "@/lib/config-client";
 import { resolveFilmPlaybackUrl } from "@/lib/film-url";
@@ -90,6 +92,69 @@ const mergeLlmConcepts = (
     };
   });
 
+export const generateHeroFilmMock = async (
+  ctx: {
+    script?: {
+      id?: string;
+      exec?: { h2?: string; p?: string };
+      scopeDefaults?: { region?: string };
+    };
+    params?: { region?: string; state?: string; flavor?: string };
+    state?: string;
+    flavor?: string;
+  } = {},
+  onProgress?: (t: string) => void
+) => {
+  const script = ctx.script || {};
+  const region =
+    ctx.params?.region || script.scopeDefaults?.region || "Pan-India";
+  const state = ctx.state || ctx.params?.state || region;
+  const flavor = ctx.flavor || ctx.params?.flavor || "Honey Chilli";
+  const ex = script.exec || {};
+  const concepts = pickConceptSkus(ctx);
+  const hero = concepts[0];
+  const filmPrompt = videoPromptFor(
+    hero,
+    (ex.p || ex.h2 || script.title || "").slice(0, 200),
+    region,
+    script.title
+  );
+
+  const steps = [
+    "Writing film brief…",
+    "Rendering film… 12%",
+    "Rendering film… 28%",
+    "Rendering film… 43%",
+    "Rendering film… 61%",
+    "Rendering film… 84%",
+    "Rendering film… 92%",
+    "Finalising cut…",
+  ];
+
+  for (const step of steps) {
+    await sleep(650);
+    onProgress?.(step);
+  }
+
+  return {
+    type: "create_film",
+    mode: "preview",
+    filmPrompt,
+    productName: hero?.title || hero?.sku || flavor,
+    sku: hero?.sku,
+    region: state,
+    flavor,
+    message: `Demo storyboard ready for ${flavor} in ${state}. Press ⌃⇧L (Ctrl+Shift+L) for live film render.`,
+    storyboard: [
+      { beat: "1", text: `Wide: ${state} landscape, Britannia pack enters frame (2s)` },
+      { beat: "2", text: `Close-up: ${flavor} snack texture, warm light (3s)` },
+      { beat: "3", text: `VO: Regional hero flavor for chai-time (3s)` },
+      { beat: "4", text: `On-screen: Flavor Insights growth stat (2s)` },
+      { beat: "5", text: `End card: Britannia logo + SKU (2s)` },
+    ],
+  };
+};
+
 export const generateHeroFilm = async (
   ctx: {
     script?: {
@@ -113,6 +178,10 @@ export const generateHeroFilm = async (
     region,
     script.title
   );
+  if (!isLlmLiveEnabled()) {
+    return generateHeroFilmMock(ctx, onProgress);
+  }
+
   const bedrockKey = getBedrockKey();
   const ready = await checkBedrockConfigured();
 
@@ -121,7 +190,7 @@ export const generateHeroFilm = async (
       type: "create_film",
       mode: "setup_required",
       filmPrompt,
-      message: "Connect Bedrock to create hero films.",
+      message: "Add your API key in settings to create hero films.",
     };
   }
 
@@ -155,7 +224,7 @@ export const generateHeroFilm = async (
       mode: "failed",
       filmPrompt,
       error: msg,
-      message: `Film failed: ${msg}`,
+      message: "Film could not be generated. Try again.",
     };
   }
 };
@@ -178,7 +247,7 @@ export const generateConceptCards = async (
   const bedrockKey = getBedrockKey();
   const bedrockReady = await checkBedrockConfigured();
 
-  if (bedrockReady) {
+  if (isLlmLiveEnabled() && bedrockReady) {
     onProgress?.("Writing concepts…");
     try {
       const llm = await runActionWithLLM("concept_cards", ctx);

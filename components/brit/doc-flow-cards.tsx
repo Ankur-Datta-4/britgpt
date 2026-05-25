@@ -367,7 +367,7 @@ export const DocNationalCard = () => {
   );
 };
 
-export const DocActionablesCard = ({ onRunDeliverable, busy }) => {
+export const DocActionablesCard = ({ onRunDeliverable, busy, filmBusy }) => {
   const [expandedState, setExpandedState] = useState(null);
   const [selectedState, setSelectedState] = useState("Maharashtra");
   const [selectedFlavor, setSelectedFlavor] = useState("Honey Chilli");
@@ -426,8 +426,8 @@ export const DocActionablesCard = ({ onRunDeliverable, busy }) => {
             <button
               key={d.id}
               type="button"
-              className="reco-chip"
-              disabled={busy}
+              className={"reco-chip " + (d.primary ? "reco-chip-primary" : "")}
+              disabled={d.actionId === "create_film" ? filmBusy : busy}
               onClick={() => onRunDeliverable?.({ actionId: d.actionId, state: selectedState, flavor: selectedFlavor, instructions })}
             >
               <span className="reco-icon">◆</span>

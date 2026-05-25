@@ -964,22 +964,40 @@ function QuotesCard({ script }) {
 /* ============================================================
    ExecBlock — final executive recommendation (dark, prominent)
 ============================================================ */
-function ExecBlock({ onOpenReport, script }) {
+function ExecBlock({ onOpenReport, onExportBrief, onShareBrief, script }) {
   const ex = getScript(script).exec || RESEARCH_SCRIPTS.default.exec;
+  const meta = (ex.meta || []).filter((m) => !/confidence/i.test(String(m.k)));
   return (
     <div className="exec-block">
       <div className="eyebrow">Recommended action · confidence 84%</div>
       <h2>{ex.h2}</h2>
       <p>{ex.p}</p>
-      <div className="meta">
-        {ex.meta.map((m, i) => (
-          <div key={i}><span className="k">{m.k}</span><span className="v">{m.v}</span></div>
-        ))}
-      </div>
+      {meta.length > 0 && (
+        <div className="meta">
+          {meta.map((m, i) => (
+            <button
+              key={i}
+              type="button"
+              className="meta-tile clickable"
+              onClick={() =>
+                openDetail({
+                  type: "Key metric",
+                  title: m.k,
+                  body: `${m.k}: ${m.v}. Part of the executive recommendation for this study.`,
+                  source: "Flavor Insights India · exec summary",
+                })
+              }
+            >
+              <span className="k">{m.k}</span>
+              <span className="v">{m.v}</span>
+            </button>
+          ))}
+        </div>
+      )}
       <div className="actions">
         <button type="button" className="btn-primary" onClick={onOpenReport}>View full report ↗</button>
-        <button type="button" className="btn-ghost">Export brief · PDF</button>
-        <button type="button" className="btn-ghost">Share with team</button>
+        <button type="button" className="btn-ghost" onClick={onExportBrief}>Export brief · PDF</button>
+        <button type="button" className="btn-ghost" onClick={onShareBrief}>Share with team</button>
       </div>
     </div>
   );
@@ -1277,23 +1295,78 @@ function ActionOutcomeCards({ payload }) {
           </div>
         )}
 
-        {payload.llm && <span className="aoc-llm-badge">Live from Nova Pro</span>}
       </div>
     </div>
   );
 }
 
-function HeroFilmPanel({ payload }) {
-  const { filmPrompt, videoUri, filmHref, message, error, setupSteps, sku, productName, region, mode } =
-    payload || {};
-  const needsSetup = mode === "setup_required";
+const FilmJobCard = ({ job, onClick }) => {
+  const pct = job.progress ?? 0;
+  const label = job.flavor && job.state ? `${job.flavor} · ${job.state}` : "Hero film";
 
   return (
-    <div className="card hero-film-card">
+    <button type="button" className="card film-job-card" onClick={() => onClick?.(job)}>
       <div className="card-h">
-        <h3>Hero film</h3>
+        <h3>{label}</h3>
+        <span className="tag film-job-tag">{job.status === "queued" ? "queued" : "rendering"}</span>
+      </div>
+      <div className="card-body">
+        <div className="film-job-track" aria-hidden>
+          <div className="film-job-fill" style={{ width: `${Math.max(4, pct)}%` }} />
+        </div>
+        <div className="film-job-row">
+          <span className="dots film-job-dots">
+            <span></span><span></span><span></span>
+          </span>
+          <span className="film-job-status">{job.progressText || "Rendering film…"}</span>
+        </div>
+        <p className="muted film-job-hint">Runs in background · click for storyboard &amp; status</p>
+      </div>
+    </button>
+  );
+};
+
+function HeroFilmPanel({ payload, onOpenDetail }) {
+  const {
+    filmPrompt,
+    videoUri,
+    filmHref,
+    message,
+    error,
+    setupSteps,
+    sku,
+    productName,
+    region,
+    flavor,
+    mode,
+    storyboard,
+  } = payload || {};
+  const needsSetup = mode === "setup_required";
+  const isPreview = mode === "preview";
+
+  const openFilmDetail = () => {
+    onOpenDetail?.({
+      type: "Hero film",
+      title: productName || sku || flavor || "Hero film",
+      subtitle: region,
+      body: message || filmPrompt,
+      facts: storyboard?.map((s) => ({ k: `Scene ${s.beat}`, v: s.text })),
+      source: isPreview ? "Demo storyboard" : "Flavor Insights · hero film",
+    });
+  };
+
+  return (
+    <div
+      className={"card hero-film-card " + (onOpenDetail ? "clickable-card" : "")}
+      onClick={onOpenDetail ? openFilmDetail : undefined}
+      onKeyDown={onOpenDetail ? (e) => e.key === "Enter" && openFilmDetail() : undefined}
+      role={onOpenDetail ? "button" : undefined}
+      tabIndex={onOpenDetail ? 0 : undefined}
+    >
+      <div className="card-h">
+        <h3>Hero film{flavor ? ` · ${flavor}` : ""}</h3>
         <span className="tag">
-          {needsSetup ? "Setup" : mode === "created" ? "Ready" : "Failed"}
+          {needsSetup ? "Setup" : isPreview ? "Demo" : mode === "created" ? "Ready" : "Failed"}
         </span>
       </div>
       <div className="card-body">
@@ -1305,14 +1378,25 @@ function HeroFilmPanel({ payload }) {
             {region && <span> · {region}</span>}
           </p>
         )}
-        {filmPrompt && mode === "failed" && (
-          <details className="concept-prompt-details">
-            <summary>Debug</summary>
+        {storyboard?.length > 0 && (
+          <div className="film-storyboard">
+            {storyboard.map((s) => (
+              <p key={s.beat} className="film-storybeat clickable" onClick={(e) => { e.stopPropagation(); onOpenDetail?.({ type: "Scene", title: `Beat ${s.beat}`, body: s.text, source: "Storyboard" }); }}>
+                <b>{s.beat}.</b> {s.text}
+              </p>
+            ))}
+          </div>
+        )}
+        {filmPrompt && (mode === "failed" || isPreview) && (
+          <details className="concept-prompt-details" onClick={(e) => e.stopPropagation()}>
+            <summary>Film brief</summary>
             <p className="concept-prompt">{filmPrompt}</p>
           </details>
         )}
         {(videoUri || filmHref) && (
-          <InlineFilmPlayer videoUri={videoUri} filmHref={filmHref} />
+          <div onClick={(e) => e.stopPropagation()}>
+            <InlineFilmPlayer videoUri={videoUri} filmHref={filmHref} />
+          </div>
         )}
         {setupSteps?.length > 0 && (
           <ol className="film-setup-steps">
@@ -1321,15 +1405,18 @@ function HeroFilmPanel({ payload }) {
             ))}
           </ol>
         )}
+        {onOpenDetail && (
+          <p className="muted film-click-hint">Click card for full detail · scenes are clickable</p>
+        )}
       </div>
     </div>
   );
 }
 
-function ActionResultPanel({ payload }) {
+function ActionResultPanel({ payload, onOpenDetail }) {
   if (!payload) return null;
   if (payload.type === "concept_cards") return <ConceptCardsPanel payload={payload} />;
-  if (payload.type === "create_film") return <HeroFilmPanel payload={payload} />;
+  if (payload.type === "create_film") return <HeroFilmPanel payload={payload} onOpenDetail={onOpenDetail} />;
   return <ActionOutcomeCards payload={payload} />;
 }
 
@@ -1360,11 +1447,11 @@ function ApiKeySettings({ open, onClose, serverConnected, config }) {
       <div className="modal modal-sm" onClick={(e) => e.stopPropagation()}>
         <div className="modal-h">
           <div>
-            <div className="title">{serverConnected ? "Bedrock connected" : "Connect Bedrock"}</div>
+            <div className="title">{serverConnected ? "API connected" : "API key"}</div>
             <div className="meta">
               {serverConnected
                 ? "Your server key is active."
-                : "Paste your Bedrock API key to enable AI features."}
+                : "Paste your API key to enable live generation."}
             </div>
           </div>
           <button type="button" className="modal-close" onClick={onClose}>✕</button>
@@ -1394,7 +1481,7 @@ function ApiKeySettings({ open, onClose, serverConnected, config }) {
                 id="api-key"
                 type="password"
                 className="settings-input"
-                placeholder="ABSK…"
+                placeholder="Paste API key…"
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
                 autoComplete="off"
@@ -1544,7 +1631,7 @@ function FullSummaryCard({ script, onOpenReport }) {
 /* ============================================================
    Report modal — full PDF-backed sections, clickable TOC
 ============================================================ */
-function ReportModal({ params, script, onClose, initialSection = "exec" }) {
+function ReportModal({ params, script, onClose, onDownloadBrief, onShareBrief, initialSection = "exec" }) {
   const s = getScript(script);
   const sections = D().reportSections || [];
   const sweet = D().sweetOpportunities || [];
@@ -1602,7 +1689,10 @@ function ReportModal({ params, script, onClose, initialSection = "exec" }) {
             <div className="meta">Run #4821 · {D().meta?.date} · {D().meta?.channels?.length} sources · scope: {params.region}</div>
           </div>
           <div style={{display:'flex', gap: 8, alignItems: 'center'}}>
-            <button type="button" className="btn-ghost" style={{padding:'6px 10px', fontSize:12}}>Download PDF</button>
+            <button type="button" className="btn-ghost" style={{padding:'6px 10px', fontSize:12}} onClick={onDownloadBrief}>Download PDF</button>
+            {onShareBrief && (
+              <button type="button" className="btn-ghost" style={{padding:'6px 10px', fontSize:12}} onClick={onShareBrief}>Share</button>
+            )}
             <button type="button" className="modal-close" onClick={onClose}>✕</button>
           </div>
         </div>
@@ -1730,7 +1820,7 @@ function ReportModal({ params, script, onClose, initialSection = "exec" }) {
 export {
   BootBlock, ScopeForm, TimelineBlock, InsightBlock,
   RegionCard, StatesCard, ExtensionsCard, SentimentCard, TrendCard, FlavourCard, QuotesCard,
-  FullSummaryCard, ExecBlock, ReportModal, DetailPanel, QAResponse, DatasetBreakdown,
+  FullSummaryCard, ExecBlock, FilmJobCard, ReportModal, DetailPanel, QAResponse, DatasetBreakdown,
   ActionsRecommendations, ConceptCardsPanel, ActionResultPanel, ActionOutcomeCards, ApiKeySettings,
   SUGGESTIONS, RESEARCH_SCRIPTS, matchResearchScript, STATES_TABLE, openDetail,
 };

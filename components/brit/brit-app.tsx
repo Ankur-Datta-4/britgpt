@@ -21,6 +21,7 @@ import {
   DetailPanel,
   ApiKeySettings,
   SUGGESTIONS,
+  RESEARCH_SCRIPTS,
   matchResearchScript,
   TimelineBlock,
   InsightBlock,
@@ -29,30 +30,95 @@ import {
   TrendCard,
   FlavourCard,
   QuotesCard,
-  FullSummaryCard,
   ExecBlock,
+  FilmJobCard,
   ActionResultPanel,
   QAResponse,
 } from '@/components/brit/chat-ui';
+import { parseFilmProgress } from '@/lib/film-job';
+import { isLlmLiveEnabled, toggleLlmLive } from '@/lib/llm-mode';
+import {
+  createSessionId,
+  loadSessionIndex,
+  saveSessionIndex,
+  deleteSessionFromIndex,
+  serializeMessages,
+  getSessionTitle,
+  isSessionToday,
+  formatSessionTime,
+} from '@/lib/brit-sessions';
+import { exportBriefPdf, exportFullReport, shareText } from '@/lib/brief-export';
+
+const restoreScript = (stored) => {
+  if (!stored) return null;
+  if (stored.id && RESEARCH_SCRIPTS[stored.id]) return RESEARCH_SCRIPTS[stored.id];
+  if (stored.title) return matchResearchScript(stored.title);
+  return null;
+};
+
+const hydrateMessages = (messages = []) =>
+  messages.map((m) => ({
+    ...m,
+    script: m.script ? restoreScript(m.script) : m.script,
+  }));
+
+const wantsResearchPipeline = (text) => {
+  const q = String(text || "").trim().toLowerCase();
+  if (!q) return false;
+  if (/^(run|start)\s+(full\s+)?research/.test(q)) return true;
+  const researchHints =
+    /research|flavour|flavor|state|trend|extension|biscoff|biscuit|sentiment|pan-india|across india|map india|discover|sweet|savory|savoury|honey chilli|gulkand/i;
+  if (q.length < 28 && !researchHints.test(q)) return false;
+  return researchHints.test(q) || q.length > 55;
+};
 
 /* ============================================================
    Sidebar
 ============================================================ */
-function Sidebar({ onNewChat, onPickQuestion, activeTitle }) {
-  const presets = (BRIT_DATA?.predefinedQuestions || SUGGESTIONS).slice(0, 8);
-  const recents = presets.map((p, i) => ({
-    id: p.id || "c"+i,
-    title: p.q.length > 42 ? p.q.slice(0, 40) + "…" : p.q,
-    badge: p.research ? "pipeline" : "Q&A",
-    active: activeTitle && p.q.includes(activeTitle?.slice(0, 12)),
-    q: p.q,
-  }));
-  const older = [
-    "Festive flavour 2024",
-    "Tier-2 sweet & savoury",
-    "Regional repurchase rates",
-    "Modern trade penetration",
-  ];
+const Sidebar = ({
+  sessions,
+  activeSessionId,
+  onNewChat,
+  onSelectSession,
+  onDeleteSession,
+  onPickQuestion,
+  canPickQuestion,
+}) => {
+  const [ctxMenu, setCtxMenu] = useState(null);
+  const presets = (BRIT_DATA?.predefinedQuestions || SUGGESTIONS).slice(0, 4);
+  const todaySessions = sessions.filter((s) => isSessionToday(s.updatedAt));
+  const olderSessions = sessions.filter((s) => !isSessionToday(s.updatedAt));
+
+  useEffect(() => {
+    if (!ctxMenu) return undefined;
+    const close = () => setCtxMenu(null);
+    window.addEventListener("click", close);
+    window.addEventListener("scroll", close, true);
+    return () => {
+      window.removeEventListener("click", close);
+      window.removeEventListener("scroll", close, true);
+    };
+  }, [ctxMenu]);
+
+  const openCtxMenu = (e, sessionId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCtxMenu({ x: e.clientX, y: e.clientY, sessionId });
+  };
+
+  const renderSession = (s) => (
+    <div
+      key={s.id}
+      className={"side-item session-item " + (s.id === activeSessionId ? "active" : "")}
+      onClick={() => onSelectSession(s.id)}
+      onContextMenu={(e) => openCtxMenu(e, s.id)}
+      title={`${s.title} · right-click to delete`}
+    >
+      <span>{s.title}</span>
+      <span className="side-time">{formatSessionTime(s.updatedAt)}</span>
+      {s.phase === "done" && <span className="badge">done</span>}
+    </div>
+  );
 
   return (
     <aside className="sidebar">
@@ -75,22 +141,33 @@ function Sidebar({ onNewChat, onPickQuestion, activeTitle }) {
       <div className="side-scroll">
         <div className="side-group">
           <div className="side-label">Today</div>
-          {recents.map(r => (
-            <div key={r.id} className={"side-item " + (r.active ? "active" : "")}
-                 onClick={() => onPickQuestion && onPickQuestion(r.q)} title={r.q}>
-              <span>{r.title}</span>
-              {r.badge && <span className="badge">{r.badge}</span>}
-            </div>
-          ))}
+          {todaySessions.length > 0 ? (
+            todaySessions.map(renderSession)
+          ) : (
+            <div className="side-empty">No sessions yet — start a question below.</div>
+          )}
         </div>
-        <div className="side-group">
-          <div className="side-label">Last week</div>
-          {older.map(t => (
-            <div key={t} className="side-item">
-              <span>{t}</span>
-            </div>
-          ))}
-        </div>
+        {olderSessions.length > 0 && (
+          <div className="side-group">
+            <div className="side-label">Earlier</div>
+            {olderSessions.map(renderSession)}
+          </div>
+        )}
+        {canPickQuestion && (
+          <div className="side-group">
+            <div className="side-label">Starters</div>
+            {presets.map((p, i) => (
+              <div
+                key={p.id || `p-${i}`}
+                className="side-item"
+                onClick={() => onPickQuestion?.(p.q)}
+                title={p.q}
+              >
+                <span>{p.q.length > 42 ? `${p.q.slice(0, 40)}…` : p.q}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="side-foot">
@@ -102,14 +179,34 @@ function Sidebar({ onNewChat, onPickQuestion, activeTitle }) {
           </div>
         </div>
       </div>
+
+      {ctxMenu && (
+        <div
+          className="side-ctx-menu"
+          style={{ top: ctxMenu.y, left: ctxMenu.x }}
+          onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          <button
+            type="button"
+            className="side-ctx-item side-ctx-danger"
+            onClick={() => {
+              onDeleteSession?.(ctxMenu.sessionId);
+              setCtxMenu(null);
+            }}
+          >
+            Delete session
+          </button>
+        </div>
+      )}
     </aside>
   );
-}
+};
 
 /* ============================================================
    Composer
 ============================================================ */
-function ComposerInner({ onSubmit, disabled, placeholder }) {
+const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction }) => {
   const [v, setV] = useState("");
   const ta = useRef(null);
 
@@ -127,34 +224,47 @@ function ComposerInner({ onSubmit, disabled, placeholder }) {
     setV("");
   };
 
+  const chips = [
+    { id: "data", label: "＋ data universe" },
+    { id: "brief", label: "＋ attach brief" },
+    { id: "compare", label: "＋ compare brands" },
+  ];
+
   return (
     <div className="composer-wrap">
       <div className="composer">
         <textarea
           ref={ta}
           value={v}
-          onChange={e => setV(e.target.value)}
+          onChange={(e) => setV(e.target.value)}
           placeholder={placeholder || "Ask a consumer research question…"}
           disabled={disabled}
-          onKeyDown={e => {
+          onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
           }}
         />
         <div className="composer-bar">
           <div className="chips">
-            <span className="composer-chip">＋ data universe</span>
-            <span className="composer-chip">＋ attach brief</span>
-            <span className="composer-chip">＋ compare brands</span>
+            {chips.map((c) => (
+              <span
+                key={c.id}
+                className="composer-chip clickable"
+                onClick={() => !disabled && onChipAction?.(c.id)}
+              >
+                {c.label}
+              </span>
+            ))}
           </div>
           <button className="composer-send" onClick={send} disabled={disabled || !v.trim()} title="Send">↑</button>
         </div>
       </div>
       <div className="composer-foot">
-        Brit GPT can make mistakes. Cross-check important findings with your data team · <a>privacy</a>
+        Brit GPT can make mistakes. Cross-check important findings with your data team ·{" "}
+        <a href="#" onClick={(e) => { e.preventDefault(); onChipAction?.("privacy"); }}>privacy</a>
       </div>
     </div>
   );
-}
+};
 
 /* ============================================================
    Message renderer
@@ -163,7 +273,13 @@ function MessageView({ m, ctx }) {
   if (m.role === "user") {
     return (
       <div className="msg msg-user">
-        <div className="bubble">{m.text}</div>
+        <div
+          className="bubble clickable"
+          title="Click to copy"
+          onClick={() => ctx.onCopyText?.(m.text)}
+        >
+          {m.text}
+        </div>
       </div>
     );
   }
@@ -197,11 +313,26 @@ function MessageView({ m, ctx }) {
         {m.kind === "flavour" && <FlavourCard script={m.script} />}
         {m.kind === "quotes" && <QuotesCard script={m.script} />}
         {m.kind === "doc_actionables" && (
-          <DocActionablesCard onRunDeliverable={ctx.onRunDeliverable} busy={ctx.actionBusy} />
+          <DocActionablesCard
+            onRunDeliverable={ctx.onRunDeliverable}
+            busy={ctx.actionBusy}
+            filmBusy={ctx.filmBusy}
+          />
         )}
-        {m.kind === "summary" && <FullSummaryCard script={m.script} onOpenReport={ctx.onOpenReport} />}
-        {m.kind === "exec" && <ExecBlock script={m.script} onOpenReport={ctx.onOpenReport} />}
-        {m.kind === "action_result" && <ActionResultPanel payload={m.payload} />}
+        {m.kind === "film_job" && (
+          <FilmJobCard job={m} onClick={ctx.onFilmJobClick} />
+        )}
+        {m.kind === "exec" && (
+          <ExecBlock
+            script={m.script}
+            onOpenReport={ctx.onOpenReport}
+            onExportBrief={ctx.onExportBrief}
+            onShareBrief={ctx.onShareBrief}
+          />
+        )}
+        {m.kind === "action_result" && (
+          <ActionResultPanel payload={m.payload} onOpenDetail={ctx.onOpenDetail} />
+        )}
         {m.kind === "qa" && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
         {m.kind === "research_reco" && (
           <ResearchRecoCard tag={m.tag} query={m.query} hint={m.hint} onStart={ctx.onStartResearch} />
@@ -221,6 +352,8 @@ export default function BritApp() {
     return `msg-${msgIdRef.current}`;
   };
 
+  const [sessionId, setSessionId] = useState(() => createSessionId());
+  const [sessions, setSessions] = useState([]);
   const [messages, setMessages] = useState([]);
   const [phase, setPhase] = useState("idle");
   const [params, setParams] = useState(null);
@@ -230,12 +363,158 @@ export default function BritApp() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [detail, setDetail] = useState(null);
   const [actionBusy, setActionBusy] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [llmLiveOn, setLlmLiveOn] = useState(false);
+  const [filmBusy, setFilmBusy] = useState(false);
   const [serverBedrock, setServerBedrock] = useState(false);
   const [s3Configured, setS3Configured] = useState(false);
   const [bedrockConfig, setBedrockConfig] = useState(null);
   const threadRef = useRef(null);
   const scriptRef = useRef(null);
+  const messagesRef = useRef([]);
   const pipelineDoneRef = useRef(false);
+  const persistSkipRef = useRef(true);
+
+  const showToast = useCallback((text) => {
+    setToast(text);
+    setTimeout(() => setToast(null), 2800);
+  }, []);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
+    setSessions(loadSessionIndex());
+    setLlmLiveOn(isLlmLiveEnabled());
+  }, []);
+
+  const flushSessionSave = useCallback(() => {
+    if (messages.length === 0) return;
+    const script = scriptRef.current || activeScript;
+    const title = getSessionTitle(messages, script);
+    const snapshot = {
+      id: sessionId,
+      title,
+      updatedAt: Date.now(),
+      createdAt: Date.now(),
+      phase,
+      messages: serializeMessages(messages),
+      params,
+      runConfig,
+      scriptId: script?.id || null,
+      scriptTitle: script?.title || null,
+      msgIdCounter: msgIdRef.current,
+      pipelineDone: pipelineDoneRef.current,
+    };
+    setSessions((prev) => {
+      const list = [...prev];
+      const idx = list.findIndex((s) => s.id === sessionId);
+      if (idx >= 0) {
+        snapshot.createdAt = list[idx].createdAt;
+        list[idx] = snapshot;
+      } else {
+        list.unshift(snapshot);
+      }
+      list.sort((a, b) => b.updatedAt - a.updatedAt);
+      saveSessionIndex(list);
+      return list;
+    });
+  }, [sessionId, messages, phase, params, runConfig, activeScript]);
+
+  const persistCurrentSession = useCallback(() => {
+    if (persistSkipRef.current || messages.length === 0) return;
+    const script = scriptRef.current || activeScript;
+    const title = getSessionTitle(messages, script);
+    const snapshot = {
+      id: sessionId,
+      title,
+      updatedAt: Date.now(),
+      createdAt: Date.now(),
+      phase,
+      messages: serializeMessages(messages),
+      params,
+      runConfig,
+      scriptId: script?.id || null,
+      scriptTitle: script?.title || null,
+      msgIdCounter: msgIdRef.current,
+      pipelineDone: pipelineDoneRef.current,
+    };
+
+    setSessions((prev) => {
+      const list = [...prev];
+      const idx = list.findIndex((s) => s.id === sessionId);
+      if (idx >= 0) {
+        snapshot.createdAt = list[idx].createdAt;
+        list[idx] = snapshot;
+      } else {
+        list.unshift(snapshot);
+      }
+      list.sort((a, b) => b.updatedAt - a.updatedAt);
+      saveSessionIndex(list);
+      return list;
+    });
+  }, [sessionId, messages, phase, params, runConfig, activeScript]);
+
+  useEffect(() => {
+    const t = setTimeout(persistCurrentSession, 400);
+    return () => clearTimeout(t);
+  }, [persistCurrentSession]);
+
+  const applySession = useCallback((snap) => {
+    if (!snap) return;
+    persistSkipRef.current = true;
+    const script = restoreScript({ id: snap.scriptId, title: snap.scriptTitle });
+    scriptRef.current = script;
+    setSessionId(snap.id);
+    setMessages(hydrateMessages(snap.messages || []));
+    const restoredPhase = snap.phase === "reco" ? "done" : (snap.phase || "idle");
+    setPhase(restoredPhase);
+    setParams(snap.params || null);
+    setRunConfig(snap.runConfig || null);
+    setActiveScript(script);
+    msgIdRef.current = snap.msgIdCounter || 0;
+    pipelineDoneRef.current = !!snap.pipelineDone;
+    setReportOpen(false);
+    setActionBusy(false);
+    setTimeout(() => { persistSkipRef.current = false; }, 50);
+  }, []);
+
+  const loadSession = useCallback((id) => {
+    const list = loadSessionIndex();
+    const snap = list.find((s) => s.id === id);
+    if (snap) {
+      setSessions(list);
+      applySession(snap);
+      showToast(`Restored · ${snap.title}`);
+    }
+  }, [applySession, showToast]);
+
+  const clearToNewSession = useCallback(() => {
+    persistSkipRef.current = true;
+    setSessionId(createSessionId());
+    setMessages([]);
+    setPhase("idle");
+    setParams(null);
+    setRunConfig(null);
+    setActiveScript(null);
+    scriptRef.current = null;
+    pipelineDoneRef.current = false;
+    setReportOpen(false);
+    setActionBusy(false);
+    setFilmBusy(false);
+    msgIdRef.current = 0;
+    setTimeout(() => { persistSkipRef.current = false; }, 50);
+  }, []);
+
+  const deleteSession = useCallback((id) => {
+    const list = deleteSessionFromIndex(id);
+    setSessions(list);
+    if (sessionId === id) {
+      clearToNewSession();
+    }
+    showToast("Session deleted");
+  }, [sessionId, clearToNewSession, showToast]);
 
   useEffect(() => {
     const handler = (e) => setDetail(e.detail);
@@ -266,7 +545,7 @@ export default function BritApp() {
   }, [messages.length, actionBusy]);
 
   const push = (m) =>
-    setMessages((ms) => [...ms, { ...m, id: nextMsgId() }]);
+    setMessages((ms) => [...ms, { ...m, id: m.id || nextMsgId() }]);
   const pushDelayed = (m, ms) => setTimeout(() => push(m), ms);
 
   const actionContext = (overrides = {}) => ({
@@ -297,11 +576,14 @@ export default function BritApp() {
     await new Promise((r) => setTimeout(r, intro ? 700 : 500));
 
     let answer = answerFromDataset(text);
-    if (await hasLlmKeyAsync()) {
-      setTypingText("Refining answer…");
+    const liveLlm = await hasLlmKeyAsync();
+    if (liveLlm) {
+      setTypingText("Refining with live search…");
       try {
         answer = await enrichQAAnswer(text, answer);
-      } catch { /* keep dataset answer */ }
+      } catch {
+        setTypingText("Using dataset answer…");
+      }
     }
 
     setMessages((ms) => {
@@ -314,29 +596,6 @@ export default function BritApp() {
       }
       return copy;
     });
-
-  };
-
-  const showResearchReco = (text) => {
-    const query = text?.trim();
-    if (!query) return;
-    const script = matchResearchScript(query);
-    scriptRef.current = script;
-    setActiveScript(script);
-    push({ role: "user", text: query });
-    pushDelayed({
-      role: "asst",
-      kind: "text",
-      text: "Got it. Here's the recommended study for that question — start when you're ready.",
-    }, 280);
-    pushDelayed({
-      role: "asst",
-      kind: "research_reco",
-      tag: script.title || "Research",
-      query,
-      hint: "29 states · 2 credits · ~45 min",
-    }, 550);
-    setPhase("reco");
   };
 
   const startDocPipeline = (text) => {
@@ -345,6 +604,14 @@ export default function BritApp() {
     scriptRef.current = script;
     setActiveScript(script);
     setParams({ region: "Pan-India", obj: "Product extension" });
+
+    const hasUser = messagesRef.current.some(
+      (m) => m.role === "user" && m.text?.trim() === prompt
+    );
+    if (!hasUser) {
+      push({ role: "user", text: prompt });
+    }
+
     pushDelayed({
       role: "asst",
       kind: "text",
@@ -375,22 +642,95 @@ export default function BritApp() {
     setPhase("running");
   };
 
-  const handleUserSubmit = (text) => {
-    if (phase === "idle") {
-      showResearchReco(text);
+  const handleUserSubmit = async (text) => {
+    const q = text?.trim();
+    if (!q) return;
+
+    if (phase === "idle" || phase === "reco") {
+      if (wantsResearchPipeline(q)) {
+        startDocPipeline(q);
+        return;
+      }
+      await replyWithQA(q);
+      setPhase("done");
       return;
     }
     if (phase === "done") {
-      replyWithQA(text);
+      if (wantsResearchPipeline(q)) {
+        startDocPipeline(q);
+        return;
+      }
+      await replyWithQA(q);
       return;
     }
   };
 
+  const updateFilmJob = useCallback((jobId, patch) => {
+    setMessages((ms) => ms.map((m) => (m.id === jobId ? { ...m, ...patch } : m)));
+  }, []);
+
+  const runFilmAsync = useCallback(({ state, flavor, instructions }) => {
+    const jobId = nextMsgId();
+    push({ role: "user", text: `Create film · ${flavor} · ${state}` });
+    push({
+      role: "asst",
+      id: jobId,
+      kind: "film_job",
+      status: "queued",
+      progress: 4,
+      progressText: "Queued…",
+      state,
+      flavor,
+    });
+    setFilmBusy(true);
+
+    const ctx = actionContext({ state, flavor, instructions });
+
+    (async () => {
+      try {
+        const payload = await executeAction("create_film", ctx, (text) => {
+          const pct = parseFilmProgress(text);
+          updateFilmJob(jobId, {
+            status: "rendering",
+            progressText: text,
+            progress: pct ?? undefined,
+          });
+        });
+        updateFilmJob(jobId, {
+          kind: "action_result",
+          payload,
+          status: "done",
+          progress: 100,
+          progressText: payload?.message || "Film ready",
+        });
+        showToast(payload?.mode === "preview" ? "Demo storyboard ready" : "Hero film ready — click to view");
+      } catch {
+        updateFilmJob(jobId, {
+          kind: "action_result",
+          status: "failed",
+          payload: {
+            type: "create_film",
+            mode: "failed",
+            message: "Film could not be generated. Try again.",
+          },
+        });
+        showToast("Film generation failed");
+      } finally {
+        setFilmBusy(false);
+      }
+    })();
+  }, [actionContext, updateFilmJob, showToast]);
+
   const onRunDeliverable = async ({ actionId, state, flavor, instructions }) => {
+    if (actionId === "create_film") {
+      if (filmBusy) return;
+      runFilmAsync({ state, flavor, instructions });
+      return;
+    }
     if (actionBusy) return;
     const labels = {
       content_engine: "Content & messaging",
-      concept_cards: "Concept cards",
+      concept_cards: "Create",
       storyboard: "Video ad storyboard",
       positioning: "Positioning",
     };
@@ -410,12 +750,12 @@ export default function BritApp() {
         }
         return copy;
       });
-    } catch (err) {
+    } catch {
       setMessages((ms) => {
         const copy = [...ms];
         for (let i = copy.length - 1; i >= 0; i--) {
           if (copy[i].kind === "typing") {
-            copy[i] = { ...copy[i], kind: "text", text: `Generation failed: ${err.message}` };
+            copy[i] = { ...copy[i], kind: "text", text: "Generation failed. Try again in a moment." };
             break;
           }
         }
@@ -426,8 +766,33 @@ export default function BritApp() {
     }
   };
 
+  const onFilmJobClick = useCallback((job) => {
+    if (job.kind === "action_result" && job.payload) {
+      setDetail({
+        type: "Hero film",
+        title: job.flavor || job.payload.productName,
+        subtitle: job.state,
+        body: job.payload.message,
+        facts: job.payload.storyboard?.map((s) => ({ k: `Scene ${s.beat}`, v: s.text })),
+        source: job.payload.mode === "preview" ? "Demo" : "Film output",
+      });
+      return;
+    }
+    setDetail({
+      type: "Film render",
+      title: `${job.flavor} · ${job.state}`,
+      body: job.progressText || "Rendering in the background. You can keep chatting or run other actions.",
+      facts: [{ k: "Progress", v: `${job.progress || 0}%` }],
+      source: "Brit GPT · async film",
+    });
+  }, []);
+
   const onTimelineDone = useCallback(() => {
     if (pipelineDoneRef.current) return;
+    if (messagesRef.current.some((m) => m.kind === "exec" || m.kind === "doc_states")) {
+      pipelineDoneRef.current = true;
+      return;
+    }
     pipelineDoneRef.current = true;
 
     const script = scriptRef.current || activeScript || matchResearchScript(DEFAULT_RESEARCH_PROMPT);
@@ -465,6 +830,10 @@ export default function BritApp() {
   }, [activeScript, params]);
 
   const reset = () => {
+    flushSessionSave();
+    persistSkipRef.current = true;
+    const newId = createSessionId();
+    setSessionId(newId);
     setMessages([]);
     setPhase("idle");
     setParams(null);
@@ -475,39 +844,150 @@ export default function BritApp() {
     setReportOpen(false);
     setActionBusy(false);
     msgIdRef.current = 0;
+    setTimeout(() => { persistSkipRef.current = false; }, 50);
+    showToast("New research session");
   };
+
+  useEffect(() => {
+    persistSkipRef.current = false;
+  }, []);
+
+  const sessionScript = () => scriptRef.current || activeScript;
+
+  const handleExportBrief = useCallback(() => {
+    try {
+      exportBriefPdf({ script: sessionScript(), params, messages });
+      showToast("Brief downloaded — open or print to PDF");
+    } catch (e) {
+      showToast(e.message || "Export failed");
+    }
+  }, [activeScript, params, messages, showToast]);
+
+  const handleShareBrief = useCallback(async () => {
+    try {
+      const script = sessionScript();
+      const text = [
+        script?.title || "Brit GPT research",
+        script?.exec?.h2,
+        script?.exec?.p,
+        "",
+        "— Shared from Brit GPT · Flavor Insights India",
+      ].filter(Boolean).join("\n");
+      const mode = await shareText({ title: script?.title, text });
+      showToast(mode === "shared" ? "Shared with your team" : "Link copied to clipboard");
+    } catch (e) {
+      showToast(e.message || "Could not share");
+    }
+  }, [activeScript, showToast]);
+
+  const handleDownloadReport = useCallback(() => {
+    try {
+      exportFullReport({ script: sessionScript(), params });
+      showToast("Full report downloaded");
+    } catch (e) {
+      showToast(e.message || "Download failed");
+    }
+  }, [activeScript, params, showToast]);
+
+  const handleChipAction = useCallback((chipId) => {
+    if (chipId === "data") {
+      if (phase === "idle" && messages.length === 0) {
+        showToast("Start a question first — data config appears in the flow");
+        return;
+      }
+      if (phase === "data_config") showToast("Confirm sources in the card above");
+      else showToast("Data universe: 7 sources · India · last 12 months");
+      return;
+    }
+    if (chipId === "brief") {
+      handleExportBrief();
+      return;
+    }
+    if (chipId === "compare") {
+      setDetail({
+        type: "Compare brands",
+        title: "Britannia vs category",
+        body: "Compare mode: Biscoff premium dessert track vs Honey Chilli swicy snacks. Use state tables and national matrix in this run for side-by-side signals.",
+        source: "Flavor Insights India",
+      });
+      return;
+    }
+    if (chipId === "privacy") {
+      setDetail({
+        type: "Privacy",
+        title: "Data & privacy",
+        body: "Sessions are stored locally in your browser only. Research outputs use aggregated Flavor Insights India data. Do not paste PII into prompts.",
+        source: "Brit GPT",
+      });
+    }
+  }, [phase, messages.length, showToast, handleExportBrief]);
 
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") {
         if (reportOpen) setReportOpen(false);
         if (settingsOpen) setSettingsOpen(false);
+        if (detail) setDetail(null);
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === "l") {
+        e.preventDefault();
+        const on = toggleLlmLive();
+        setLlmLiveOn(on);
+        if (on) {
+          hasLlmKeyAsync().then((ready) => {
+            showToast(
+              ready
+                ? "Live LLM search on"
+                : "Live search on — add API key in .env.local for real LLM"
+            );
+          });
+        } else {
+          showToast("Demo mode — dataset answers only");
+        }
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [reportOpen, settingsOpen]);
+  }, [reportOpen, settingsOpen, detail, showToast]);
 
   const ctx = {
     onDataConfig,
     onAudienceConfig,
     onTimelineDone,
     onOpenReport: () => setReportOpen(true),
+    onExportBrief: handleExportBrief,
+    onShareBrief: handleShareBrief,
     onPickRelated: (q) => handleUserSubmit(q),
     onStartResearch: (q) => startDocPipeline(q),
     onRunDeliverable,
+    onFilmJobClick,
+    onOpenDetail: (item) => setDetail(item),
+    filmBusy,
+    onCopyText: async (text) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Copied to clipboard");
+      } catch {
+        showToast("Could not copy");
+      }
+    },
     actionBusy,
   };
 
   const canPickQuestion = (phase === "idle" && messages.length === 0) || phase === "done";
-  const composerLocked = ["reco", "data_config", "audience_config", "running"].includes(phase) || actionBusy;
+  const composerLocked = ["data_config", "audience_config", "running"].includes(phase) || actionBusy;
 
   return (
     <div className="app">
       <Sidebar
+        sessions={sessions}
+        activeSessionId={sessionId}
         onNewChat={reset}
+        onSelectSession={loadSession}
+        onDeleteSession={deleteSession}
         onPickQuestion={canPickQuestion ? handleUserSubmit : undefined}
-        activeTitle={activeScript?.title}
+        canPickQuestion={canPickQuestion && messages.length === 0}
       />
       <div className="main">
         <div className="topbar">
@@ -516,6 +996,7 @@ export default function BritApp() {
             <span className="pill">Run #4821</span>
           </div>
           <div className="topbar-right">
+            {llmLiveOn && <span className="credit-pill llm-live-pill">live search</span>}
             <span className="credit-pill">credits <b>1,820</b></span>
             <span className="credit-pill" style={{ cursor: "pointer" }} onClick={reset}>↺ restart</span>
           </div>
@@ -526,27 +1007,38 @@ export default function BritApp() {
             <WelcomeView />
           ) : (
             <div className="thread-inner">
-              {messages.map((m, i) => (
-                <MessageView key={m.id ?? `msg-fallback-${i}`} m={m} ctx={ctx} />
-              ))}
+              {messages
+                .filter((m) => m.kind !== "summary" && m.kind !== "research_reco")
+                .map((m, i) => (
+                  <MessageView key={m.id ?? `msg-fallback-${i}`} m={m} ctx={ctx} />
+                ))}
             </div>
           )}
         </div>
 
         <ComposerInner
           onSubmit={handleUserSubmit}
+          onChipAction={handleChipAction}
           disabled={composerLocked}
           placeholder={
-            phase === "reco" ? "Start research from the card above…" :
             phase === "data_config" ? "Confirm data configuration above…" :
             phase === "audience_config" ? "Confirm audience above to run research…" :
             phase === "running" ? "Research is running. You'll see updates inline…" :
             phase === "done" ? "Ask a follow-up…" :
-            "Ask a research question…"
+            "Ask anything — or describe a full research study…"
           }
         />
       </div>
-      {reportOpen && <ReportModal params={params || { region: "South" }} script={activeScript} onClose={() => setReportOpen(false)} />}
+      {reportOpen && (
+        <ReportModal
+          params={params || { region: "Pan-India" }}
+          script={activeScript}
+          onClose={() => setReportOpen(false)}
+          onDownloadBrief={handleDownloadReport}
+          onShareBrief={handleShareBrief}
+        />
+      )}
+      {toast && <div className="brit-toast">{toast}</div>}
       <ApiKeySettings
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
@@ -578,7 +1070,7 @@ function WelcomeView() {
       <div className="badge">Flavor Insights India · {BRIT_DATA?.meta?.date || "20 May 2026"}</div>
       <h1>What would you like to <em>discover</em> today?</h1>
       <p className="welcome-sub">
-        Ask about flavors, states, extensions, or trends — we'll suggest a study, then you confirm sources and audience.
+        Ask a quick question, or describe a full study — research runs when your question needs the pipeline.
       </p>
     </div>
   );

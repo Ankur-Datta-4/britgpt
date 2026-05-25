@@ -272,8 +272,9 @@ export const CROSS_STATE_INSIGHTS = {
 };
 
 export const DELIVERABLE_TYPES = [
+  { id: "create", label: "Create", sub: "Concept cards · packshots", actionId: "concept_cards", primary: true },
+  { id: "create_film", label: "Create film", sub: "30s hero ad", actionId: "create_film" },
   { id: "messaging", label: "Content & messaging", sub: "Platform copy + hooks", actionId: "content_engine" },
-  { id: "concept_cards", label: "Concept cards", sub: "EN + vernacular · 16:9", actionId: "concept_cards" },
   { id: "storyboard", label: "Video ad storyboard", sub: "30s scene-by-scene", actionId: "storyboard" },
   { id: "positioning", label: "Positioning", sub: "Brand + shelf story", actionId: "positioning" },
 ] as const;

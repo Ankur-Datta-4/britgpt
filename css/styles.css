@@ -400,6 +400,13 @@ button { font-family: inherit; cursor: pointer; }
   display: flex;
   justify-content: flex-end;
 }
+.msg-user .bubble.clickable {
+  cursor: pointer;
+  transition: box-shadow 0.12s;
+}
+.msg-user .bubble.clickable:hover {
+  box-shadow: 0 2px 12px oklch(0.54 0.205 25 / 0.15);
+}
 .msg-user .bubble {
   max-width: 80%;
   padding: 12px 16px;
@@ -1056,6 +1063,23 @@ button { font-family: inherit; cursor: pointer; }
   margin-bottom: 18px;
 }
 .exec-block .meta div { display: flex; flex-direction: column; gap: 3px; }
+.exec-block .meta-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: oklch(1 0 0 / 0.06);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  border-radius: var(--r);
+  padding: 10px 12px;
+  text-align: left;
+  color: inherit;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+}
+.exec-block .meta-tile:hover {
+  background: oklch(1 0 0 / 0.12);
+  border-color: oklch(1 0 0 / 0.22);
+  transform: translateY(-1px);
+}
 .exec-block .meta .k {
   font-family: var(--f-mono);
   font-size: 9px;
@@ -1145,6 +1169,146 @@ button { font-family: inherit; cursor: pointer; }
   border: 1px solid var(--line);
 }
 .composer-chip:hover { color: var(--fg); border-color: var(--line-strong); background: var(--panel); }
+.composer-chip.clickable { cursor: pointer; }
+.side-item .side-time {
+  font-size: 10px;
+  color: var(--fg-dim);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.side-item.session-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+.side-item.session-item > span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.side-empty {
+  font-size: 12px;
+  color: var(--fg-dim);
+  padding: 8px 12px;
+  line-height: 1.4;
+}
+.side-ctx-menu {
+  position: fixed;
+  z-index: 500;
+  min-width: 160px;
+  padding: 6px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-lg);
+}
+.side-ctx-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--r-sm);
+  background: transparent;
+  text-align: left;
+  font-size: 13px;
+  color: var(--fg);
+  cursor: pointer;
+}
+.side-ctx-item:hover {
+  background: var(--sidebar-hover);
+}
+.side-ctx-danger {
+  color: var(--red);
+}
+.side-ctx-danger:hover {
+  background: var(--red-soft);
+}
+.credit-pill.llm-live-pill {
+  border-color: var(--green);
+  color: var(--green);
+}
+.film-job-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.film-job-card:hover {
+  border-color: var(--red);
+  box-shadow: var(--shadow-card);
+}
+.film-job-track {
+  height: 6px;
+  background: var(--line-soft);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.film-job-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red-deep), var(--red-glow));
+  border-radius: 99px;
+  transition: width 0.35s ease;
+}
+.film-job-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.film-job-status {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+.film-job-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+}
+.film-job-tag { text-transform: uppercase; }
+.card.clickable-card {
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.12s;
+}
+.card.clickable-card:hover {
+  border-color: var(--red);
+  transform: translateY(-1px);
+}
+.film-storyboard {
+  margin: 12px 0;
+  padding: 12px;
+  background: var(--gold-soft);
+  border-radius: var(--r);
+  border: 1px solid var(--line-soft);
+}
+.film-storybeat {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.film-storybeat:last-child { margin-bottom: 0; }
+.film-click-hint { margin-top: 12px; font-size: 11px; }
+.brit-toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  background: var(--fg);
+  color: var(--panel);
+  padding: 12px 20px;
+  border-radius: var(--r-lg);
+  font-size: 13px;
+  box-shadow: var(--shadow-lg);
+  animation: toast-in 0.2s ease;
+  pointer-events: none;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
 .composer-send {
   width: 32px; height: 32px;
   border-radius: 8px;

@@ -6,6 +6,7 @@ import {
 } from "@/lib/bedrock";
 import { checkBedrockConfigured } from "@/lib/api-status";
 import { getBedrockKey, hasBedrockKey } from "@/lib/config-client";
+import { isLlmLiveEnabled } from "@/lib/llm-mode";
 
 export type ActionContext = {
   script?: { title?: string; exec?: { h2?: string; p?: string } };
@@ -32,7 +33,12 @@ const ACTION_IDS = [
 
 export const hasLlmKey = () => hasBedrockKey() || hasBedrockAccess();
 
-export const hasLlmKeyAsync = () => checkBedrockConfigured();
+export const canUseLiveLlm = async () => {
+  if (!isLlmLiveEnabled()) return false;
+  return checkBedrockConfigured();
+};
+
+export const hasLlmKeyAsync = canUseLiveLlm;
 
 export const generateContent = async (
   userPrompt: string,

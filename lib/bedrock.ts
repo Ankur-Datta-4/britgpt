@@ -70,7 +70,7 @@ const converse = async (
   const blocks = (data as { output?: { message?: { content?: { text?: string }[] } } })
     ?.output?.message?.content || [];
   const text = blocks.map((b) => b.text).filter(Boolean).join("\n");
-  if (!text) throw new Error("Empty response from Nova Pro");
+  if (!text) throw new Error("Empty response from language model");
   return text;
 };
 
@@ -96,7 +96,7 @@ export const generateBedrockJSON = async (
   } catch {
     const match = cleaned.match(/\{[\s\S]*\}/);
     if (match) return JSON.parse(match[0]) as Record<string, unknown>;
-    throw new Error("Nova Pro did not return parseable JSON");
+    throw new Error("Could not parse model response");
   }
 };
 
@@ -249,7 +249,7 @@ export const generateBedrockFilm = async (
   )) as { invocationArn?: string };
 
   const arn = start.invocationArn;
-  if (!arn) throw new Error("Nova Reel did not return a job ARN");
+  if (!arn) throw new Error("Video job did not start");
 
   const encodedArn = encodeURIComponent(arn);
   for (let i = 0; i < 60; i++) {
@@ -268,14 +268,14 @@ export const generateBedrockFilm = async (
     };
 
     if (status.status === "Failed") {
-      throw new Error(status.failureMessage || "Nova Reel failed");
+      throw new Error(status.failureMessage || "Video generation failed");
     }
     if (status.status === "Completed") {
       return status.outputDataConfig?.s3OutputDataConfig?.s3Uri || s3Uri;
     }
   }
 
-  throw new Error("Nova Reel timed out (~8 min)");
+  throw new Error("Video generation timed out (~8 min)");
 };
 
 export const hasBedrockAccess = () => !!resolveKey();
