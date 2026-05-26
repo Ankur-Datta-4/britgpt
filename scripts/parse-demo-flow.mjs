@@ -9,8 +9,9 @@ const lines = src.split(/\r?\n/).map((l) => l.replace(/^\t+/, "").trim());
 
 const sliceBetween = (start, end) => {
   const i = lines.findIndex((l) => l === start);
-  const j = lines.findIndex((l) => l === end);
-  return lines.slice(i + 1, j);
+  const j = end ? lines.findIndex((l) => l === end) : lines.length;
+  if (i < 0) return [];
+  return lines.slice(i + 1, j >= 0 ? j : undefined);
 };
 
 const INDIAN_STATES = new Set([
@@ -20,6 +21,33 @@ const INDIAN_STATES = new Set([
   "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
   "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
 ]);
+
+const CLUSTER_IDS = {
+  "Tamil Nadu + Karnataka": "south-podi",
+  "Delhi + NCR": "delhi-ncr",
+  Maharashtra: "maharashtra",
+  "Uttar Pradesh + Rajasthan": "up-raj",
+  "West Bengal + Odisha": "east",
+};
+
+const isVolume = (s) => /^\d+(\.\d+)?K$/.test(s);
+
+/* ── Section 2.1: state top-5 ── */
+const s21 = sliceBetween("Section 2.1", "Section 2.2");
+const demoStates = [];
+for (let i = 0; i < s21.length; i++) {
+  const line = s21[i];
+  if (!INDIAN_STATES.has(line)) continue;
+  const sweet = (s21[i + 1] || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const savory = (s21[i + 2] || "").split(",").map((s) => s.trim()).filter(Boolean);
+  demoStates.push({ state: line, sweet, savory });
+  i += 2;
+}
+
+writeFileSync(
+  join(root, "lib/demo-states-parsed.json"),
+  JSON.stringify(demoStates, null, 2)
+);
 
 /* ── Section 2.2: state metrics ── */
 const s22 = sliceBetween("Section 2.2", "Section 3");
@@ -81,17 +109,6 @@ writeFileSync(
 
 /* ── Section 3: winning flavors ── */
 const s3 = sliceBetween("Section 3", "Section 4");
-const winning = [];
-let k = 0;
-while (k < s3.length) {
-  const line = s3[k];
-  if (!line || line === "State" || line === "Flavor Type") { k++; continue; }
-  if (INDIAN_STATES.has(line) || s3[k + 1] === "Sweet" || s3[k + 1] === "Savory") {
-    const state = INDIAN_STATES.has(line) ? line : null;
-  }
-  k++;
-}
-
 const winningRows = [];
 for (let j = 0; j < s3.length; j++) {
   const a = s3[j];
@@ -116,7 +133,6 @@ writeFileSync(
 
 /* ── Section 4: cross-state ── */
 const s4raw = sliceBetween("Section 4", "Section 5").join("\n");
-const blocks = s4raw.split(/_{5,}/).map((b) => b.trim()).filter(Boolean);
 
 const parseBlock = (text) => {
   const insightM = text.match(/Insight:\s*([\s\S]+?)(?=Key flavors:|Peak flavors:|Top flavors:|Opportunity signal:|Implication:|Trial potential:|$)/);
@@ -160,6 +176,111 @@ writeFileSync(
   JSON.stringify(crossState, null, 2)
 );
 
-console.log("Parsed", Object.keys(stateDetails).length, "states,",
+/* ── Section 5: national prioritization ── */
+const s5 = sliceBetween("Section 5", "Section 6");
+const nationalFlavors = [];
+for (let k = 0; k < s5.length; k++) {
+  const name = s5[k];
+  if (!name || name === "Flavor Name" || name.includes("Conversation Growth")) { k++; continue; }
+  if (s5[k + 1]?.endsWith("%") && s5[k + 2]?.endsWith("%")) {
+    nationalFlavors.push({
+      name,
+      convGrowth: s5[k + 1],
+      engGrowth: s5[k + 2],
+      trendType: s5[k + 3],
+      states: s5[k + 4],
+      extensions: s5[k + 5],
+      brandFit: s5[k + 6],
+    });
+    k += 6;
+  }
+}
+
+writeFileSync(
+  join(root, "lib/demo-national-parsed.json"),
+  JSON.stringify(nationalFlavors, null, 2)
+);
+
+/* ── Overall flavor machine table ── */
+const fmHeader = lines.findIndex((l) => l === "Product Category Portfolio Recommendation");
+const fmEnd = lines.findIndex((l) => l === "STATE-WISE FLAVOR TABLES");
+const flavorMachine = [];
+
+if (fmHeader >= 0 && fmEnd > fmHeader) {
+  const fmLines = lines.slice(fmHeader + 1, fmEnd);
+  for (let m = 0; m < fmLines.length; m++) {
+    const name = fmLines[m];
+    if (!name || name === "Flavor" || name.includes("Conversation Growth")) continue;
+    if (fmLines[m + 1]?.endsWith("%") && fmLines[m + 2]?.endsWith("%")) {
+      flavorMachine.push({
+        name,
+        convGrowth: fmLines[m + 1],
+        engGrowth: fmLines[m + 2],
+        productCategory: fmLines[m + 3],
+        brandFit: fmLines[m + 4],
+      });
+      m += 4;
+    }
+  }
+}
+
+writeFileSync(
+  join(root, "lib/demo-flavor-machine.json"),
+  JSON.stringify(flavorMachine, null, 2)
+);
+
+/* ── Regional flavor clusters ── */
+const clusterStart = fmEnd >= 0 ? fmEnd + 1 : -1;
+const clusters = [];
+
+if (clusterStart >= 0) {
+  const clusterLines = lines.slice(clusterStart);
+  let c = 0;
+  while (c < clusterLines.length) {
+    const line = clusterLines[c];
+    if (!line) { c++; continue; }
+    if (line.startsWith(">") || line.includes("Actionable Options")) break;
+    if (clusterLines[c + 1] === "Flavor") {
+      const label = line;
+      const rows = [];
+      c += 4;
+      while (c < clusterLines.length && isVolume(clusterLines[c + 1])) {
+        rows.push({
+          flavor: clusterLines[c],
+          convVolume: clusterLines[c + 1],
+          engVolume: clusterLines[c + 2],
+        });
+        c += 3;
+      }
+      let insight = clusterLines[c] || "";
+      insight = insight.replace(/^Insight Callout:\s*/i, "").trim();
+      if (insight && !insight.startsWith(">")) {
+        clusters.push({
+          id: CLUSTER_IDS[label] || label.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+          label,
+          insight,
+          rows,
+        });
+        c++;
+      }
+      continue;
+    }
+    c++;
+  }
+}
+
+writeFileSync(
+  join(root, "lib/demo-state-clusters.json"),
+  JSON.stringify(clusters, null, 2)
+);
+
+console.log(
+  "Parsed",
+  demoStates.length, "states,",
+  Object.keys(stateDetails).length, "state details,",
   winningRows.length, "winning rows,",
-  "cross:", crossState.zone.length, crossState.weather.length, crossState.age.length);
+  nationalFlavors.length, "national flavors,",
+  flavorMachine.length, "flavor machine rows,",
+  clusters.length, "clusters,",
+  "cross:", crossState.zone.length, crossState.weather.length, crossState.age.length
+);

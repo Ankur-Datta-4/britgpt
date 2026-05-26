@@ -162,7 +162,7 @@ State
 	Bhut Jolokia Spice, Khar Masala, Fish Curry Masala, Bamboo Shoot Pickle, Mustard Seed Mix
 	Bihar
 	Tilkut Sesame Jaggery, Honey Chilli, Khaja Caramel, Anarsa Coconut, Thekua Crunch
-	Sattu Masala, Litti Chokha Spice, Mustard Pickle, Chaat Masala, Gunpowder Podi
+	Sattu Masala, Litti Chokha Spice, Mustard Pickle, Chaat Masala Blast, Gunpowder Podi
 	Chhattisgarh
 	Tilgur Sesame Jaggery, Honey Chilli, Mahua Flower Candy, Coconut Barfi Bite, Mango Aamchur Toffee
 	Chana Dal Masala, Red Chilli Chutney, Bafauri Spice, Farra Masala, Garlic Podi
@@ -435,7 +435,7 @@ Flavor
 	Savory
 	13.7K
 	98.4K
-	Chaat Masala
+	Chaat Masala Blast
 	Savory
 	11.5K
 	82.1K
@@ -2276,7 +2276,7 @@ Flavor Name
 	Kerala
 	Banana chips, savory wafers
 	Good Day
-	Qubani Caramel
+	Qubani Ka Meetha Toffee
 	27.1%
 	39.9%
 	Seasonal
@@ -2537,13 +2537,13 @@ Flavor
 	Chips, Crackers, Nachos
 	50-50 Golmaal
 	Gunpowder Podi
-	46.8%
-	61.5%
+	46.2%
+	61.8%
 	Crackers, Podi Chips, Khakhra
 	NutriChoice
-	Thecha
-	44.1%
-	57.9%
+	Thecha Spice
+	44.8%
+	59.2%
 	Namkeen Crackers
 	50-50
 	Gulkand
@@ -2731,9 +2731,9 @@ Flavor
 	29.1%
 	Festive Cookies
 	Good Day
-	Chaat Masala
-	19.6%
-	28.4%
+	Chaat Masala Blast
+	38.6%
+	51.3%
 	Mainstream Line Extensions
 	50-50
 	
@@ -2771,7 +2771,7 @@ Flavor
 	Korean Gochujang
 	17.9K
 	142.6K
-	Chaat Masala
+	Chaat Masala Blast
 	15.6K
 	104.4K
 	Peri Peri
@@ -2787,7 +2787,7 @@ Maharashtra
 Flavor
 	Conversation Volume in State
 	Engagement Volume in State
-	Thecha
+	Thecha Spice
 	18.4K
 	132.7K
 	Bhakarwadi
