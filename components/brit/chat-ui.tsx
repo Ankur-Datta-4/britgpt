@@ -25,30 +25,25 @@ const SUGGESTIONS = (D().predefinedQuestions || [
 ]).map((p) => ({ tag: p.tag, q: p.q, hint: p.hint }));
 
 const BOOT_LINES = [
-  { t: "0.20s", text: "Running consumer research engine…",       marker: null,  done: false },
+  { t: "0.20s", text: "Starting your research…",                   marker: null,  done: false },
   { t: "0.60s", text: "Consumer discovery started",              marker: "✓",   done: true  },
   { t: "1.10s", text: "Gathering market signals…",               marker: null,  done: false },
-  { t: "1.55s", text: "6 channels identified · 1.53L conversations", marker: "✓", done: true },
-  { t: "2.05s", text: "Generating follow-up questions",          marker: "✓",   done: true  },
+  { t: "1.80s", text: "9 channels identified · 1.53L conversations", marker: "✓", done: true },
+  { t: "2.40s", text: "Analyzing flavor patterns…",              marker: null,  done: false },
+  { t: "3.10s", text: "Generating follow-up questions",          marker: "✓",   done: true  },
 ];
 
 const REGIONS = ["Pan-India", "North", "South", "West", "East", "Metro"];
 const TIMEFRAMES = ["90 days", "6 months", "12 months", "24 months"];
-const OBJECTIVES = ["Product extension", "New SKU launch", "Pricing strategy", "Channel mix", "Brand refresh"];
+const OBJECTIVES = ["Product extension", "Regional launch", "Pricing strategy", "Channel mix", "Brand refresh"];
 const FILTERS = ["Urban", "Rural", "Premium tier", "Mass tier", "Gen-Z", "Millennials", "Families"];
 
-const SOURCE_NAMES = [
-  "Instagram", "Reddit", "X", "YouTube", "Amazon Reviews", "Flipkart Reviews",
-];
+const SOURCE_NAMES = D().meta?.channels || [];
 
-const REGIONS_DATA = [
-  { lbl: "Peri Peri",            val: 22 },
-  { lbl: "Honey Chilli",         val: 18 },
-  { lbl: "Magic / Chatpata",     val: 15 },
-  { lbl: "Cheese",               val: 11 },
-  { lbl: "Chilli",               val:  9 },
-  { lbl: "Metro avg.",           val:  8 },
-];
+const REGIONS_DATA = (D().favoriteSavoryShares || []).slice(0, 6).map((f) => ({
+  lbl: f.flavor,
+  val: f.pct,
+}));
 
 const FLAVOURS = [
   { name: "Gulkand",            grow: "+31.62%", bars: [3,5,4,6,7,8,9], down: false },
@@ -65,22 +60,20 @@ const SENT_DATA = [
   { lbl: "Negative", v: 12.4, color: "oklch(0.54 0.205 25)" },
 ];
 
-const TOTAL_CONVERSATIONS = 153496;
-const BISCOFF_CONVERSATIONS = 17835;
-const HONEY_CHILLI_CONVERSATIONS = 11353;
-const BISCOFF_POSITIVE_PCT = 43.10;
-const HONEY_CHILLI_FAV_SHARE = 18;
-const GLOBAL_SPICE_INTEREST = 55;
-const SAVORY_INNOVATION_DEMAND = 25;
-const FUSION_FLAVOUR_ENTHUSIASM = 19.43;
-
-const BISCOFF_EXTENSIONS = [
-  "Biscoff Cream Biscuits", "Biscoff Cheesecake Cups", "Biscoff Kaju Katli",
-  "Biscoff Barfi", "Biscoff Cream Cones", "Biscoff Filled Croissants",
+const TOTAL_CONVERSATIONS = D().meta?.totalSample || 153496;
+const HONEY_CHILLI_GROWTH = D().honeyChilli?.convGrowthPct || 48.7;
+const GUNPOWDER_GROWTH = D().gunpowderPodi?.convGrowthPct || 46.2;
+const heroFlavorStats = () => [
+  { k: "Honey Chilli conv. growth", v: String(HONEY_CHILLI_GROWTH), suffix: "%" },
+  { k: "Gunpowder Podi conv. growth", v: String(GUNPOWDER_GROWTH), suffix: "%" },
 ];
+const REGIONAL_SWEET_POSITIVE = D().regionalSweetSentiment?.positivePct || 68.4;
 
-const HONEY_CHILLI_EXTENSIONS = [
-  "Chips", "Makhana", "Crackers", "Dips", "Pizza", "Chaat", "Popcorn", "Namkeen",
+const SAVORY_EXTENSIONS = D().savoryOpportunities?.flatMap((o) => o.extensions.slice(0, 2)) || [
+  "Podi crackers", "Coated crackers", "Schezwan chips", "Chaat crackers",
+];
+const SWEET_EXTENSIONS = D().sweetOpportunities?.flatMap((o) => o.extensions.slice(0, 2)) || [
+  "Jaggery biscuits", "Tamarind cookies", "Mishti doi bites", "Gur toffee bites",
 ];
 
 const STATES_TABLE = [
@@ -97,10 +90,10 @@ const STATES_TABLE = [
   { state: "West Bengal", sweet: ["Mishti Doi", "Sandesh", "Rasgulla", "Chhanar Jilipi", "Caramel / Burnt Dairy"], savory: ["Puchka", "Kachori", "Kathi Roll", "Ghugni", "Kosha Mangsho"] },
 ];
 
-const FAVOUR_FLAVOR_SHARES = [
-  { lbl: "Peri Peri", val: 22 }, { lbl: "Honey Chilli", val: 18 }, { lbl: "Magic / Chatpata", val: 15 },
-  { lbl: "Cheese", val: 11 }, { lbl: "Chilli", val: 9 }, { lbl: "Schezwan", val: 8 },
-];
+const FAVOUR_FLAVOR_SHARES = (D().favoriteSavoryShares || []).slice(0, 6).map((f) => ({
+  lbl: f.flavor,
+  val: f.pct,
+}));
 
 /* Per-question research scripts — real PDF data, deterministic demo paths */
 const RESEARCH_SCRIPTS = {
@@ -109,14 +102,13 @@ const RESEARCH_SCRIPTS = {
     title: "Top flavours by state",
     scopeDefaults: { region: "Pan-India", obj: "Product extension" },
     muted: "State-level sweet & savory top-5 lists, flavor opportunity scores, and regional snack share.",
-    cards: ["states", "flavour", "region", "quotes", "summary", "exec"],
+    cards: ["states", "flavour", "region", "quotes", "summary", "doc_states", "doc_winning", "doc_cross", "doc_national", "exec", "doc_actionables"],
     insight: {
       highlight: "Honey Chilli & Gunpowder Podi",
       body: HERO_THESIS.body,
       stats: [
         { k: "States covered", v: "29" },
-        { k: "Honey Chilli conv. growth", v: "48.7", suffix: "%" },
-        { k: "Gunpowder Podi eng. growth", v: "61.8", suffix: "%" },
+        ...heroFlavorStats(),
         { k: "Sample", v: "1.5", suffix: "L" },
       ],
     },
@@ -137,147 +129,117 @@ const RESEARCH_SCRIPTS = {
     exec: {
       h2: "Launch state-anchored flavor platforms — start with Maharashtra sweet + Thecha savory, and Delhi Honey Chilli.",
       p: "Index local top-5 flavors per state before nationalizing. Priority anchors: Caramel Chikki + Thecha (MH), Gunpowder Podi (South), Honey Chilli (Delhi/NCR).",
-      meta: [{ k: "States", v: "11" }, { k: "Fusion", v: "19.4%" }, { k: "Global spice", v: "55%" }, { k: "Sample", v: "1.5L" }],
+      meta: [{ k: "States", v: "29" }, { k: "Honey Chilli", v: "48.7%" }, { k: "Gunpowder Podi", v: "46.2%" }, { k: "Sample", v: "1.5L" }],
     },
   },
   sentiment: {
     id: "sentiment",
-    title: "Biscoff sentiment — sweets",
-    scopeDefaults: { region: "Pan-India", obj: "New SKU launch" },
-    muted: "Biscoff sentiment split, positive rate, and trust narrative from 17,835 conversations.",
-    cards: ["sentiment", "trend", "quotes", "summary", "exec"],
+    title: "Regional sweet sentiment",
+    scopeDefaults: { region: "East", obj: "Product extension" },
+    muted: "Heritage sweets sentiment — Mishti Doi, Nolen Gur, and regional dessert trust across East India.",
+    cards: ["sentiment", "trend", "quotes", "summary", "doc_states", "doc_winning", "doc_cross", "doc_national", "exec", "doc_actionables"],
     insight: {
-      highlight: "Biscoff",
-      body: "shows 43.10% positive sentiment in sweets — consumers like the taste but distrust low-quality imitations. Win as a premium dessert system with transparent ingredients, not a copycat biscuit.",
+      highlight: "Mishti Doi & Nolen Gur",
+      body: "lead regional sweet conversations — heritage formats outperform novelty in West Bengal and Assam. Consumers reward authentic provenance over imported dessert cues.",
       stats: [
-        { k: "Positive", v: "43.1", suffix: "%" },
-        { k: "Sentiment +", v: "73.1", suffix: "%" },
-        { k: "Conversations", v: "17.8", suffix: "K" },
-        { k: "Neutral", v: "14.5", suffix: "%" },
+        { k: "Positive", v: "68.4", suffix: "%" },
+        { k: "Mishti Doi growth", v: "35.4", suffix: "%" },
+        { k: "Nolen Gur growth", v: "32.6", suffix: "%" },
+        { k: "Sample", v: "1.5", suffix: "L" },
       ],
     },
-    sentData: SENT_DATA,
-    sentCenter: BISCOFF_POSITIVE_PCT,
-    sentMentions: BISCOFF_CONVERSATIONS,
-    trendLabel: "Biscoff · positive sentiment",
-    trendSolid: [38, 39, 40, 41, 41, 42, 42, 43, 43, 43, 43, 43],
-    trendDashed: [65, 66, 67, 68, 69, 70, 71, 72, 72, 73, 73, 73],
+    sentData: [
+      { lbl: "Positive", v: 68.4, color: "oklch(0.55 0.13 155)" },
+      { lbl: "Neutral", v: 19.2, color: "oklch(0.60 0.01 50)" },
+      { lbl: "Negative", v: 12.4, color: "oklch(0.54 0.205 25)" },
+    ],
+    sentCenter: REGIONAL_SWEET_POSITIVE,
+    sentMentions: D().regionalSweetSentiment?.conversations || 89420,
+    trendLabel: "Regional sweets · positive sentiment",
+    trendSolid: [62, 63, 64, 65, 65.5, 66, 66.5, 67, 67.5, 68, 68.2, 68.4],
+    trendDashed: [72, 74, 76, 78, 80, 82, 84, 85, 86, 87, 88, 89],
     quotes: [
-      { text: "Biscoff already travels across desserts, beverages and hacks; the unlock is premium formulation and ingredient transparency.", att: `Biscoff · ${BISCOFF_CONVERSATIONS.toLocaleString("en-IN")} conversations · ${BISCOFF_POSITIVE_PCT}% positive` },
-      { text: "Sentiment in sweets: 73.1% positive, 14.5% neutral, 12.4% negative — trust gap on local imitations.", att: "Flavor Insights · India · last 12 months" },
-      { text: "Consumers like the taste but distrust low-quality local imitations — controlled sweetness matters.", att: "Report narrative · Consuma AI" },
+      { text: D().regionalSweetSentiment?.narrative || "Heritage sweets outperform novelty in the East.", att: "Regional sweets · Flavor Insights" },
+      { text: "Mishti Doi Caramel and Nolen Gur Toffee show strongest repeat-conversation signals in Bengal and Assam.", att: "East India · last 12 months" },
+      { text: "Nostalgia-led positioning beats novelty-led launches in West Bengal and Odisha.", att: "Cross-state synthesis" },
     ],
     exec: {
-      h2: "Position Biscoff as a premium dessert system — cream biscuits, mithai, and cheesecake adjacency first.",
-      p: `Lead with transparent ingredients and dessert formats. ${BISCOFF_POSITIVE_PCT}% positive sentiment across ${BISCOFF_CONVERSATIONS.toLocaleString("en-IN")} conversations; negative risk is imitation quality, not flavor rejection.`,
-      meta: [{ k: "Positive", v: "43.1%" }, { k: "Convos", v: "17.8K" }, { k: "Trust gap", v: "Imitation" }, { k: "Format", v: "Dessert" }],
+      h2: "Lead with Mishti Doi and Nolen Gur dessert-snack formats in East India before national scale.",
+      p: "Yogurt-cream biscuits, jaggery caramel bites, and festival assortments align with 68.4% positive regional sweet sentiment.",
+      meta: [{ k: "Positive", v: "68.4%" }, { k: "East anchor", v: "WB+AS" }, { k: "Format", v: "Dessert" }, { k: "Heritage", v: "High" }],
     },
   },
   extension: {
     id: "extension",
     title: "Extension opportunities",
     scopeDefaults: { region: "Pan-India", obj: "Product extension" },
-    muted: "Biscoff dessert extensions and Honey Chilli swicy snack line — from report opportunity lists.",
-    cards: ["extensions", "flavour", "region", "summary", "exec"],
+    muted: "Indian sweet and savory extension ideas — Honey Chilli, Gunpowder Podi, and regional flavor platforms.",
+    cards: ["extensions", "flavour", "region", "summary", "doc_states", "doc_winning", "doc_cross", "doc_national", "exec", "doc_actionables"],
     insight: {
-      highlight: "Biscoff + Honey Chilli",
-      body: "extension pipelines are the clearest near-term plays — six Biscoff dessert SKUs and eight Honey Chilli savory formats, backed by 17,835 and 11,353 conversations respectively.",
+      highlight: "Honey Chilli & Gunpowder Podi",
+      body: "drive the clearest extension opportunities — national sweet-heat formats and South podi-led savory biscuits, backed by 48.7% and 46.2% conversation growth.",
       stats: [
-        { k: "Biscoff SKUs", v: "6" },
-        { k: "Honey Chilli SKUs", v: "8" },
-        { k: "Swicy share", v: "18", suffix: "%" },
-        { k: "Fusion", v: "19.4", suffix: "%" },
+        ...heroFlavorStats(),
+        { k: "Savory ideas", v: "5", suffix: "" },
+        { k: "Sweet ideas", v: "5", suffix: "" },
       ],
     },
     regionsData: FAVOUR_FLAVOR_SHARES,
-    regionTitle: "Share of favorite savory flavors (%)",
+    regionTitle: "Top savory flavor momentum (index)",
     flavours: [
-      { name: "Biscoff Cream", grow: "Dessert", bars: [4,5,6,7,8,8,9], down: false },
-      { name: "Honey Chilli Chips", grow: "Swicy", bars: [3,4,5,6,7,8,8], down: false },
-      { name: "Gunpowder Podi", grow: "+55%", bars: [3,4,5,5,6,7,7], down: false },
-      { name: "Bhakarwadi", grow: "+25%", bars: [3,3,4,4,5,5,6], down: false },
-      { name: "Gulkand", grow: "+31.6%", bars: [3,4,4,5,6,6,7], down: false },
-      { name: "Sattu", grow: "+51.5%", bars: [2,3,4,4,5,6,6], down: false },
+      { name: "Honey Chilli", grow: "+48.7%", bars: [38,39,41,42,44,45,46,47,48,48.5,48.7,48.7], down: false },
+      { name: "Gunpowder Podi", grow: "+46.2%", bars: [36,37,39,40,42,43,44,45,45.5,46,46.2,46.2], down: false },
+      { name: "Schezwan Masala", grow: "+41.8%", bars: [32,33,35,36,38,39,40,40.5,41,41.5,41.8,41.8], down: false },
+      { name: "Mishti Doi Caramel", grow: "+35.4%", bars: [28,29,30,31,32,33,34,34.5,35,35.2,35.4,35.4], down: false },
+      { name: "Tamarind Candy", grow: "+30.8%", bars: [24,25,26,27,28,29,29.5,30,30.4,30.6,30.8,30.8], down: false },
+      { name: "Sattu Masala", grow: "+34.5%", bars: [26,27,28,29,30,31,32,33,33.5,34,34.3,34.5], down: false },
     ],
     quotes: [
-      { text: "Extension opportunities: Biscoff Cream Biscuits, Cheesecake Cups, Kaju Katli, Barfi, Cream Cones, Filled Croissants.", att: "Biscoff · Flavor Insights" },
-      { text: "Honey Chilli extensions: Chips, Makhana, Crackers, Dips, Pizza, Chaat, Popcorn, Namkeen.", att: "Honey Chilli · 18%+ favorite snack share" },
-      { text: "55% global-spice interest and 25% savory innovation demand support swicy and podi-led launches.", att: "Savory opportunities · report" },
+      { text: "Honey Chilli: coated crackers, baked chips, snack mix, cream biscuits — pan-India sweet-heat.", att: "Honey Chilli · national matrix" },
+      { text: "Gunpowder Podi: podi crackers, khakhra, savory biscuits — TN, Karnataka, AP, Telangana.", att: "Gunpowder Podi · South" },
+      { text: "Regional sweets: Mishti Doi caramel biscuits, Nolen Gur toffee bites, Tamarind chewy formats.", att: "Sweet opportunities · India" },
     ],
     exec: {
-      h2: "Prioritize Biscoff dessert-system extensions, then Honey Chilli swicy snacks in parallel.",
-      p: `Phase 1: ${BISCOFF_EXTENSIONS.slice(0, 3).join(", ")}. Phase 2: ${HONEY_CHILLI_EXTENSIONS.slice(0, 4).join(", ")}. Both tracks use real conversation volume (${BISCOFF_CONVERSATIONS.toLocaleString("en-IN")} / ${HONEY_CHILLI_CONVERSATIONS.toLocaleString("en-IN")}).`,
-      meta: [{ k: "Biscoff SKUs", v: "6" }, { k: "Honey Chilli", v: "8" }, { k: "Spice interest", v: "55%" }, { k: "Confidence", v: "84%" }],
+      h2: "Pilot Honey Chilli nationally and Gunpowder Podi in South — anchor packs to state top-5 flavors.",
+      p: `Savory: ${SAVORY_EXTENSIONS.slice(0, 3).join(", ")}. Sweet: ${SWEET_EXTENSIONS.slice(0, 3).join(", ")}. Use state tables to localize naming before scale.`,
+      meta: [{ k: "Honey Chilli", v: "48.7%" }, { k: "Gunpowder", v: "46.2%" }, { k: "States", v: "29" }, { k: "Confidence", v: "92%" }],
     },
   },
-  biscoff: {
-    id: "biscoff",
-    title: "Biscoff dessert system",
-    scopeDefaults: { region: "Pan-India", obj: "Premium dessert system" },
-    muted: "Full Biscoff narrative — sentiment, trust, extensions from 17,835 conversations.",
-    cards: ["sentiment", "extensions", "trend", "quotes", "summary", "exec"],
-    insight: {
-      highlight: "Biscoff",
-      body: "wins through premium dessert-led trust building — 43.10% positive sentiment across 17,835 conversations; not a copycat biscuit play.",
-      stats: [
-        { k: "Positive", v: "43.1", suffix: "%" },
-        { k: "In sweets +", v: "73.1", suffix: "%" },
-        { k: "Conversations", v: "17.8", suffix: "K" },
-        { k: "Extensions", v: "6", suffix: "" },
-      ],
-    },
-    sentData: SENT_DATA,
-    sentCenter: BISCOFF_POSITIVE_PCT,
-    sentMentions: BISCOFF_CONVERSATIONS,
-    trendLabel: "Biscoff positive % · 12 mo",
-    trendSolid: [38, 39, 40, 41, 41, 42, 42, 43, 43, 43, 43, 43],
-    trendDashed: [70, 71, 71, 72, 72, 73, 73, 73, 73, 73, 73, 73],
-    quotes: [
-      { text: D().biscoff?.narrative || "Premium formulation and ingredient transparency unlock trust.", att: "Biscoff · Flavor Insights" },
-      { text: "73.1% positive, 14.5% neutral, 12.4% negative in sweets category.", att: "Sentiment split · report" },
-      { text: "Travels across desserts, beverages and hacks — distrust is on imitation quality.", att: "17,835 conversations" },
-    ],
-    exec: {
-      h2: "Launch Biscoff as a premium dessert system — transparent ingredients, controlled sweetness.",
-      p: "Prioritize Cream Biscuits, Cheesecake Cups, and mithai formats. 43.10% positive; imitation-quality is the main risk.",
-      meta: [{ k: "Positive", v: "43.1%" }, { k: "Convos", v: "17.8K" }, { k: "SKUs", v: "6" }, { k: "Format", v: "Dessert" }],
-    },
-  },
-  swicy: {
-    id: "swicy",
-    title: "Honey Chilli swicy heat",
-    scopeDefaults: { region: "Pan-India", obj: "Swicy innovation" },
-    muted: "Favorite flavor shares, global spice signals, Honey Chilli extensions.",
+  honeyChilli: {
+    id: "honeyChilli",
+    title: "Honey Chilli trends",
+    scopeDefaults: { region: "Pan-India", obj: "Product extension" },
+    muted: "National sweet-heat growth, engagement, and extension formats.",
     cards: ["region", "extensions", "trend", "flavour", "summary", "exec"],
     insight: {
-      highlight: "Hot Honey Chilli Crisp",
-      body: "is the global swicy bet — 18%+ favorite-snack share, 55% global-spice interest, 11,353 conversations.",
+      highlight: "Honey Chilli",
+      body: D().honeyChilli?.narrative || "Sweet-heat is the pan-India bridge flavor.",
       stats: [
-        { k: "Fav. share", v: "18", suffix: "%+" },
-        { k: "Global spice", v: "55", suffix: "%" },
-        { k: "Savory innov.", v: "25", suffix: "%" },
-        { k: "Convos", v: "11.4", suffix: "K" },
+        { k: "Conv. growth", v: "48.7", suffix: "%" },
+        { k: "Eng. growth", v: "63.4", suffix: "%" },
+        { k: "Trend", v: "Established", suffix: "" },
+        { k: "States", v: "29", suffix: "" },
       ],
     },
-    regionsData: D().favoriteSavoryShares || FAVOUR_FLAVOR_SHARES,
-    regionTitle: "Share of favorite savory flavors (%)",
+    regionsData: FAVOUR_FLAVOR_SHARES,
+    regionTitle: "Top savory flavor momentum (index)",
     flavours: [
-      { name: "Honey Chilli", grow: "18%+", bars: [12,13,14,15,16,17,17,18,18,18,18,18], down: false },
-      { name: "Peri Peri", grow: "22%", bars: [18,19,19,20,20,21,21,22,22,22,22,22], down: false },
-      { name: "Gunpowder Podi", grow: "55%", bars: [3,4,5,6,7,8,8], down: false },
-      { name: "Thecha", grow: "55%", bars: [3,3,4,5,6,6,7], down: false },
-      { name: "Bhakarwadi", grow: "25%", bars: [3,3,4,4,5,5,6], down: false },
-      { name: "Sattu", grow: "51.5%", bars: [2,3,4,4,5,6,6], down: false },
+      { name: "Honey Chilli", grow: "+48.7%", bars: [38,39,41,42,44,45,46,47,48,48.5,48.7,48.7], down: false },
+      { name: "Gunpowder Podi", grow: "+46.2%", bars: [36,37,39,40,42,43,44,45,45.5,46,46.2,46.2], down: false },
+      { name: "Schezwan Masala", grow: "+41.8%", bars: [32,33,35,36,38,39,40,40.5,41,41.5,41.8,41.8], down: false },
+      { name: "Chaat Masala Blast", grow: "+38.6%", bars: [30,31,32,33,35,36,37,37.5,38,38.4,38.6,38.6], down: false },
+      { name: "Tandoori BBQ", grow: "+35.1%", bars: [28,29,30,31,32,33,34,34.5,35,35,35.1,35.1], down: false },
+      { name: "Thecha Spice", grow: "+44.8%", bars: [34,35,37,38,40,41,42,43,44,44.5,44.8,44.8], down: false },
     ],
     quotes: [
-      { text: D().honeyChilli?.narrative || "Swicy, crunchy, saucy, snackable.", att: "Honey Chilli · report" },
-      { text: "Peri Peri 22%, Honey Chilli 18%, Magic/Chatpata 15% — favorite savory menu shares.", att: "Flavor share · India" },
-      { text: "Extensions: chips, makhana, crackers, dips, pizza, chaat, popcorn, namkeen.", att: "11,353 conversations" },
+      { text: D().honeyChilli?.narrative || "", att: "Honey Chilli · report" },
+      { text: "Strongest in Maharashtra, UP, Delhi NCR, Karnataka, and Telangana.", att: "National prioritization" },
+      { text: `Extensions: ${(D().honeyChilli?.extensions || []).join(", ")}.`, att: "Product extension ideas" },
     ],
     exec: {
-      h2: "Pilot Honey Chilli swicy line — chips, makhana, popcorn, dip sachets — pan-India.",
-      p: "Differentiate on swicy (55% global-spice interest), not plain heat. Delhi already lists Honey Chilli in savory top-5.",
-      meta: [{ k: "Share", v: "18%" }, { k: "Spice", v: "55%" }, { k: "Fusion", v: "19.4%" }, { k: "SKUs", v: "8" }],
+      h2: "Scale Honey Chilli on coated crackers and baked chips — national with state-localized packs.",
+      p: `${HONEY_CHILLI_GROWTH}% conversation growth and ${D().honeyChilli?.engGrowthPct || 63.4}% engagement growth support a Treat and 50-50 launch window.`,
+      meta: [{ k: "Conv.", v: "48.7%" }, { k: "Eng.", v: "63.4%" }, { k: "Trend", v: "Established" }, { k: "Regions", v: "5+" }],
     },
   },
   pricing: {
@@ -297,8 +259,8 @@ const RESEARCH_SCRIPTS = {
       ],
     },
     regionsData: [
-      { lbl: "Caramel", val: 62 }, { lbl: "Date Jaggery Til", val: 75 }, { lbl: "Pistachio Kesar", val: 60 },
-      { lbl: "Gulkand", val: 50 }, { lbl: "Thandai", val: 29 }, { lbl: "Biscoff positive", val: 43 },
+      { lbl: "Mishti Doi", val: 35 }, { lbl: "Nolen Gur", val: 33 }, { lbl: "Tamarind", val: 31 },
+      { lbl: "Tilkut Sesame", val: 28 }, { lbl: "Qubani Meetha", val: 27 }, { lbl: "Honey Chilli", val: 49 },
     ],
     regionTitle: "Premium & health demand index (%)",
     flavours: [
@@ -307,16 +269,16 @@ const RESEARCH_SCRIPTS = {
       { name: "Pistachio Kesar", grow: "+60%", bars: [3,4,4,5,6,7,7], down: false },
       { name: "Gulkand", grow: "+50%", bars: [3,3,4,5,5,6,6], down: false },
       { name: "Thandai", grow: "+29%", bars: [2,3,3,4,5,5,6], down: false },
-      { name: "Biscoff", grow: "+43%", bars: [3,3,4,4,4,4,4], down: false },
+      { name: "Honey Chilli", grow: "+48.7%", bars: [38,40,42,44,45,46,47,48,48.5,48.7,48.7,48.7], down: false },
     ],
     quotes: [
-      { text: "62.43% premium/luxury pull and 31.62% fusion interest make burnt chhena caramel a scalable bridge.", att: "Caramel · sweet opportunity" },
+      { text: "Mishti Doi Caramel indexes high for family buyers in Bengal — yogurt-cream biscuit adjacency.", att: "Mishti Doi · sweet opportunity" },
       { text: "75% natural sweetener demand, 50% health-conscious choice — Date Jaggery Til for better-for-you premium.", att: "Date Jaggery Til · Bihar, MH, GJ" },
       { text: "60% healthy ingredients, 35% nut premium appeal, 17.57% gifting — Pistachio Kesar festive platform.", att: "Pistachio Kesar · RJ, GJ, MH" },
     ],
     exec: {
-      h2: "Price premium biscuit SKUs on Caramel and Pistachio Kesar platforms — tier Metro first.",
-      p: "Elasticity favors transparent premium ingredients over mass discounting. Anchor ₹60–80 packs on Caramel and Kesar stories; Biscoff dessert line for indulgence tier.",
+      h2: "Price premium packs on Mishti Doi and Nolen Gur platforms — tier Metro and East first.",
+      p: "Elasticity favors heritage storytelling over mass discounting. Anchor ₹60–80 packs on regional sweet stories; Honey Chilli for national sweet-heat tier.",
       meta: [{ k: "Premium pull", v: "62%" }, { k: "Natural demand", v: "75%" }, { k: "Gifting", v: "17.6%" }, { k: "Metro", v: "First" }],
     },
   },
@@ -325,13 +287,12 @@ const RESEARCH_SCRIPTS = {
     title: "Sweet & savory insights",
     scopeDefaults: { region: "South", obj: "Product extension" },
     muted: "State deep dives, winning flavors, cross-state synthesis, national matrix, and actionables.",
-    cards: ["summary", "exec"],
+    cards: ["summary", "quotes", "doc_states", "doc_winning", "doc_cross", "doc_national", "doc_actionables"],
     insight: {
       highlight: HERO_THESIS.headline,
       body: HERO_THESIS.body,
       stats: [
-        { k: "Honey Chilli conv.", v: "48.7", suffix: "%" },
-        { k: "Gunpowder Podi conv.", v: "46.2", suffix: "%" },
+        ...heroFlavorStats(),
         { k: "Flavors indexed", v: "39" },
         { k: "Sample", v: "1.53", suffix: "L" },
       ],
@@ -339,14 +300,11 @@ const RESEARCH_SCRIPTS = {
     regionsData: REGIONS_DATA,
     regionTitle: "Regional affinity — favorite savory flavors",
     flavours: FLAVOURS,
-    sentData: SENT_DATA,
-    sentCenter: BISCOFF_POSITIVE_PCT,
-    sentMentions: BISCOFF_CONVERSATIONS,
     quotes: BRITANNIA_CONSUMER_QUOTES,
     exec: {
-      h2: "Launch Biscoff as a premium dessert system and pilot Honey Chilli swicy snacks — first in South India.",
-      p: `Three signals: ${BISCOFF_POSITIVE_PCT}% Biscoff positive, ${HONEY_CHILLI_FAV_SHARE}% Honey Chilli favorite-snack share, ${GLOBAL_SPICE_INTEREST}% global-spice interest.`,
-      meta: [{ k: "Confidence", v: "84%" }, { k: "Biscoff", v: "17.8K" }, { k: "Sample", v: "1.5L" }, { k: "Channels", v: "6" }],
+      h2: "Launch Honey Chilli nationally and Gunpowder Podi in South — localize packs using state top-5 tables.",
+      p: `Three signals: ${HONEY_CHILLI_GROWTH}% Honey Chilli conversation growth, ${GUNPOWDER_GROWTH}% Gunpowder Podi conversation growth, 29 states mapped with regional extension ideas.`,
+      meta: [{ k: "Confidence", v: "92%" }, { k: "Honey Chilli", v: "48.7%" }, { k: "Sample", v: "1.5L" }, { k: "States", v: "29" }],
     },
   },
 };
@@ -358,9 +316,9 @@ const matchResearchScript = (query) => {
   if (preset && RESEARCH_SCRIPTS[preset.id]) return RESEARCH_SCRIPTS[preset.id];
   if (/britannia|performing|good day|marie gold|nutrichoice|50-50|treat/.test(ql)) return RESEARCH_SCRIPTS.default;
   if (/flavour|flavor|state|trend/.test(ql)) return RESEARCH_SCRIPTS.flavour;
-  if (/biscoff|dessert/.test(ql)) return RESEARCH_SCRIPTS.biscoff;
-  if (/swicy|honey.chilli|honey chilli/.test(ql)) return RESEARCH_SCRIPTS.swicy;
-  if (/sentiment|biscuit|sweet/.test(ql)) return RESEARCH_SCRIPTS.sentiment;
+  if (/honey.chilli|honey chilli/.test(ql)) return RESEARCH_SCRIPTS.honeyChilli;
+  if (/gunpowder|podi/.test(ql)) return RESEARCH_SCRIPTS.flavour;
+  if (/sentiment|sweet|mishti|nolen/.test(ql)) return RESEARCH_SCRIPTS.sentiment;
   if (/extension|opportunit/.test(ql)) return RESEARCH_SCRIPTS.extension;
   if (/pric|elastic|premium|sku/.test(ql)) return RESEARCH_SCRIPTS.pricing;
   return RESEARCH_SCRIPTS.default;
@@ -422,12 +380,12 @@ function BootBlock({ onComplete }) {
       i++;
       setN(i);
       if (i < BOOT_LINES.length) {
-        setTimeout(step, 380 + Math.random() * 200);
+        setTimeout(step, 400 + Math.random() * 300);
       } else {
         setTimeout(() => onComplete && onComplete(), 500);
       }
     };
-    setTimeout(step, 320);
+    setTimeout(step, 400);
   }, []);
 
   return (
@@ -530,7 +488,7 @@ function ScopeForm({ defaults, locked, onRun }) {
         </div>
       </div>
       <div className="card-foot">
-        <div className="note">Engine ready · 6 sources staged</div>
+        <div className="note">Ready · {SOURCE_NAMES.length} sources selected</div>
         <button className="btn-primary" onClick={() => onRun({ region, tf, obj, filters, extra })}>
           Run research <kbd>⌘↵</kbd>
         </button>
@@ -543,15 +501,41 @@ function ScopeForm({ defaults, locked, onRun }) {
    TimelineBlock — cinematic execution timeline (inline)
 ============================================================ */
 function TimelineBlock({ onDone }) {
-  const stages = RRP_TIMELINE_STAGES;
+  const stages = RRP_TIMELINE_STAGES.map(s => ({ ...s, dur: s.dur * 3 }));
   const [idx, setIdx] = useState(0);
   const [prog, setProg] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [srcCount, setSrcCount] = useState(2);
   const started = useRef(Date.now());
   const finished = useRef(false);
+  const elapsedFrozen = useRef(null);
+  const timerRef = useRef(null);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
+
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }, []);
+
+  const freezeElapsed = useCallback(() => {
+    stopTimer();
+    if (elapsedFrozen.current != null) return;
+    elapsedFrozen.current = (Date.now() - started.current) / 1000;
+    setElapsed(elapsedFrozen.current);
+  }, [stopTimer]);
+
+  useEffect(() => {
+    const tick = () => {
+      if (elapsedFrozen.current != null) return;
+      setElapsed((Date.now() - started.current) / 1000);
+    };
+    tick();
+    timerRef.current = setInterval(tick, 100);
+    return stopTimer;
+  }, [stopTimer]);
 
   useEffect(() => {
     if (idx >= stages.length) return;
@@ -565,8 +549,9 @@ function TimelineBlock({ onDone }) {
       else if (idx + 1 < stages.length) {
         setIdx(idx + 1);
         setProg(0);
-      }       else if (!finished.current) {
+      } else if (!finished.current) {
         finished.current = true;
+        freezeElapsed();
         setIdx(stages.length);
         setProg(1);
         setTimeout(() => onDoneRef.current?.(), 600);
@@ -574,19 +559,18 @@ function TimelineBlock({ onDone }) {
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [idx]);
+  }, [idx, freezeElapsed, stages.length]);
+
+  const allDone = idx >= stages.length;
 
   useEffect(() => {
-    const i = setInterval(() => setElapsed((Date.now() - started.current) / 1000), 100);
-    return () => clearInterval(i);
-  }, []);
+    if (allDone && elapsedFrozen.current == null) freezeElapsed();
+  }, [allDone, freezeElapsed]);
 
   useEffect(() => {
     const want = Math.min(SOURCE_NAMES.length, 2 + Math.floor((idx + prog) * 1.2));
     setSrcCount(want);
   }, [idx, prog]);
-
-  const allDone = idx >= stages.length;
 
   const overall = useMemo(() => {
     if (allDone) return 100;
@@ -594,15 +578,29 @@ function TimelineBlock({ onDone }) {
     let done = 0;
     for (let i = 0; i < idx; i++) done += stages[i].dur;
     done += prog * (stages[idx]?.dur || 0);
-    return Math.min(100, Math.round((done / total) * 100));
+    return Math.min(99, Math.round((done / total) * 100));
+  }, [idx, prog, allDone, stages]);
+
+  const signalsProcessed = useMemo(() => {
+    if (allDone) return TOTAL_CONVERSATIONS;
+    const totalDur = stages.reduce((a, s) => a + s.dur, 0);
+    let doneDur = 0;
+    for (let i = 0; i < idx; i++) doneDur += stages[i].dur;
+    if (idx < stages.length) doneDur += prog * stages[idx].dur;
+    return Math.min(
+      TOTAL_CONVERSATIONS,
+      Math.round((doneDur / totalDur) * TOTAL_CONVERSATIONS)
+    );
   }, [idx, prog, allDone, stages]);
 
   const sourcePills = SOURCE_NAMES.slice(0, srcCount);
 
   return (
     <div className="tl-block">
-      <div className="tl-head">
-        <span className="l">Run #4821 · executing · t+{elapsed.toFixed(1)}s</span>
+      <div className={"tl-head" + (allDone ? " tl-head--done" : "")}>
+        <span className="l">
+          Run #4821 · {allDone ? "complete" : "in progress"} · t+{elapsed.toFixed(1)}s
+        </span>
         <span className="r">{overall}%</span>
       </div>
       <div className="tl-list">
@@ -615,10 +613,10 @@ function TimelineBlock({ onDone }) {
               <div className="tl-body">
                 <div className="tl-title">{s.title}</div>
                 <div className="tl-sub">{s.desc}</div>
-                <div className="tl-bar"><span style={{width: (p*100)+"%"}}></span></div>
+                <div className="tl-bar"><span style={{width: Math.max(0.5, p*100)+"%", minWidth: "2px"}}></span></div>
               </div>
               <div className={"tl-stat " + (status === "active" ? "live" : status === "done" ? "ok" : "")}>
-                {status === "done" ? "done" : status === "active" ? "running" : "queued"}
+                {status === "done" ? "done" : status === "active" ? "in progress" : "waiting"}
               </div>
             </div>
           );
@@ -626,14 +624,14 @@ function TimelineBlock({ onDone }) {
       </div>
       <div className="tl-foot">
         <div className="col">
-          <div className="lbl">Sources aggregated · {sourcePills.length}/6</div>
+          <div className="lbl">Sources included · {sourcePills.length}/{SOURCE_NAMES.length}</div>
           <div>
             {sourcePills.map(s => <span key={s} className="src-pill">{s}</span>)}
           </div>
         </div>
         <div className="col">
           <div className="lbl">Signals processed</div>
-          <div className="v">{Math.round(((idx + prog) / stages.length) * TOTAL_CONVERSATIONS).toLocaleString("en-IN")} / {TOTAL_CONVERSATIONS.toLocaleString("en-IN")}</div>
+          <div className="v">{signalsProcessed.toLocaleString("en-IN")} / {TOTAL_CONVERSATIONS.toLocaleString("en-IN")}</div>
         </div>
       </div>
     </div>
@@ -655,7 +653,7 @@ function InsightBlock({ params, script }) {
   });
   return (
     <div className="insight">
-      <div className="eyebrow">Insight · opening hero</div>
+      <div className="eyebrow">Opening Thesis / Macro Shift</div>
       <h2>{HERO_THESIS.title}</h2>
       <p className="insight-lead">{ins.highlight}. {ins.body.replace("{region}", reg)}</p>
       <div className="insight-stats">
@@ -683,7 +681,9 @@ function RegionCard({ script }) {
       subtitle: `${r.val}% of favorite savory flavor conversations`,
       body: r.lbl === "Honey Chilli"
         ? D().honeyChilli?.narrative
-        : `Ranked in national favorite snack menus. Peri Peri leads at 22%, Honey Chilli at 18%+. Sample: ${D().meta?.totalSample?.toLocaleString("en-IN")} conversations.`,
+        : r.lbl === "Gunpowder Podi"
+          ? D().gunpowderPodi?.narrative
+          : `Top savory flavor momentum index for ${r.lbl}. Sample: ${D().meta?.totalSample?.toLocaleString("en-IN")} conversations across India.`,
       facts: [{ k: "Share", v: `${r.val}%` }, { k: "Period", v: "Last 12 months" }],
       source: "Flavor Insights · p.3",
     });
@@ -708,14 +708,14 @@ function RegionCard({ script }) {
 function SentimentCard({ script }) {
   const sc = getScript(script);
   const sent = sc.sentData || SENT_DATA;
-  const center = sc.sentCenter ?? BISCOFF_POSITIVE_PCT;
-  const mentions = sc.sentMentions ?? BISCOFF_CONVERSATIONS;
+  const center = sc.sentCenter ?? REGIONAL_SWEET_POSITIVE;
+  const mentions = sc.sentMentions ?? D().regionalSweetSentiment?.conversations ?? TOTAL_CONVERSATIONS;
 
   const onSegment = (s) => {
     openDetail({
       type: "Sentiment",
       title: `${s.lbl} — ${s.v}%`,
-      body: `Biscoff in sweets: ${D().biscoff?.sentiment?.positive}% positive, ${D().biscoff?.sentiment?.neutral}% neutral, ${D().biscoff?.sentiment?.negative}% negative. Headline positive sentiment ${D().biscoff?.positivePct}%.`,
+      body: `Regional sweets sentiment: ${D().regionalSweetSentiment?.sentiment?.positive}% positive, ${D().regionalSweetSentiment?.sentiment?.neutral}% neutral, ${D().regionalSweetSentiment?.sentiment?.negative}% negative. Headline positive ${D().regionalSweetSentiment?.positivePct}%.`,
       source: `${mentions.toLocaleString("en-IN")} conversations`,
     });
   };
@@ -723,7 +723,7 @@ function SentimentCard({ script }) {
   return (
     <div className="card">
       <div className="card-h">
-        <h3>Sentiment towards Biscoff in sweets</h3>
+        <h3>Sentiment towards regional sweets</h3>
         <span className="tag">{mentions.toLocaleString("en-IN")} mentions · click chart</span>
       </div>
       <div className="card-body">
@@ -794,37 +794,43 @@ function StatesCard() {
    Extensions card
 ============================================================ */
 function ExtensionsCard() {
-  const biscoff = D().biscoff?.extensions || BISCOFF_EXTENSIONS;
-  const hc = D().honeyChilli?.extensions || HONEY_CHILLI_EXTENSIONS;
-  const onExt = (name, track) => openDetail({
-    type: "Extension SKU",
+  const savory = D().savoryOpportunities || [];
+  const sweet = D().sweetOpportunities || [];
+  const onExt = (name, track, flavor) => openDetail({
+    type: "Product extension",
     title: name,
-    body: track === "Biscoff"
-      ? `Part of Biscoff dessert-system extensions. ${D().biscoff?.conversations?.toLocaleString("en-IN")} conversations · ${D().biscoff?.positivePct}% positive.`
-      : `Honey Chilli swicy extension. ${D().honeyChilli?.conversations?.toLocaleString("en-IN")} conversations · ${D().honeyChilli?.favSharePct}%+ favorite snack share.`,
+    body: `${name} — extension idea for ${flavor} (${track}). Grounded in Flavor Insights India state and national flavor data.`,
     source: "Flavor Insights · extension list",
   });
   return (
     <div className="card">
       <div className="card-h">
         <h3>Extension opportunities</h3>
-        <span className="tag">click any SKU</span>
+        <span className="tag">click any idea</span>
       </div>
       <div className="card-body">
         <div className="ext-group">
-          <div className="ext-label">Biscoff · premium dessert</div>
+          <div className="ext-label">Savory · India</div>
           <div className="scope-chips">
-            {biscoff.map((e) => (
-              <span key={e} className="chip clickable" onClick={() => onExt(e, "Biscoff")}>{e}</span>
-            ))}
+            {savory.flatMap((o) =>
+              o.extensions.map((e) => (
+                <span key={`${o.flavor}-${e}`} className="chip clickable" onClick={() => onExt(e, "Savory", o.flavor)}>
+                  {e}
+                </span>
+              ))
+            )}
           </div>
         </div>
         <div className="ext-group">
-          <div className="ext-label">Honey Chilli · swicy</div>
+          <div className="ext-label">Sweet · India</div>
           <div className="scope-chips">
-            {hc.map((e) => (
-              <span key={e} className="chip clickable" onClick={() => onExt(e, "Honey Chilli")}>{e}</span>
-            ))}
+            {sweet.flatMap((o) =>
+              o.extensions.map((e) => (
+                <span key={`${o.flavor}-${e}`} className="chip clickable" onClick={() => onExt(e, "Sweet", o.flavor)}>
+                  {e}
+                </span>
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -837,9 +843,11 @@ function ExtensionsCard() {
 ============================================================ */
 const getTrendSeries = (script) => {
   const sc = getScript(script);
-  const b = D().biscoff?.trend12m;
   const h = D().honeyChilli?.trend12m;
-  const fromData = sc.id === "swicy" ? h : b;
+  const g = D().gunpowderPodi?.trend12m;
+  const r = D().regionalSweetSentiment?.trend12m;
+  const fromData =
+    sc.id === "sentiment" ? r : sc.id === "flavour" || /podi|gunpowder/i.test(sc.title || "") ? g : h;
   if (fromData) {
     return {
       label: fromData.label,
@@ -882,7 +890,7 @@ function TrendCard({ script }) {
               type: "Trend",
               title: row.month,
               body: `${primaryName}: ${row.primary}%. ${secondaryName}: ${row.secondary}%. Flavor Insights India · last 12 months.`,
-              source: "1,53,496 conversations · 6 channels",
+              source: `1,53,496 conversations · ${SOURCE_NAMES.length} channels`,
             })
           }
         />
@@ -929,18 +937,22 @@ function FlavourCard({ script }) {
    Quotes card
 ============================================================ */
 function QuotesCard({ script }) {
-  const quotes = getScript(script).quotes || RESEARCH_SCRIPTS.default.quotes;
+  const scriptObj = typeof script === "string" ? matchResearchScript(script) : getScript(script);
+  // Pick exactly the top 3 quotes related to this specific research script
+  // (no randomization, ensuring it is deterministic and stays strictly on-topic)
+  const quotes = (scriptObj.quotes || RESEARCH_SCRIPTS.default.quotes).slice(0, 3);
+  
   return (
     <div className="card">
       <div className="card-h">
         <h3>Consumer voice</h3>
-        <span className="tag">panel + social</span>
+        <span className="tag">panel + social + delivery</span>
       </div>
       <div className="card-body">
         {quotes.map((q, i) => (
           <div key={i} className="quote clickable"
                onClick={() => openDetail({ type: "Consumer voice", title: "Verbatim signal", body: q.text, source: q.att })}>
-            <p>"{q.text}"</p>
+            <p>&quot;{q.text}&quot;</p>
             <div className="att">{q.att} · click to expand</div>
           </div>
         ))}
@@ -996,7 +1008,7 @@ function ExecBlock({ onOpenReport, onExportBrief, onShareBrief, script }) {
 ============================================================ */
 const ACTION_BUTTONS = [
   { id: "concept_cards", label: "Create", sub: "Concept cards", icon: "◆", primary: true },
-  { id: "content_engine", label: "Shoot to content engine", sub: "Scripts + packshots", icon: "↗" },
+  { id: "content_engine", label: "Campaign messaging", sub: "Scripts + packshots", icon: "↗" },
   { id: "fpd_scout", label: "Scout for FPD", sub: "Field discovery", icon: "◎" },
   { id: "triangulate_1ds", label: "Triangulate with 1DS", sub: "Sales + social", icon: "△" },
 ];
@@ -1177,8 +1189,176 @@ function InlineFilmPlayer({ videoUri, filmHref, className = "hero-film-video" })
   );
 }
 
+const dispatchHandoff = (target, detail = {}) => {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("brit-handoff", { detail: { target, ...detail } }));
+};
+
+const DeliverableHandoff = ({ label, target, flavor, state }) => {
+  const [sent, setSent] = useState(false);
+  const onSend = () => {
+    dispatchHandoff(target, { flavor, state, label });
+    setSent(true);
+  };
+  return (
+    <div className="deliverable-handoff">
+      <p className="deliverable-handoff-lead">Ready for downstream review</p>
+      <button
+        type="button"
+        className="btn-primary deliverable-handoff-btn"
+        onClick={onSend}
+        disabled={sent}
+      >
+        {sent ? `Sent to ${target} ✓` : label}
+      </button>
+    </div>
+  );
+};
+
+const STORYBOARD_FRAME_STYLES = {
+  retail: "linear-gradient(145deg, #f5ebe0 0%, #d4c4b0 100%)",
+  macro: "linear-gradient(145deg, #3d2314 0%, #8b4513 55%, #c45c3e 100%)",
+  lifestyle: "linear-gradient(145deg, #e8dfd4 0%, #b8a090 100%)",
+  product: "linear-gradient(145deg, #1a1410 0%, #4a3020 100%)",
+  brand: "linear-gradient(145deg, #c41e3a 0%, #8b1538 100%)",
+};
+
+const buildStoryboardScenes = (payload) => {
+  if (payload?.scenes?.length) return payload.scenes;
+  const bullets = payload?.bullets || [];
+  const timings = ["0–3s", "3–8s", "8–18s", "18–24s", "24–30s"];
+  const titles = ["Hero shelf", "Ingredient cue", "Snacking moment", "Product crunch", "Brand lock-up"];
+  const moods = ["retail", "macro", "lifestyle", "product", "brand"];
+  return bullets.slice(0, 5).map((b, i) => ({
+    beat: i + 1,
+    timing: timings[i],
+    title: titles[i],
+    shot: String(b),
+    vo: payload?.recommendations?.[i] || "",
+    onScreen: payload?.flavor || "",
+    frameStyle: moods[i],
+  }));
+};
+
+const StoryboardMockPanel = ({ payload }) => {
+  const scenes = buildStoryboardScenes(payload);
+  const flavor = payload?.flavor;
+  const state = payload?.state;
+
+  return (
+    <div className="card storyboard-mock-card">
+      <div className="card-h">
+        <h3>{payload?.title || "Video ad storyboard"}</h3>
+        <span className="tag">30s mock-up</span>
+      </div>
+      <div className="card-body">
+        {payload?.message && <p className="concept-msg">{payload.message}</p>}
+        {payload?.body && <p className="action-outcome-lead">{payload.body}</p>}
+        <div className="storyboard-mock-meta">
+          {flavor && <span className="storyboard-mock-chip">{flavor}</span>}
+          {state && <span className="storyboard-mock-chip">{state}</span>}
+          <span className="storyboard-mock-chip">5 scenes · 30s</span>
+        </div>
+        <div className="storyboard-mock-grid">
+          {scenes.map((s) => (
+            <article key={s.beat} className="storyboard-frame">
+              <div
+                className="storyboard-frame-visual"
+                style={{ background: STORYBOARD_FRAME_STYLES[s.frameStyle] || STORYBOARD_FRAME_STYLES.retail }}
+              >
+                <span className="storyboard-frame-beat">Scene {s.beat}</span>
+                <span className="storyboard-frame-timing">{s.timing}</span>
+                <p className="storyboard-frame-title">{s.title}</p>
+              </div>
+              <div className="storyboard-frame-copy">
+                <p className="storyboard-shot"><b>Shot</b> {s.shot}</p>
+                {s.vo ? <p className="storyboard-vo"><b>VO</b> {s.vo}</p> : null}
+                {s.onScreen ? <p className="storyboard-os"><b>On-screen</b> {s.onScreen}</p> : null}
+              </div>
+            </article>
+          ))}
+        </div>
+        <DeliverableHandoff
+          label="Send to Creative Agency"
+          target="Creative Agency"
+          flavor={flavor}
+          state={state}
+        />
+      </div>
+    </div>
+  );
+};
+
+const CreativeBriefPanel = ({ payload }) => {
+  const messaging = payload?.messaging?.length
+    ? payload.messaging
+    : payload?.type === "content_engine"
+      ? payload?.bullets
+      : [];
+  const positioning = payload?.positioning?.length
+    ? payload.positioning
+    : payload?.type === "positioning"
+      ? payload?.bullets
+      : [];
+  const mergedMessaging =
+    messaging?.length > 0
+      ? messaging
+      : (payload?.bullets || []).slice(0, 3);
+  const mergedPositioning =
+    positioning?.length > 0
+      ? positioning
+      : (payload?.bullets || []).slice(3, 8);
+
+  return (
+    <div className="card creative-brief-card">
+      <div className="card-h">
+        <h3>Creative brief</h3>
+        <span className="tag">Messaging + positioning</span>
+      </div>
+      <div className="card-body">
+        {payload?.message && <p className="concept-msg">{payload.message}</p>}
+        {payload?.body && <p className="action-outcome-lead">{payload.body}</p>}
+        <div className="creative-brief-grid">
+          <section className="creative-brief-section">
+            <h4 className="creative-brief-heading">Messaging &amp; communication</h4>
+            <ul className="creative-brief-list">
+              {mergedMessaging.map((line, i) => (
+                <li key={`msg-${i}`}>{String(line)}</li>
+              ))}
+            </ul>
+          </section>
+          <section className="creative-brief-section">
+            <h4 className="creative-brief-heading">Positioning</h4>
+            <ul className="creative-brief-list">
+              {mergedPositioning.map((line, i) => (
+                <li key={`pos-${i}`}>{String(line)}</li>
+              ))}
+            </ul>
+          </section>
+        </div>
+        {payload?.recommendations?.length > 0 && (
+          <div className="action-outcome-section compact">
+            <h4 className="aoc-section-title">Recommendations</h4>
+            <ul className="action-reco-list">
+              {payload.recommendations.map((r, i) => (
+                <li key={`reco-${i}`}>{String(r)}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+        <DeliverableHandoff
+          label="Send to Hogarth"
+          target="Hogarth"
+          flavor={payload?.flavor}
+          state={payload?.state}
+        />
+      </div>
+    </div>
+  );
+};
+
 function ConceptCardsPanel({ payload }) {
-  const { concepts = [], mode, message, error } = payload || {};
+  const { concepts = [], mode, message, error, flavor, state } = payload || {};
   const created = mode === "created";
 
   return (
@@ -1190,28 +1370,45 @@ function ConceptCardsPanel({ payload }) {
       <div className="card-body">
         {message && !error && <p className="concept-msg">{message}</p>}
         {error && <p className="concept-err">{error}</p>}
-        <div className="concept-grid">
+        <div className="concept-grid concept-grid--mockups">
           {concepts.map((c) => (
-            <div key={c.id} className="concept-card">
-              <ConceptCardImage concept={c} />
-              <div className="concept-meta">
-                <span className="concept-lane">{c.lane}</span>
-                <h4>{c.title}</h4>
-                <p className="concept-sku">{c.sku}</p>
-                <p className="concept-tag">{c.tagline}</p>
+            <div key={c.id} className="concept-mock-shell">
+              <div className="concept-mock-device" aria-label={`Concept mock-up: ${c.title}`}>
+                <div className="concept-mock-chrome">
+                  <span className="concept-mock-dot" />
+                  <span className="concept-mock-dot" />
+                  <span className="concept-mock-dot" />
+                  <span className="concept-mock-label">Social · Story</span>
+                </div>
+                <div className="concept-card concept-card--mock">
+                  <ConceptCardImage concept={c} />
+                  <div className="concept-meta">
+                    <span className="concept-lane">{c.lane}</span>
+                    <h4>{c.title}</h4>
+                    <p className="concept-tag">{c.tagline}</p>
+                  </div>
+                  <div className="concept-mock-cta">{c.cta || "Shop now →"}</div>
+                </div>
               </div>
             </div>
           ))}
         </div>
+        <DeliverableHandoff
+          label="Send to FPD"
+          target="FPD"
+          flavor={flavor}
+          state={state}
+        />
       </div>
     </div>
   );
 }
 
 const ACTION_META = {
-  content_engine: { label: "Content engine", icon: "↗", accent: "#c45c3e" },
+  content_engine: { label: "Creative brief", icon: "📋", accent: "#c45c3e" },
+  creative_brief: { label: "Creative brief", icon: "📋", accent: "#c45c3e" },
   storyboard: { label: "Video storyboard", icon: "▶", accent: "#5c4a3e" },
-  positioning: { label: "Positioning", icon: "◇", accent: "#6b3d2e" },
+  positioning: { label: "Creative brief", icon: "📋", accent: "#6b3d2e" },
   fpd_scout: { label: "FPD scout", icon: "◎", accent: "#5c3d2e" },
   triangulate_1ds: { label: "1DS triangulation", icon: "△", accent: "#8b2e1a" },
 };
@@ -1296,7 +1493,7 @@ const FilmJobCard = ({ job, onClick }) => {
     <button type="button" className="card film-job-card" onClick={() => onClick?.(job)}>
       <div className="card-h">
         <h3>{label}</h3>
-        <span className="tag film-job-tag">{job.status === "queued" ? "queued" : "rendering"}</span>
+        <span className="tag film-job-tag">{job.status === "queued" ? "waiting" : "in progress"}</span>
       </div>
       <div className="card-body">
         <div className="film-job-track" aria-hidden>
@@ -1306,7 +1503,7 @@ const FilmJobCard = ({ job, onClick }) => {
           <span className="dots film-job-dots">
             <span></span><span></span><span></span>
           </span>
-          <span className="film-job-status">{job.progressText || "Rendering film…"}</span>
+          <span className="film-job-status">{job.progressText || "Creating your film…"}</span>
         </div>
         <p className="muted film-job-hint">Runs in background · click for storyboard &amp; status</p>
       </div>
@@ -1405,6 +1602,14 @@ function ActionResultPanel({ payload, onOpenDetail }) {
   if (!payload) return null;
   if (payload.type === "concept_cards") return <ConceptCardsPanel payload={payload} />;
   if (payload.type === "create_film") return <HeroFilmPanel payload={payload} onOpenDetail={onOpenDetail} />;
+  if (payload.type === "storyboard") return <StoryboardMockPanel payload={payload} />;
+  if (
+    payload.type === "creative_brief" ||
+    payload.type === "content_engine" ||
+    payload.type === "positioning"
+  ) {
+    return <CreativeBriefPanel payload={payload} />;
+  }
   return <ActionOutcomeCards payload={payload} />;
 }
 
@@ -1568,14 +1773,14 @@ function DatasetBreakdown() {
 function FullSummaryCard({ script, onOpenReport }) {
   const s = getScript(script);
   const tiles = [
-    { id: "sample", title: "Sample size", val: "1.53L", sub: "6 channels · 12 mo", section: "method" },
-    { id: "biscoff", title: "Biscoff positive", val: "43.1%", sub: `${D().biscoff?.conversations?.toLocaleString("en-IN")} convos`, section: "biscoff" },
-    { id: "hc", title: "Honey Chilli share", val: "18%+", sub: `${D().honeyChilli?.conversations?.toLocaleString("en-IN")} convos`, section: "swicy" },
-    { id: "spice", title: "Global spice", val: "55%", sub: "Savory innov. 25%", section: "swicy" },
-    { id: "states", title: "States mapped", val: "11", sub: "Sweet + savory top 5", section: "states" },
-    { id: "sweet", title: "Sweet opps.", val: "5", sub: "Gulkand → Date-til", section: "sweet" },
+    { id: "sample", title: "Sample size", val: "1.53L", sub: `${SOURCE_NAMES.length} channels · 12 mo`, section: "method" },
+    { id: "hc", title: "Honey Chilli", val: "48.7%", sub: "Conv. growth", section: "honeyChilli" },
+    { id: "gp", title: "Gunpowder Podi", val: "46.2%", sub: "Conv. growth", section: "gunpowderPodi" },
+    { id: "regional", title: "Regional sweets", val: "68.4%", sub: "Positive sentiment", section: "regional" },
+    { id: "states", title: "States mapped", val: "29", sub: "Sweet + savory top 5", section: "states" },
+    { id: "sweet", title: "Sweet opps.", val: "5", sub: "Mishti Doi → Qubani", section: "sweet" },
     { id: "savory", title: "Savory opps.", val: "5", sub: "Podi → Honey Chilli", section: "savory" },
-    { id: "exec", title: "Recommendation", val: "84%", sub: "Confidence", section: "exec" },
+    { id: "exec", title: "Recommendation", val: "92%", sub: "Confidence", section: "exec" },
   ];
   const onTile = (t) => {
     const sec = (D().reportSections || []).find((r) => r.id === t.section);
@@ -1700,20 +1905,20 @@ function ReportModal({ params, script, onClose, onDownloadBrief, onShareBrief, i
           </aside>
           <article className="report-main">
             <div className="report-hero">
-              <div className="deck">Brit GPT · Consuma AI Rapid Research · under 30 minutes</div>
+              <div className="deck">Brit GPT · Consuma AI · under 30 minutes</div>
               <h1>{s.title} — India flavor insights</h1>
             </div>
 
             <section id="exec" ref={bindSection("exec")} className="report-section">
               <h2>{sectionById("exec")?.title || "Executive summary"}</h2>
               <p className="report-section-lead">{sectionById("exec")?.content}</p>
-              <div className="pull">"{D().biscoff?.narrative}"</div>
+              <div className="pull">&quot;{D().honeyChilli?.narrative}&quot;</div>
               <div className="factbox clickable-factbox">
-                <div onClick={() => openDetail({ type: "Metric", title: "Biscoff positive", body: `${BISCOFF_POSITIVE_PCT}% across ${BISCOFF_CONVERSATIONS.toLocaleString("en-IN")} conversations.`, source: "p.2" })}>
-                  <div className="k">Biscoff positive</div><div className="v">{BISCOFF_POSITIVE_PCT}%</div>
+                <div onClick={() => openDetail({ type: "Metric", title: "Honey Chilli", body: `${HONEY_CHILLI_GROWTH}% conversation growth nationally.`, source: "National matrix" })}>
+                  <div className="k">Honey Chilli</div><div className="v">{HONEY_CHILLI_GROWTH}%</div>
                 </div>
-                <div onClick={() => openDetail({ type: "Metric", title: "Honey Chilli", body: `${HONEY_CHILLI_FAV_SHARE}%+ favorite snack share.`, source: "p.3" })}>
-                  <div className="k">Honey Chilli</div><div className="v">{HONEY_CHILLI_FAV_SHARE}%+</div>
+                <div onClick={() => openDetail({ type: "Metric", title: "Gunpowder Podi", body: `${GUNPOWDER_GROWTH}% conversation growth in South India.`, source: "National matrix" })}>
+                  <div className="k">Gunpowder Podi</div><div className="v">{GUNPOWDER_GROWTH}%</div>
                 </div>
                 <div onClick={() => openDetail({ type: "Metric", title: "Sample", body: `${TOTAL_CONVERSATIONS.toLocaleString("en-IN")} conversations.`, source: "cover" })}>
                   <div className="k">Total sample</div><div className="v">1.53L</div>
@@ -1723,38 +1928,27 @@ function ReportModal({ params, script, onClose, onDownloadBrief, onShareBrief, i
               <p>{s.exec?.p}</p>
             </section>
 
-            <section id="biscoff" ref={bindSection("biscoff")} className="report-section">
-              <h2>{sectionById("biscoff")?.title || "Biscoff wins"}</h2>
-              <p className="report-section-lead">{sectionById("biscoff")?.content}</p>
-              <p>{D().biscoff?.narrative} Sentiment in sweets: {SENT_DATA.map((x) => `${x.lbl} ${x.v}%`).join(", ")}.</p>
-              <p><b>Extensions:</b> {(D().biscoff?.extensions || BISCOFF_EXTENSIONS).join(" · ")}.</p>
-            </section>
-
-            <section id="swicy" ref={bindSection("swicy")} className="report-section">
-              <h2>{sectionById("swicy")?.title || "Honey Chilli swicy"}</h2>
-              <p className="report-section-lead">{sectionById("swicy")?.content}</p>
+            <section id="honeyChilli" ref={bindSection("honeyChilli")} className="report-section">
+              <h2>{sectionById("honeyChilli")?.title || "Honey Chilli"}</h2>
+              <p className="report-section-lead">{sectionById("honeyChilli")?.content}</p>
               <p>{D().honeyChilli?.narrative}</p>
-              <p><b>Signals:</b> {GLOBAL_SPICE_INTEREST}% global spice · {SAVORY_INNOVATION_DEMAND}% savory innovation · {FUSION_FLAVOUR_ENTHUSIASM}% fusion.</p>
-              <p><b>Extensions:</b> {(D().honeyChilli?.extensions || HONEY_CHILLI_EXTENSIONS).join(" · ")}.</p>
+              <p><b>Extensions:</b> {(D().honeyChilli?.extensions || []).join(" · ")}.</p>
             </section>
 
-            <section id="shares" ref={bindSection("shares")} className="report-section">
-              <h2>{sectionById("shares")?.title || "Favorite savory shares"}</h2>
-              <p className="report-section-lead">{sectionById("shares")?.content}</p>
-              <div className="report-share-grid">
-                {(D().favoriteSavoryShares || []).map((f) => (
-                  <button
-                    key={f.lbl}
-                    type="button"
-                    className="report-share-chip clickable"
-                    onClick={() => openDetail({ type: "Share", title: f.lbl, body: `${f.val}% favorite savory share`, source: "Favorite flavors" })}
-                  >
-                    <span className="rs-label">{f.lbl}</span>
-                    <span className="rs-val">{f.val}%</span>
-                  </button>
-                ))}
-              </div>
+            <section id="gunpowderPodi" ref={bindSection("gunpowderPodi")} className="report-section">
+              <h2>{sectionById("gunpowderPodi")?.title || "Gunpowder Podi"}</h2>
+              <p className="report-section-lead">{sectionById("gunpowderPodi")?.content}</p>
+              <p>{D().gunpowderPodi?.narrative}</p>
+              <p><b>Extensions:</b> {(D().gunpowderPodi?.extensions || []).join(" · ")}.</p>
             </section>
+
+            <section id="regional" ref={bindSection("regional")} className="report-section">
+              <h2>{sectionById("regional")?.title || "Regional sweets"}</h2>
+              <p className="report-section-lead">{sectionById("regional")?.content}</p>
+              <p>{D().regionalSweetSentiment?.narrative}</p>
+            </section>
+
+            <section id="shares" ref={bindSection("shares")} className="report-section" style={{ display: "none" }} aria-hidden="true" />
 
             <section id="states" ref={bindSection("states")} className="report-section">
               <h2>{sectionById("states")?.title || "States — top flavors"}</h2>
@@ -1795,7 +1989,7 @@ function ReportModal({ params, script, onClose, onDownloadBrief, onShareBrief, i
               <p className="report-section-lead">{sectionById("method")?.content}</p>
               <p><b>Channels:</b> {(D().meta?.channels || []).join(" · ")}.</p>
               <p><b>Sample:</b> {TOTAL_CONVERSATIONS.toLocaleString("en-IN")} conversations · India · last 12 months.</p>
-              <p><b>Platform:</b> Consuma AI Rapid Research · generated in under 30 minutes.</p>
+              <p><b>Prepared by:</b> Consuma AI · generated in under 30 minutes.</p>
             </section>
           </article>
         </div>

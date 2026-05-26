@@ -253,7 +253,7 @@ export const generateBedrockFilm = async (
 
   const encodedArn = encodeURIComponent(arn);
   for (let i = 0; i < 60; i++) {
-    onProgress?.(`Rendering film… ${Math.min(92, 10 + i * 3)}%`);
+    onProgress?.(`Creating film… ${Math.min(92, 10 + i * 3)}%`);
     await sleep(i < 3 ? 5000 : 8000);
 
     const status = (await bedrockFetch(

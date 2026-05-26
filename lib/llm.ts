@@ -85,9 +85,9 @@ const researchContext = (ctx: ActionContext) => {
     `Executive recommendation: ${ex.h2 || ""}`,
     `Detail: ${ex.p || ""}`,
     `Report date: ${BRIT_DATA.meta?.date || "May 2026"} — all timelines must be May 2026 onward; never cite 2023, 2024, or Q4 2023.`,
-    `Dataset: ${BRIT_DATA.meta?.totalSample?.toLocaleString("en-IN")} conversations across 6 channels, India, last 12 months.`,
-    `Biscoff: ${BRIT_DATA.biscoff?.positivePct}% positive sentiment, ${BRIT_DATA.biscoff?.conversations?.toLocaleString("en-IN")} conversations.`,
-    `Honey Chilli: ${BRIT_DATA.honeyChilli?.favSharePct}%+ favorite snack share, ${BRIT_DATA.honeyChilli?.conversations?.toLocaleString("en-IN")} conversations.`,
+    `Dataset: ${BRIT_DATA.meta?.totalSample?.toLocaleString("en-IN")} conversations across ${BRIT_DATA.meta?.channels?.length || 9} channels, India, last 12 months.`,
+    `Honey Chilli: ${BRIT_DATA.honeyChilli?.convGrowthPct}% conversation growth, ${BRIT_DATA.honeyChilli?.engGrowthPct}% engagement growth.`,
+    `Gunpowder Podi: ${BRIT_DATA.gunpowderPodi?.convGrowthPct}% conversation growth, ${BRIT_DATA.gunpowderPodi?.engGrowthPct}% engagement growth.`,
     `Favorite savory shares: ${savoryShares}.`,
     `State flavor profiles (top 3 sweet + savory each):\n${formatStateFlavors()}`,
     formatOpportunities(),
@@ -118,6 +118,25 @@ const ACTION_OUTPUT_SCHEMA = `Output JSON only with these fields:
 - nextSteps (exactly 2 immediate tasks for this week)
 - status ("running" or "queued")
 - eta (time estimate only, e.g. "~15 min" or "~2 week field cycle" — never calendar quarters or years before 2026)`;
+
+const STORYBOARD_OUTPUT_SCHEMA = `Output JSON only with these fields:
+- title (max 6 words)
+- body (max 2 sentences for the 30s ad)
+- scenes (exactly 5 objects: beat 1–5, timing e.g. "0–3s", title, shot, vo, onScreen, frameStyle one of retail|macro|lifestyle|product|brand)
+- bullets (exactly 5 one-line scene summaries)
+- recommendations (exactly 3 creative hooks)
+- nextSteps (exactly 2)
+- status ("ready")
+- eta (e.g. "~6 min")`;
+
+const CREATIVE_BRIEF_OUTPUT_SCHEMA = `Output JSON only with these fields:
+- title (max 6 words, include "Creative brief")
+- body (max 2 sentences)
+- messaging (exactly 5 bullets: tone, hooks, platform copy directions)
+- positioning (exactly 5 bullets: shelf story, competitive frame, RTB, portfolio fit)
+- recommendations (exactly 3)
+- status ("ready")
+- eta (e.g. "~5 min")`;
 
 const followUpNote = (ctx: ActionContext) => {
   if (!ctx.completedActions?.length && !ctx.priorResults?.length) return "";
@@ -157,7 +176,7 @@ export const buildHeroFilmPrompt = async (
       [
         researchContext(ctx),
         "",
-        `Hero SKU: ${hero.sku}`,
+        `Hero product: ${hero.sku}`,
         `Display name: ${hero.title || hero.sku}`,
         `Lane: ${hero.lane}`,
         "",
@@ -166,7 +185,7 @@ export const buildHeroFilmPrompt = async (
         "Do NOT include honey pours, syrup drizzle, liquid close-ups, cooking, or people.",
         "Output only the prompt text — no quotes, labels, or JSON.",
       ].join("\n"),
-      "You write precise FMCG product film prompts for Nova Reel. The video must match the named SKU and research insight."
+      "You write precise FMCG product film prompts for Nova Reel. The video must match the named product and research insight."
     );
     const cleaned = text?.trim().replace(/^["']|["']$/g, "") || "";
     return cleaned.length > 40 ? cleaned.slice(0, 512) : fallback;
@@ -185,20 +204,22 @@ export const runActionWithLLM = async (
   const systems: Record<string, string> = {
     concept_cards:
       "You are a Britannia India innovation strategist. Output JSON: concepts (array of 3: title, sku, lane, tagline, imagePrompt for professional packshot photo). Ground in Flavor Insights data only.",
-    content_engine: `You are a content strategist for Britannia India. ${ACTION_OUTPUT_SCHEMA}`,
     fpd_scout: `You are an FMCG field product discovery lead for Britannia India. ${ACTION_OUTPUT_SCHEMA} For FPD, prioritize 2–3 states from the dataset with concrete flavor white-space and field validation plans.`,
     triangulate_1ds: `You are a data triangulation analyst linking social flavor insights to 1DS sales for Britannia India. ${ACTION_OUTPUT_SCHEMA} Link social buzz metrics to sell-out hypotheses by state.`,
-    storyboard: `You are a video creative director for Britannia India. ${ACTION_OUTPUT_SCHEMA} bullets should be 5 scene beats for a 30s video ad (shot, VO, on-screen text, timing). recommendations should be messaging hooks.`,
-    positioning: `You are a brand strategist for Britannia India. ${ACTION_OUTPUT_SCHEMA} Focus on shelf story, competitive frame, and Britannia portfolio fit for the selected flavor-state pair.`,
+    storyboard: `You are a video creative director for Britannia India. ${STORYBOARD_OUTPUT_SCHEMA}`,
+    creative_brief: `You are a brand and content strategist for Britannia India. ${CREATIVE_BRIEF_OUTPUT_SCHEMA} Merge messaging and positioning into one agency-ready brief.`,
+    positioning: `You are a brand strategist for Britannia India. ${CREATIVE_BRIEF_OUTPUT_SCHEMA}`,
+    content_engine: `You are a content strategist for Britannia India. ${CREATIVE_BRIEF_OUTPUT_SCHEMA}`,
   };
 
   const prompts: Record<string, string> = {
     concept_cards: `Create 3 product concept cards with detailed packshot image prompts.\n\n${context}${extra}`,
-    content_engine: `Draft platform-specific messaging: copy directions, tone guidelines, and hook frameworks for the selected flavor-state pair.\n\n${context}${extra}`,
+    content_engine: `Draft a unified creative brief: messaging, tone, hooks, and positioning for the selected flavor-state pair.\n\n${context}${extra}`,
+    creative_brief: `Draft a unified creative brief: messaging, tone, hooks, and positioning for the selected flavor-state pair.\n\n${context}${extra}`,
     fpd_scout: `Draft an FPD (field product discovery) scout brief. Name specific states, sweet/savory flavors from the dataset, and what field reps should validate in trade.\n\n${context}${extra}`,
     triangulate_1ds: `Draft a 1DS triangulation plan linking social flavor themes to sell-out velocity by state.\n\n${context}${extra}`,
-    storyboard: `Draft a 30-second video ad storyboard for the selected flavor and state. Scene-by-scene with shot descriptions, voiceover, on-screen text, and timing.\n\n${context}${extra}`,
-    positioning: `Draft positioning and product story recommendations for the selected flavor-state pair.\n\n${context}${extra}`,
+    storyboard: `Draft a 30-second video ad storyboard mock-up for the selected flavor and state. Full scene objects with shot, VO, on-screen text, and timing.\n\n${context}${extra}`,
+    positioning: `Draft a unified creative brief (messaging + positioning) for the selected flavor-state pair.\n\n${context}${extra}`,
   };
 
   return generateJSON(prompts[actionId] || prompts.concept_cards, systems[actionId]);
@@ -225,11 +246,11 @@ export const generateFollowUpRecommendations = async (ctx: ActionContext) => {
 - intro (1 sentence — why these next steps, grounded in the research)
 - suggestions (array of 2–3 objects: actionId must be one of [${remaining.join(", ")}], reason max 20 words, priority 1–3 where 1 is highest)`
     );
-    if (!data?.suggestions?.length) return null;
+    if (!data?.suggestions || !Array.isArray(data.suggestions) || data.suggestions.length === 0) return null;
     return {
       intro: data.intro || "Based on what you've done, here's what to run next.",
-      suggestions: data.suggestions.filter((s: { actionId?: string }) =>
-        remaining.includes(s.actionId as (typeof ACTION_IDS)[number])
+      suggestions: data.suggestions.filter((s: any) =>
+        remaining.includes(s.actionId)
       ),
       llm: true,
     };

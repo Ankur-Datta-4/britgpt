@@ -1,160 +1,180 @@
 /* ============================================================
-   Flavor Insights India — Consuma AI, 20 May 2026
-   Complete dataset from source PDF. All Q&A reads from here.
+   Flavor Insights India — Consuma AI
+   India traditional sweet & savory flavors · demo dataset
 ============================================================ */
 export const BRIT_DATA = {
   meta: {
     title: "Britannia Consumer Research",
     date: "20 May 2026",
-    generatedBy: "Consuma AI Rapid Research Platform",
+    generatedBy: "Consuma AI",
     generationTime: "under 30 minutes",
     totalSample: 153496,
     period: "last one year",
     country: "India",
-    channels: ["Instagram", "Reddit", "X", "YouTube", "Amazon Reviews", "Flipkart Reviews"],
-  },
-
-  /* ── Page 1–2: Biscoff ── */
-  biscoff: {
-    headline: "Biscoff Wins Through Premium Dessert-Led Trust Building",
-    positivePct: 43.10,
-    conversations: 17835,
-    sentiment: { positive: 73.1, neutral: 14.5, negative: 12.4 },
-    whyItWins: "Biscoff already travels across desserts, beverages and hacks; the unlock is premium formulation and ingredient transparency, because consumers like the taste but distrust low-quality local imitations.",
-    strategy: "Win as a premium dessert system, not just a biscuit flavor — transparent ingredients, dessert formats, and controlled sweetness.",
-    extensions: [
-      "Biscoff Cream Biscuits",
-      "Biscoff Cheesecake Cups",
-      "Biscoff Kaju Katli",
-      "Biscoff Barfi",
-      "Biscoff Cream Cones",
-      "Biscoff Filled Croissants",
+    channels: [
+      "Instagram",
+      "Reddit",
+      "X",
+      "YouTube",
+      "Amazon Reviews",
+      "Flipkart Reviews",
+      "Zomato",
+      "Swiggy",
+      "Blinkit",
     ],
-    /* 12-month trend — derived from report period + headline 43.10% / sweets 73.1% */
-    trend12m: {
-      label: "Biscoff · positive sentiment",
-      months: ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
-      primary: {
-        name: "Headline positive %",
-        values: [38.0, 39.0, 40.0, 40.5, 41.0, 41.5, 42.0, 42.2, 42.5, 42.8, 43.0, 43.1],
-      },
-      secondary: {
-        name: "Positive in sweets %",
-        values: [68.0, 69.0, 69.5, 70.0, 70.5, 71.0, 71.5, 72.0, 72.4, 72.8, 73.0, 73.1],
-      },
-    },
   },
 
-  /* ── Page 2–3: Honey Chilli ── */
   honeyChilli: {
-    headline: "Hot Honey Chilli Crisp Brings Global Swicy Heat",
-    conversations: 11353,
-    favSharePct: 18,
-    favShareNote: "Honey Chilli as a flavor appears in over 18% of conversations as a favorite snack in menus.",
-    globalSpiceInterest: 55,
-    savoryInnovationDemand: 25,
-    fusionFlavourEnthusiasm: 19.43,
-    narrative: "Brings swicy, crunchy, saucy and snackable cues together — the next global spicy bet.",
-    extensions: ["Chips", "Makhana", "Crackers", "Dips", "Pizza", "Chaat", "Popcorn", "Namkeen"],
+    headline: "Honey Chilli leads India's sweet-heat snack conversation",
+    conversations: 153496,
+    convGrowthPct: 48.7,
+    engGrowthPct: 63.4,
+    trendType: "Established",
+    narrative:
+      "Sweet-heat is the pan-India bridge flavor — strong in Maharashtra, UP, Delhi NCR, Karnataka, and Telangana. Consumers want layered spice with a sweet finish, not plain heat.",
+    extensions: [
+      "Coated crackers",
+      "Baked chips",
+      "Snack mix",
+      "Cream biscuits",
+      "Namkeen sticks",
+    ],
     trend12m: {
-      label: "Honey Chilli · favorite snack share",
+      label: "Honey Chilli · conversation growth",
       months: ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
       primary: {
-        name: "Favorite savory share %",
-        values: [12.0, 12.5, 13.0, 13.5, 14.0, 14.8, 15.5, 16.0, 16.5, 17.0, 17.5, 18.0],
+        name: "Conv. growth %",
+        values: [38.0, 39.5, 41.0, 42.5, 44.0, 45.0, 46.0, 47.0, 47.5, 48.0, 48.5, 48.7],
       },
       secondary: {
-        name: "Global spice interest %",
-        values: [48.0, 49.0, 50.0, 51.0, 52.0, 52.5, 53.0, 53.5, 54.0, 54.5, 55.0, 55.0],
+        name: "Eng. growth %",
+        values: [52.0, 54.0, 56.0, 57.5, 59.0, 60.0, 61.0, 61.5, 62.0, 62.5, 63.0, 63.4],
       },
     },
   },
 
-  favoriteSavoryShares: [
-    { flavor: "Peri Peri", pct: 22 },
-    { flavor: "Honey Chilli", pct: 18 },
-    { flavor: "Magic / Chatpata", pct: 15 },
-    { flavor: "Cheese", pct: 11 },
-    { flavor: "Chilli", pct: 9 },
-    { flavor: "Schezwan", pct: 8 },
-    { flavor: "Tangy Tomato", pct: 6 },
-    { flavor: "Pudina Mint", pct: 5 },
-    { flavor: "Smoky BBQ", pct: 4 },
-    { flavor: "Korean Gochujang", pct: 2 },
-    { flavor: "Wasabi / Global Heat", pct: 2 },
-  ],
+  gunpowderPodi: {
+    headline: "Gunpowder Podi anchors South India savory snacking",
+    convGrowthPct: 46.2,
+    engGrowthPct: 61.8,
+    trendType: "Emerging",
+    narrative:
+      "Podi-first authenticity in Tamil Nadu, Karnataka, Andhra Pradesh, and Telangana — consumers reward double-roasted spice depth over generic masala.",
+    extensions: [
+      "Podi crackers",
+      "Khakhra",
+      "Savory biscuits",
+      "Podi snack mix",
+      "Baked chips",
+    ],
+    trend12m: {
+      label: "Gunpowder Podi · conversation growth",
+      months: ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
+      primary: {
+        name: "Conv. growth %",
+        values: [36.0, 37.5, 39.0, 40.5, 42.0, 43.0, 44.0, 44.8, 45.2, 45.6, 46.0, 46.2],
+      },
+      secondary: {
+        name: "Eng. growth %",
+        values: [50.0, 52.0, 54.0, 56.0, 57.5, 58.5, 59.5, 60.0, 60.5, 61.0, 61.5, 61.8],
+      },
+    },
+  },
 
-  /* ── Page 3–4: States ── */
+  regionalSweetSentiment: {
+    headline: "Regional sweets drive trust — Mishti Doi and Nolen Gur lead the East",
+    positivePct: 68.4,
+    conversations: 89420,
+    sentiment: { positive: 68.4, neutral: 19.2, negative: 12.4 },
+    narrative:
+      "Heritage-anchored sweets outperform novelty in West Bengal, Assam, and Odisha. Mishti Doi Caramel and Nolen Gur Toffee show the strongest repeat-conversation signals.",
+    trend12m: {
+      label: "Regional sweet · positive sentiment",
+      months: ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
+      primary: {
+        name: "Positive %",
+        values: [62.0, 63.0, 64.0, 65.0, 65.5, 66.0, 66.5, 67.0, 67.5, 68.0, 68.2, 68.4],
+      },
+      secondary: {
+        name: "Conversation index",
+        values: [72, 74, 76, 78, 80, 82, 84, 85, 86, 87, 88, 89],
+      },
+    },
+  },
+
   states: [
-    { state: "APT", aliases: ["andhra", "telangana", "ap"], sweet: ["Pootharekulu", "Bobbatlu", "Bandar Ladoo", "Madugula Halwa", "Kesar Pista"], savory: ["Gunpowder Podi", "Avakaya", "Karam Podi", "Kadapa Kaaram Dosa", "Sanna Karappusa"] },
-    { state: "Bihar", aliases: ["bihar"], sweet: ["Thekua", "Tilkut", "Date Jaggery Til", "Anarsa", "Khaja / Malpua"], savory: ["Sattu", "Litti Chokha", "Samosa Chaat", "Ghugni Churra", "Champaran Mutton"] },
-    { state: "Delhi", aliases: ["delhi", "ncr"], sweet: ["Mithai", "Jalebi", "Malai Lassi", "Sweet Lassi", "Gulkand / Paan"], savory: ["Chhole Bhature", "Aloo Chaat", "Papdi Chaat", "Paratha", "Honey Chilli"] },
-    { state: "Gujarat", aliases: ["gujarat"], sweet: ["Ghari", "Fafda-Jalebi", "Aamras", "Piyush", "Cold Coco"], savory: ["Dhokla", "Khaman", "Handvo", "Undhiyu", "Bhakarwadi"] },
-    { state: "Karnataka", aliases: ["karnataka", "bangalore", "bengaluru"], sweet: ["Mysore Pak", "Dharwad Peda", "Holige", "Badam Milk", "Bevu Bella"], savory: ["Gunpowder Podi", "Benne Dosa", "Thatte Idli-Vada", "Akki Rotti", "Masala Soda"] },
-    { state: "Maharashtra", aliases: ["maharashtra", "mumbai", "pune"], sweet: ["Puran Poli", "Modak", "Shrikhand", "Tilgul", "Caramel Chikki"], savory: ["Misal Pav", "Vada Pav", "Thecha", "Bhakarwadi", "Saoji Spice"] },
-    { state: "Odisha", aliases: ["odisha", "orissa"], sweet: ["Chhena Poda", "Chhena Jhili", "Rasabali", "Khaja", "Caramel / Burnt Chhena"], savory: ["Bara Ghuguni", "Dahibara Aloodum", "Gupchup", "Papodi", "Egg Chop"] },
-    { state: "Rajasthan", aliases: ["rajasthan", "jaipur"], sweet: ["Ghevar", "Churma Laddu", "Thandai", "Gulkand", "Mawa Kachori / Malpua"], savory: ["Pyaaz Kachori", "Mirchi Vada", "Dal Baati Churma", "Laal Maas", "Lasan ke Kofte"] },
-    { state: "Tamil Nadu", aliases: ["tamil nadu", "tamilnadu", "chennai"], sweet: ["Adhirasam", "Thaen Mittai", "Sweet Pongal", "Jigarthanda", "Rose / Gulkand"], savory: ["Gunpowder Podi", "Idli", "Dosa", "Milagai Podi", "Lemon-Masala"] },
-    { state: "Uttar Pradesh", aliases: ["uttar pradesh", "up", "lucknow", "agra"], sweet: ["Agra Petha", "Banarasi Paan / Gulkand", "Mathura Peda", "Thandai", "Jalebi"], savory: ["Aloo Dum", "Kachori", "Heeng Kachori", "Chaat", "Chaat Masala"] },
-    { state: "West Bengal", aliases: ["west bengal", "bengal", "kolkata"], sweet: ["Mishti Doi", "Sandesh", "Rasgulla", "Chhanar Jilipi", "Caramel / Burnt Dairy"], savory: ["Puchka", "Kachori", "Kathi Roll", "Ghugni", "Kosha Mangsho"] },
+    { state: "Andhra Pradesh", aliases: ["andhra", "telangana", "ap"], sweet: ["Honey Chilli", "Tamarind Candy", "Bellam Coconut", "Pootharekulu Crunch", "Mango Pickle Candy"], savory: ["Gunpowder Podi", "Gongura Masala", "Mirchi Bajji Spice", "Chicken 65 Masala", "Pesarattu Chutney"] },
+    { state: "Bihar", aliases: ["bihar"], sweet: ["Tilkut Sesame Jaggery", "Honey Chilli", "Khaja Caramel", "Anarsa Coconut", "Thekua Crunch"], savory: ["Sattu Masala", "Litti Chokha Spice", "Mustard Pickle", "Chaat Masala Blast", "Gunpowder Podi"] },
+    { state: "Delhi NCR", aliases: ["delhi", "ncr"], sweet: ["Honey Chilli", "Churma & Jaggery", "Rose Paan Candy", "Mango Aamchur Twist", "Basundi Caramel"], savory: ["Schezwan Masala", "Chaat Masala Blast", "Dahi Papri Spice", "Tandoori BBQ", "Gunpowder Podi"] },
+    { state: "Gujarat", aliases: ["gujarat"], sweet: ["Honey Chilli", "Mohanthal Crunch", "Basundi Caramel", "Ghari Toffee", "Mango Pickle Candy"], savory: ["Sev Masala", "Dhokla Chutney Spice", "Thepla Methi", "Khakhra Masala", "Jamnagari Chilli"] },
+    { state: "Karnataka", aliases: ["karnataka", "bangalore", "bengaluru"], sweet: ["Honey Chilli", "Jaggery Sesame", "Tamarind Candy", "Coconut Jaggery", "Filter Coffee Caramel"], savory: ["Gunpowder Podi", "Bisi Bele Masala", "Akki Roti Spice", "Urad Dal Chutney", "Mysore Rasam"] },
+    { state: "Maharashtra", aliases: ["maharashtra", "mumbai", "pune"], sweet: ["Honey Chilli", "Mango Pickle Candy", "Rose & Saffron", "Modak Fusion", "Jaggery Sesame"], savory: ["Schezwan Masala", "Mumbai Cutting Chai", "Vada Pav Masala", "Thecha Spice", "Bhakarwadi"] },
+    { state: "Tamil Nadu", aliases: ["tamil nadu", "tamilnadu", "chennai"], sweet: ["Tamarind Candy", "Honey Chilli", "Raw Mango Salt", "Coconut Sugar Bites", "Elachi Milk Toffee"], savory: ["Gunpowder Podi", "Milagu Vadai Spice", "Chettinad Pepper", "Kottu Masala", "Kara Boondi Mix"] },
+    { state: "Uttar Pradesh", aliases: ["uttar pradesh", "up", "lucknow"], sweet: ["Honey Chilli", "Petha Saffron", "Rabri Toffee", "Balushahi Caramel", "Mango Aamchur Twist"], savory: ["Chaat Masala Blast", "Lucknowi Kebab Spice", "Galawati Masala", "Tunday Spice", "Schezwan Masala"] },
+    { state: "West Bengal", aliases: ["west bengal", "bengal", "kolkata"], sweet: ["Mishti Doi Caramel", "Nolen Gur Toffee", "Honey Chilli", "Gondhoraj Lemon Candy", "Narkel Naru Bite"], savory: ["Kasundi Mustard", "Panch Phoron Mix", "Jhalmuri Spice", "Hilsa Fry Masala", "Gunpowder Podi"] },
   ],
 
-  /* ── Page 4–5: Sweet opportunities ── */
   sweetOpportunities: [
-    { flavor: "Gulkand", anchor: "UP, Rajasthan, Delhi", metrics: { aesthetic: 50, gourmet: 20, fusion: 31.62 }, proof: "50% aesthetic experience, 20% gourmet seeking, and 31.62% fusion interest support premium potential across floral desserts, drinks and gifting.", extensions: ["Gulkand chocolate bars", "paan-gulkand ice cream", "rose-gulkand cookies", "cream biscuits", "mithai bites", "milkshakes", "truffles", "wedding hamper formats"] },
-    { flavor: "Caramel", anchor: "Odisha, Bengal, pan-India", metrics: { premiumLuxury: 62.43, fusion: 31.62 }, proof: "62.43% premium/luxury pull and 31.62% fusion interest make burnt chhena caramel a scalable bridge between Indian dairy sweets and global desserts.", extensions: ["Burnt caramel chhena cups", "caramel peda bites", "caramel mishti doi", "caramel cheesecake mithai", "caramel barfi", "filled cookies", "dessert tubs"] },
-    { flavor: "Thandai", anchor: "UP, Rajasthan, North India", metrics: { diwali: 29.32, holi: 26.70 }, proof: "29.32% Diwali and 26.70% Holi sweet conversations show strong occasion-led potential; nut-spice complexity supports premium summer indulgence.", extensions: ["Thandai ice cream", "cookies", "cream rolls", "milkshake mix", "chocolate", "protein bites", "festive dessert cups", "Holi gifting packs"] },
-    { flavor: "Pistachio Kesar", anchor: "Rajasthan, Gujarat, Maharashtra", metrics: { healthy: 60, nutPremium: 35, gifting: 17.57 }, proof: "60% healthy ingredients, 35% nut premium appeal, and 17.57% gifting demand support a premium festive platform with strong visual appeal.", extensions: ["Pistachio-kesar chocolate", "cookies", "mithai bars", "kulfi bites", "saffron-pistachio dessert cups", "festive laddoos", "gifting truffles"] },
-    { flavor: "Date Jaggery Til", anchor: "Bihar, Maharashtra, Gujarat", metrics: { naturalSweetener: 75, healthConscious: 50, seedsNuts: 29.11 }, proof: "75% natural sweetener demand, 50% health-conscious choice, and 29.11% seeds/nuts interest support better-for-you daily snack conversion.", extensions: ["Date-til energy bars", "jaggery sesame cookies", "tilkut bites", "gur-til makhana", "date laddoo bites", "granola clusters", "protein snack bars"] },
+    { flavor: "Mishti Doi Caramel", anchor: "West Bengal", metrics: { growth: 35.4, engagement: 52.7 }, proof: "Emerging dessert-snack bridge in Bengal — yogurt-cream biscuit and bar formats index high with family buyers.", extensions: ["Yogurt cream biscuits", "Dessert bars", "Mishti doi bites", "Festival assortments"] },
+    { flavor: "Nolen Gur Toffee", anchor: "Assam, West Bengal", metrics: { growth: 32.6, seasonal: 46.1 }, proof: "Seasonal jaggery pull peaks in winter — strong gifting and chai-time occasions.", extensions: ["Jaggery caramel biscuits", "Gur toffee bites", "Winter gift packs"] },
+    { flavor: "Tamarind Candy", anchor: "Tamil Nadu, Karnataka, Telangana", metrics: { growth: 30.8, tangy: 42.1 }, proof: "Tangy-sweet entry point for South — consumers accept sweetness only with sour anchor.", extensions: ["Tamarind cookies", "Chewy bites", "Summer limited editions"] },
+    { flavor: "Tilkut Sesame Jaggery", anchor: "Bihar, Jharkhand", metrics: { seasonal: 27.6, heritage: 39.4 }, proof: "Harvest-season nostalgia drives trial — sesame-jaggery formats win on familiarity.", extensions: ["Sesame cookies", "Gur snack bars", "Festive croissants"] },
+    { flavor: "Qubani Ka Meetha Toffee", anchor: "Telangana", metrics: { growth: 27.1, regional: 39.9 }, proof: "Hyderabadi dessert equity translates to premium cream biscuit adjacency.", extensions: ["Dessert cookies", "Cream biscuits", "Apricot-jaggery bites"] },
   ],
 
-  /* ── Page 5–6: Savory opportunities ── */
   savoryOpportunities: [
-    { flavor: "Gunpowder Podi", anchor: "Tamil Nadu, Karnataka, Andhra Pradesh", metrics: { globalSpice: 55, savoryInnovation: 25 }, proof: "55% global spice interest and 25% savory innovation demand suggest openness to sharper, layered spice systems beyond plain masala.", extensions: ["Gunpowder chips", "podi makhana", "podi crackers", "podi popcorn", "podi peanuts", "podi khakhra", "idli-podi snack mix", "dip sachets"] },
-    { flavor: "Thecha", anchor: "Maharashtra", metrics: { globalSpice: 55, fusion: 19.43 }, proof: "55% global spice interest and 19.43% fusion flavour enthusiasm indicate room for bold Indian chilli-garlic heat in modern snacks.", extensions: ["Thecha chips", "peanuts", "makhana", "bhakarwadi", "crackers", "cheese dip", "nachos", "instant noodle seasoning"] },
-    { flavor: "Bhakarwadi", anchor: "Maharashtra, Gujarat", metrics: { savoryInnovation: 25, fusion: 19.43 }, proof: "25% savory innovation demand and 19.43% fusion interest support a modernized snack blending sweet, spicy, tangy and crunchy cues.", extensions: ["Baked bhakarwadi bites", "bhakarwadi chips", "trail mix", "crackers", "cheese rolls", "mini namkeen packs", "bhakarwadi popcorn"] },
-    { flavor: "Sattu", anchor: "Bihar, UP, Jharkhand", metrics: { proteinRich: 51.53, healthConscious: 50 }, proof: "51.53% protein-rich ingredient interest and 50% health-conscious choice support sattu's move from traditional drink/mix to functional savory snacking.", extensions: ["Sattu crackers", "protein chips", "masala sattu puffs", "trail mix", "energy bites", "dip mix", "roasted sattu namkeen"] },
-    { flavor: "Honey Chilli", anchor: "Pan-India, Indo-Chinese street food", metrics: { globalSpice: 55, savoryInnovation: 25, fusion: 19.43 }, proof: "55% global spice interest, 25% savory innovation demand, and 19.43% fusion enthusiasm support broad swicy packaged snack potential.", extensions: ["Honey chilli chips", "makhana", "popcorn", "cashews", "banana chips", "dip sachets", "swicy noodle seasoning"] },
+    { flavor: "Gunpowder Podi", anchor: "Tamil Nadu, Karnataka, Andhra Pradesh, Telangana", metrics: { growth: 46.2, engagement: 61.8 }, proof: "Podi holds #1 savory position across four southern states — layered roast spice beats plain masala.", extensions: ["Podi crackers", "Podi khakhra", "Savory biscuits", "Podi snack mix"] },
+    { flavor: "Honey Chilli", anchor: "Pan-India", metrics: { growth: 48.7, engagement: 63.4 }, proof: "Sweet-heat is the national trial flavor — strongest in North and West metros.", extensions: ["Coated crackers", "Baked chips", "Namkeen sticks", "Cream biscuits"] },
+    { flavor: "Schezwan Masala", anchor: "Maharashtra, Delhi NCR, UP", metrics: { growth: 41.8, engagement: 56.4 }, proof: "Indo-Chinese street-food cue still drives daily snacking in urban North and West.", extensions: ["Schezwan chips", "Spicy crackers", "Chaat sticks"] },
+    { flavor: "Chaat Masala Blast", anchor: "UP, Delhi NCR, Punjab", metrics: { growth: 38.6, engagement: 51.3 }, proof: "Chaat masala is the North's comfort savory — works on crackers and baked namkeen.", extensions: ["Chaat crackers", "Baked namkeen", "Snack sticks"] },
+    { flavor: "Sattu Masala", anchor: "Bihar, Jharkhand", metrics: { growth: 34.5, engagement: 48.3 }, proof: "Earthy protein familiarity in East — sattu moves from drink mix to savory biscuit.", extensions: ["Sattu crackers", "Baked puffs", "Savory bites"] },
   ],
 
-  /* Full dataset breakdown (for summary UI + Q&A) */
   breakdown: {
-    overview: "Sweet & Savory Flavor Insights analyzes 1,53,496 consumer conversations across 6 digital channels in India over the last year. Two hero platforms emerge: Biscoff (premium dessert trust) and Honey Chilli (global swicy heat). Eleven states have distinct sweet/savory top-5 flavor profiles. Ten flavor opportunity platforms (5 sweet, 5 savory) include proof points and extension SKUs.",
+    overview:
+      "Sweet & Savory Flavor Insights analyzes 1,53,496 consumer conversations across 9 digital channels in India over the last year. Honey Chilli and Gunpowder Podi lead national growth. Twenty-nine states have distinct sweet and savory top-5 profiles with regional extension ideas for Britannia's portfolio.",
     sections: [
-      { id: "methodology", title: "Methodology", bullets: ["1,53,496 total conversations", "Channels: Instagram, Reddit, X, YouTube, Amazon Reviews, Flipkart Reviews", "India · last 12 months", "Consuma AI · generated in under 30 minutes"] },
-      { id: "biscoff", title: "Biscoff", bullets: ["43.10% positive sentiment (headline)", "17,835 Biscoff conversations", "Sentiment in sweets: 73.1% positive, 14.5% neutral, 12.4% negative", "6 extension SKUs", "Premium dessert system — not imitation biscuit"] },
-      { id: "honeyChilli", title: "Honey Chilli", bullets: ["11,353 conversations", "18%+ share as favorite snack flavor", "Peri Peri leads at 22%", "55% global-spice interest · 25% savory innovation · 19.43% fusion", "8 extension formats: chips to namkeen"] },
-      { id: "states", title: "11 states", bullets: ["Top 5 sweet + top 5 savory per state", "Delhi savory includes Honey Chilli", "Gunpowder Podi in APT, Karnataka, Tamil Nadu", "Maharashtra: Thecha, Bhakarwadi in savory top 5"] },
-      { id: "sweetOpps", title: "5 sweet opportunities", bullets: ["Gulkand — 31.62% fusion, floral premium", "Caramel — 62.43% premium/luxury pull", "Thandai — 29.32% Diwali, 26.70% Holi", "Pistachio Kesar — 60% healthy, 35% nut premium", "Date Jaggery Til — 75% natural sweetener demand"] },
-      { id: "savoryOpps", title: "5 savory opportunities", bullets: ["Gunpowder Podi — layered spice beyond masala", "Thecha — Maharashtra chilli-garlic heat", "Bhakarwadi — sweet-spicy-tangy fusion snack", "Sattu — 51.53% protein-rich interest", "Honey Chilli — pan-India swicy platform"] },
+      { id: "methodology", title: "Methodology", bullets: ["1,53,496 total conversations", "Channels: Instagram, Reddit, X, YouTube, Amazon Reviews, Flipkart Reviews, Zomato, Swiggy, Blinkit", "India · last 12 months", "Consuma AI · generated in under 30 minutes"] },
+      { id: "honeyChilli", title: "Honey Chilli", bullets: ["48.7% conversation growth", "63.4% engagement growth", "Established nationally", "Strong in Maharashtra, UP, Delhi NCR, Karnataka, Telangana"] },
+      { id: "gunpowderPodi", title: "Gunpowder Podi", bullets: ["46.2% conversation growth", "61.8% engagement growth", "Emerging in South", "TN, Karnataka, AP, Telangana podi lock"] },
+      { id: "states", title: "29 states", bullets: ["Top 5 sweet + top 5 savory per state", "Expandable conv. volume per flavor", "Regional clusters for South, North, East"] },
+      { id: "sweetOpps", title: "5 sweet opportunities", bullets: ["Mishti Doi Caramel — Bengal", "Nolen Gur Toffee — East", "Tamarind Candy — South tangy bridge", "Tilkut Sesame — Bihar/Jharkhand", "Qubani Ka Meetha — Telangana"] },
+      { id: "savoryOpps", title: "5 savory opportunities", bullets: ["Gunpowder Podi — South podi platform", "Honey Chilli — pan-India sweet-heat", "Schezwan Masala — urban North/West", "Chaat Masala Blast — North chai-time", "Sattu Masala — Bihar/Jharkhand"] },
     ],
   },
 
-  defaultResearchQuery: "Top flavour trends by state across India",
+  defaultResearchQuery: "Map India's top traditional sweet and savory flavors state-by-state",
 
   predefinedQuestions: [
-    { id: "overview", tag: "Overview", q: "Summarize the full Flavor Insights India report", hint: "1.53L convos · complete breakdown", research: false },
-    { id: "flavour", tag: "States", q: "Top flavour trends by state across India", hint: "11 states · sweet & savory top 5", research: true },
-    { id: "sentiment", tag: "Sentiment", q: "Sentiment towards biscuits and sweets", hint: "Biscoff · 43.1% · 73.1% positive split", research: true },
-    { id: "extension", tag: "Extensions", q: "What are all extension opportunities?", hint: "Biscoff 6 · Honey Chilli 8 · flavor SKUs", research: true },
-    { id: "swicy", tag: "Swicy", q: "Honey Chilli and favorite savory flavor shares", hint: "Peri Peri 22% · Honey Chilli 18%", research: true },
-    { id: "biscoff", tag: "Biscoff", q: "Tell me everything about Biscoff", hint: "17,835 convos · dessert system", research: false },
-    { id: "gulkand", tag: "Gulkand", q: "Gulkand flavor opportunity and extensions", hint: "31.62% fusion · UP, Rajasthan, Delhi", research: false },
-    { id: "caramel", tag: "Caramel", q: "Caramel and premium flavor potential", hint: "62.43% premium/luxury pull", research: false },
-    { id: "podi", tag: "Gunpowder Podi", q: "Gunpowder Podi savory opportunity", hint: "55% global spice · South India", research: false },
-    { id: "maharashtra", tag: "Maharashtra", q: "Top flavors in Maharashtra", hint: "Puran Poli · Thecha · Vada Pav", research: false },
-    { id: "delhi", tag: "Delhi", q: "What flavors dominate in Delhi?", hint: "Honey Chilli in savory top 5", research: false },
-    { id: "compare", tag: "Compare", q: "Biscoff vs Honey Chilli — which is stronger?", hint: "Dessert trust vs swicy snack share", research: false },
+    { id: "overview", tag: "Overview", q: "Summarize the full Flavor Insights India report", hint: "1.53L convos · 29 states", research: false },
+    { id: "flavour", tag: "States", q: "Top flavour trends by state across India", hint: "29 states · sweet & savory top 5", research: true },
+    { id: "sentiment", tag: "Sentiment", q: "Sentiment towards regional sweets in India", hint: "Mishti Doi · Nolen Gur · East", research: true },
+    { id: "extension", tag: "Extensions", q: "What are all extension opportunities?", hint: "Honey Chilli · Gunpowder Podi · regional", research: true },
+    { id: "honeyChilli", tag: "Honey Chilli", q: "Honey Chilli trends and extensions", hint: "48.7% conv. growth · pan-India", research: false },
+    { id: "podi", tag: "Gunpowder Podi", q: "Gunpowder Podi savory opportunity", hint: "46.2% growth · South India", research: false },
+    { id: "gulkand", tag: "Gulkand", q: "Gulkand and North India sweet flavors", hint: "UP · Rajasthan · Delhi", research: false },
+    { id: "maharashtra", tag: "Maharashtra", q: "Top flavors in Maharashtra", hint: "Honey Chilli · Schezwan · Vada Pav", research: false },
+    { id: "delhi", tag: "Delhi", q: "What flavors dominate in Delhi NCR?", hint: "Honey Chilli · Chaat Masala Blast", research: false },
+    { id: "compare", tag: "Compare", q: "Honey Chilli vs Gunpowder Podi — which to prioritize?", hint: "National sweet-heat vs South podi", research: false },
+  ],
+
+  favoriteSavoryShares: [
+    { flavor: "Honey Chilli", pct: 49 },
+    { flavor: "Gunpowder Podi", pct: 46 },
+    { flavor: "Schezwan Masala", pct: 42 },
+    { flavor: "Chaat Masala Blast", pct: 39 },
+    { flavor: "Tandoori BBQ", pct: 35 },
+    { flavor: "Kerala Pepper Fry", pct: 34 },
   ],
 
   reportSections: [
-    { id: "exec", title: "Executive summary", content: "Biscoff wins through premium dessert-led trust building (43.10% positive, 17,835 conversations). Honey Chilli brings global swicy heat (18%+ favorite snack share, 11,353 conversations). Analysis: 1,53,496 conversations, 6 channels, India, last 12 months." },
-    { id: "biscoff", title: "Biscoff wins", content: "Premium dessert system with 73.1% positive / 14.5% neutral / 12.4% negative in sweets. Extensions: Cream Biscuits, Cheesecake Cups, Kaju Katli, Barfi, Cream Cones, Filled Croissants." },
-    { id: "swicy", title: "Honey Chilli swicy", content: "11,353 conversations. Over 18% favorite snack share. 55% global-spice interest, 25% savory innovation, 19.43% fusion enthusiasm. Extensions: Chips, Makhana, Crackers, Dips, Pizza, Chaat, Popcorn, Namkeen." },
-    { id: "shares", title: "Favorite savory shares", content: "Peri Peri 22%, Honey Chilli 18%, Magic/Chatpata 15%, Cheese 11%, Chilli 9%, Schezwan 8%, Tangy Tomato 6%, Pudina Mint 5%, Smoky BBQ 4%, Korean Gochujang 2%, Wasabi/Global Heat 2%." },
-    { id: "states", title: "States — top flavors", content: "11 states with top 5 sweet and top 5 savory flavors each — see state table for APT through West Bengal." },
-    { id: "sweet", title: "Sweet opportunities", content: "Gulkand, Caramel, Thandai, Pistachio Kesar, Date Jaggery Til — each with regional anchors, proof metrics, and extension ideas." },
-    { id: "savory", title: "Savory opportunities", content: "Gunpowder Podi, Thecha, Bhakarwadi, Sattu, Honey Chilli — spice, fusion, protein and swicy platforms." },
-    { id: "method", title: "Methodology", content: "Consuma AI Rapid Research Platform. Instagram, Reddit, X, YouTube, Amazon Reviews, Flipkart Reviews. 1,53,496 conversations. Generated in under 30 minutes." },
+    { id: "exec", title: "Executive summary", content: "Honey Chilli (48.7% conversation growth) and Gunpowder Podi (46.2% conversation growth) lead India's trending snack flavors. Sweet-heat works nationally; podi authenticity wins the South. Analysis: 1,53,496 conversations, 9 channels, India, last 12 months." },
+    { id: "honeyChilli", title: "Honey Chilli", content: "Established nationally with 48.7% conversation growth and 63.4% engagement growth. Strongest in Maharashtra, UP, Delhi NCR, Karnataka, and Telangana. Extensions: coated crackers, baked chips, snack mix, cream biscuits, namkeen sticks." },
+    { id: "gunpowderPodi", title: "Gunpowder Podi", content: "Emerging South anchor with 46.2% conversation growth. Holds #1 savory position in Tamil Nadu, Karnataka, Andhra Pradesh, and Telangana. Extensions: podi crackers, khakhra, savory biscuits, podi snack mix." },
+    { id: "regional", title: "Regional sweets", content: "East leads on heritage sweets — Mishti Doi Caramel and Nolen Gur Toffee outperform novelty. West Bengal and Assam set the tone for dessert-snack extensions." },
+    { id: "states", title: "States — top flavors", content: "Twenty-nine states with top 5 sweet and top 5 savory flavors each — expandable metrics with conversation volume and engagement per flavor." },
+    { id: "sweet", title: "Sweet opportunities", content: "Mishti Doi Caramel, Nolen Gur Toffee, Tamarind Candy, Tilkut Sesame Jaggery, Qubani Ka Meetha Toffee — regional anchors with proof points and extension ideas." },
+    { id: "savory", title: "Savory opportunities", content: "Gunpowder Podi, Honey Chilli, Schezwan Masala, Chaat Masala Blast, Sattu Masala — spice depth, sweet-heat, and regional masala platforms." },
+    { id: "method", title: "Methodology", content: "Consuma AI · Flavor Insights India. Instagram, Reddit, X, YouTube, Amazon Reviews, Flipkart Reviews, Zomato, Swiggy, Blinkit. 1,53,496 conversations. Generated in under 30 minutes." },
   ],
 };

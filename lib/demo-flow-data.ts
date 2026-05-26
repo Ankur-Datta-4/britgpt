@@ -12,6 +12,9 @@ export const DEFAULT_RESEARCH_PROMPT =
 export const DEMO_SOURCES = [
   "Amazon Reviews",
   "Flipkart Reviews",
+  "Zomato",
+  "Swiggy",
+  "Blinkit",
   "Instagram",
   "YouTube",
   "X",
@@ -45,12 +48,12 @@ export const FIXED_RUN_STATS = {
 };
 
 export const RRP_TIMELINE_STAGES = [
-  { id: "context", title: "Setting context", desc: "Parsing brief · mapping Britannia portfolio scope", dur: 1600 },
-  { id: "aggregate", title: "Source aggregation", desc: "Instagram · Reddit · X · YouTube · Amazon · Flipkart · LinkedIn", dur: 1900 },
-  { id: "collect", title: "Collecting data", desc: "Pulling 1.53L+ conversations across India", dur: 2100 },
-  { id: "clean", title: "Cleaning data", desc: "Deduping · language · spam · entity resolution", dur: 1800 },
-  { id: "analyse", title: "Analysing data", desc: "State flavors · growth · engagement · extensions", dur: 2200 },
-  { id: "report", title: "Report generation", desc: "Synthesising narrative · matrices · actionables", dur: 2400 },
+  { id: "context", title: "Reading your brief", desc: "Understanding your question and Britannia portfolio scope", dur: 600 },
+  { id: "aggregate", title: "Reviewing sources", desc: "Instagram · Reddit · X · YouTube · Amazon · Flipkart · Zomato · Swiggy · Blinkit · LinkedIn", dur: 700 },
+  { id: "collect", title: "Gathering conversations", desc: "Pulling 1.53L+ conversations across India", dur: 800 },
+  { id: "clean", title: "Filtering signals", desc: "Removing noise · checking language · keeping real consumer voices", dur: 700 },
+  { id: "analyse", title: "Finding patterns", desc: "State flavors · growth · engagement · extension ideas", dur: 900 },
+  { id: "report", title: "Building your report", desc: "Pulling together findings, charts, and next steps", dur: 1000 },
 ];
 
 export const BRITANNIA_CONSUMER_QUOTES = [
@@ -59,12 +62,24 @@ export const BRITANNIA_CONSUMER_QUOTES = [
     att: "Mumbai · Amazon + Flipkart · Good Day",
   },
   {
+    text: "Ordered the new 50-50 on Swiggy Instamart for evening chai. Delivery was quick but the crunch could be better. ⭐★★★☆ (Rated by 430 folks)",
+    att: "Bangalore · Swiggy Instamart · 50-50",
+  },
+  {
     text: "Treat Jim Jam vs Oreo in school tiffin — parents switch to Britannia when the ₹10 promo hits; taste parity is there but brand trust tips it.",
     att: "Delhi NCR · social · Treat",
   },
   {
+    text: "Got the NutriChoice digestives on Blinkit in 8 minutes. Always my go-to healthy snack! ⭐⭐⭐⭐⭐ (Rated by 1,240 folks)",
+    att: "Mumbai · Blinkit · NutriChoice",
+  },
+  {
     text: "Marie Gold + chai is non-negotiable in Bengal; low-sugar Marie threads are growing — Britannia should lead the health cue before local players.",
     att: "West Bengal · panel + social · Marie Gold",
+  },
+  {
+    text: "Added Britannia cake to my Zomato food order as a dessert. Was surprisingly fresh! ⭐⭐⭐⭐☆ (Rated by 890 folks)",
+    att: "Pune · Zomato · Cakes",
   },
 ];
 
@@ -167,7 +182,7 @@ export const DELIVERABLE_TYPES = [
     label: "Concept Cards",
     configureTitle: "Concept cards",
     description:
-      "Ready-to-use social cards with headlines, body copy, CTA, and visual direction — enter a flavor name to generate.",
+      "Social-ready concept mock-ups with pack visuals, headline, and CTA — built for quick stakeholder review.",
     actionId: "concept_cards",
     iconClass: "deliverable-icon--cards",
     icon: "▤",
@@ -177,30 +192,20 @@ export const DELIVERABLE_TYPES = [
     label: "Video Ad Storyboard",
     configureTitle: "Video ad storyboard",
     description:
-      "Scene-by-scene storyboard with shot descriptions, voiceover, on-screen text, and timing for a 30s video ad.",
+      "Visual 30s storyboard mock-up with framed scenes, VO, and on-screen text.",
     actionId: "storyboard",
     iconClass: "deliverable-icon--storyboard",
     icon: "🎬",
   },
   {
-    id: "messaging",
-    label: "Messaging & communication",
-    configureTitle: "Messaging & communication recommendations",
+    id: "creative_brief",
+    label: "Creative brief",
+    configureTitle: "Creative brief",
     description:
-      "Platform-specific copy directions, tone guidelines, and hook frameworks for your flavor.",
-    actionId: "content_engine",
-    iconClass: "deliverable-icon--messaging",
-    icon: "💬",
-  },
-  {
-    id: "positioning",
-    label: "Positioning",
-    configureTitle: "Positioning recommendations",
-    description:
-      "Brand and shelf story, competitive frame, and Britannia portfolio fit for the flavor you specify.",
-    actionId: "positioning",
-    iconClass: "deliverable-icon--positioning",
-    icon: "◎",
+      "Messaging, tone, hooks, and positioning in one brief — ready for agency production.",
+    actionId: "creative_brief",
+    iconClass: "deliverable-icon--brief",
+    icon: "📋",
   },
 ] as const;
 
@@ -220,7 +225,7 @@ export const flavorMachineAsNational = () =>
 
 export const getStateInsight = (state: string) =>
   STATE_DETAILS[state]?.insight ||
-  `${state}: Local sweet and savory top-5 flavors show distinct regional identity — anchor national SKUs to local heroes before scaling.`;
+  `${state}: Local sweet and savory top-5 flavors show distinct regional identity — anchor national launches to local heroes before scaling.`;
 
 export const getStateTakeaway = (state: string) =>
   STATE_DETAILS[state]?.takeaway ||

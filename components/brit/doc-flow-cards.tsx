@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { useState, useEffect, useMemo, Fragment } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { NationalPrioritizationMatrix } from "@/components/brit/brit-charts";
 import { AgeCohortGrid } from "@/components/brit/age-cohort-grid";
 import { getAudienceDefaultsFromCohort } from "@/lib/audience-cohorts";
@@ -17,7 +17,6 @@ import {
   DEMO_STATES,
   FLAVOR_MACHINE,
   flavorMachineAsNational,
-  STATE_FLAVOR_CLUSTERS,
   NATIONAL_FLAVORS,
   getStateInsight,
   getStateTakeaway,
@@ -52,11 +51,16 @@ export const DataConfigForm = ({ locked, defaults, onConfirm }) => {
           <span className="tag">confirmed</span>
         </div>
         <div className="card-body">
-          <div className="scope-chips">
-            <span className="chip"><b>Sources:</b> {sources.join(", ")}</span>
-            <span className="chip"><b>Time:</b> {timeframe}</span>
-            <span className="chip"><b>Geography:</b> {geography}</span>
-            {context && <span className="chip"><b>Context:</b> {context}</span>}
+          <div className="scope-chips scope-chips--confirmed">
+            <div className="chip chip--block">
+              <span className="chip-label">Sources</span>
+              <span className="chip-value">{sources.join(", ")}</span>
+            </div>
+            <div className="scope-chips-meta">
+              <span className="chip"><b>Time:</b> {timeframe}</span>
+              <span className="chip"><b>Geography:</b> {geography}</span>
+              {context && <span className="chip"><b>Context:</b> {context}</span>}
+            </div>
           </div>
         </div>
       </div>
@@ -200,53 +204,63 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
   );
 };
 
+const StateMetricsByType = ({ metrics }) => {
+  const sweet = metrics.filter((m) => m.type === "Sweet");
+  const savory = metrics.filter((m) => m.type === "Savory");
+
+  const renderBlock = (title, rows) => (
+    <div className="state-metrics-split">
+      <p className="state-metrics-split-label">{title}</p>
+      <table className="state-metrics-table compact">
+        <thead>
+          <tr>
+            <th>Flavor</th>
+            <th>Conv. volume</th>
+            <th>Total engagement</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((m) => (
+            <tr key={m.flavor}>
+              <td>{m.flavor}</td>
+              <td>{m.convVolume}</td>
+              <td>{m.totalEngagement}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  return (
+    <div className="state-metrics-split-grid">
+      {renderBlock("Sweet", sweet)}
+      {renderBlock("Savory", savory)}
+    </div>
+  );
+};
+
 /* ── Doc output cards (`.card` + existing patterns) ── */
 export const DocStateTableCard = () => {
-  const [expanded, setExpanded] = useState(null);
   return (
     <div className="card">
       <div className="card-h">
-        <h3>State-wise view</h3>
-        <span className="tag">expand row · {DEMO_STATES.length} states</span>
+        <h3>State-by-state flavor deep dives</h3>
+        <span className="tag">top 5 sweet | savory · {DEMO_STATES.length} states</span>
       </div>
       <div className="card-body state-table-wrap">
         <table className="state-table">
           <thead>
-            <tr><th>State</th><th>Top 5 sweet</th><th>Top 5 savory</th><th></th></tr>
+            <tr><th>State</th><th>Top 5 sweet</th><th>Top 5 savory</th></tr>
           </thead>
           <tbody>
-            {DEMO_STATES.map((row) => {
-              const isOpen = expanded === row.state;
-              const metrics = isOpen ? getStateMetrics(row.state) : [];
-              return (
-                <Fragment key={row.state}>
-                  <tr className={"state-table-row " + (isOpen ? "open" : "")} onClick={() => setExpanded(isOpen ? null : row.state)}>
-                    <td className="state-table-name">{row.state}</td>
-                    <td>{row.sweet.join(", ")}</td>
-                    <td>{row.savory.join(", ")}</td>
-                    <td className="state-table-expand">{isOpen ? "▾" : "▸"}</td>
-                  </tr>
-                  {isOpen && (
-                    <tr className="state-table-detail-row">
-                      <td colSpan={4}>
-                        <div className="state-expand-panel">
-                          <p className="muted" style={{ margin: "0 0 10px" }}>{getStateInsight(row.state)}</p>
-                          <p className="muted" style={{ margin: "0 0 12px" }}><b>What this means:</b> {getStateTakeaway(row.state).replace(/^What this means:\s*/i, "")}</p>
-                          <table className="state-metrics-table">
-                            <thead><tr><th>Flavor</th><th>Type</th><th>Conv. volume</th><th>Total engagement</th></tr></thead>
-                            <tbody>
-                              {metrics.map((m) => (
-                                <tr key={m.flavor + m.type}><td>{m.flavor}</td><td>{m.type}</td><td>{m.convVolume}</td><td>{m.totalEngagement}</td></tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              );
-            })}
+            {DEMO_STATES.map((row) => (
+              <tr key={row.state} className="state-table-row">
+                <td className="state-table-name">{row.state}</td>
+                <td>{row.sweet.join(", ")}</td>
+                <td>{row.savory.join(", ")}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -255,49 +269,35 @@ export const DocStateTableCard = () => {
 };
 
 export const DocWinningClustersCard = () => {
-  const [open, setOpen] = useState(STATE_FLAVOR_CLUSTERS[0]?.id);
+  const [open, setOpen] = useState(DEMO_STATES[0]?.state ?? null);
 
   return (
     <div className="card">
       <div className="card-h">
-        <h3>State-wise flavor tables</h3>
-        <span className="tag">regional clusters · click + to expand</span>
+        <h3>Key state-wise winning flavors</h3>
+        <span className="tag">{DEMO_STATES.length} states · click to expand</span>
       </div>
       <div className="card-body">
-        {STATE_FLAVOR_CLUSTERS.map((cluster) => {
-          const isOpen = open === cluster.id;
+        {DEMO_STATES.map((row) => {
+          const isOpen = open === row.state;
+          const metrics = getStateMetrics(row.state);
           return (
-            <div key={cluster.id} className="state-cluster-block">
+            <div key={row.state} className="state-cluster-block">
               <button
                 type="button"
                 className={"state-cluster-head " + (isOpen ? "open" : "")}
-                onClick={() => setOpen(isOpen ? null : cluster.id)}
+                onClick={() => setOpen(isOpen ? null : row.state)}
               >
-                <span className="state-cluster-name">{cluster.label}</span>
+                <span className="state-cluster-name">{row.state}</span>
                 <span className="state-chev">{isOpen ? "−" : "+"}</span>
               </button>
               {isOpen && (
                 <div className="state-cluster-body">
-                  <table className="state-metrics-table">
-                    <thead>
-                      <tr>
-                        <th>Flavor</th>
-                        <th>Conversation volume in state</th>
-                        <th>Engagement volume in state</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {cluster.rows.map((r) => (
-                        <tr key={r.flavor}>
-                          <td><b>{r.flavor}</b></td>
-                          <td>{r.convVolume}</td>
-                          <td>{r.engVolume}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <p className="muted" style={{ margin: "0 0 10px" }}>{getStateInsight(row.state)}</p>
+                  <StateMetricsByType metrics={metrics} />
                   <p className="state-cluster-insight">
-                    <b>Insight:</b> {cluster.insight}
+                    <b>What this means:</b>{" "}
+                    {getStateTakeaway(row.state).replace(/^What this means:\s*/i, "")}
                   </p>
                 </div>
               )}
@@ -318,7 +318,7 @@ export const DocCrossStateCard = () => {
   return (
     <div className="card cross-state-card">
       <div className="card-h">
-        <h3>Cross-state insight synthesis</h3>
+        <h3>Cross-State Insight Synthesis - Overall Flavor Reads</h3>
         <span className="tag">overall flavor reads</span>
       </div>
       <div className="card-body">
@@ -350,7 +350,7 @@ export const DocCrossStateCard = () => {
             <AgeCohortGrid
               selectedId={activeId}
               onSelect={setActiveId}
-              variant="dark"
+              variant="light"
               sectionLabel="Demographic trends"
             />
             {active?.trial && (
@@ -395,60 +395,6 @@ const formatGrowth = (value) => {
   return `+${n}%`;
 };
 
-const FlavorMachineTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => {
-  const sortIndicator = (key) => {
-    if (sortKey !== key) return "";
-    return sortDir === "asc" ? " ↑" : " ↓";
-  };
-
-  const th = (key, label) => (
-    <th>
-      <button type="button" className="national-th-sort" onClick={() => onSort(key)}>
-        {label}
-        <span className="national-th-sort-ind">{sortIndicator(key)}</span>
-      </button>
-    </th>
-  );
-
-  return (
-    <div className="national-table-wrap">
-      <table className="national-table national-table--interactive">
-        <thead>
-          <tr>
-            {th("name", "Flavor")}
-            {th("conv", "Conversation growth rate")}
-            {th("eng", "Engagement growth rate")}
-            <th>Product category portfolio</th>
-            <th>Brand in portfolio</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((f) => (
-            <tr
-              key={f.name}
-              className="clickable-row"
-              onClick={() => onRowClick(f)}
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onRowClick(f);
-                }
-              }}
-            >
-              <td><b>{f.name}</b></td>
-              <td><span className="national-growth">{formatGrowth(f.convGrowth)}</span></td>
-              <td><span className="national-growth">{formatGrowth(f.engGrowth)}</span></td>
-              <td>{f.productCategory}</td>
-              <td><span className="national-brand-pill">{f.brandFit}</span></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
 const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => {
   const sortIndicator = (key) => {
     if (sortKey !== key) return "";
@@ -470,13 +416,12 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
         <thead>
           <tr>
             {th("name", "Flavor")}
-            {th("conv", "Conv. growth")}
-            {th("eng", "Eng. growth")}
-            {th("trend", "Trend")}
-            <th>States</th>
-            {th("category", "Category")}
-            <th>Product extension ideas</th>
-            <th>Brand fit</th>
+            {th("conv", "Conversation growth")}
+            {th("eng", "Engagement growth")}
+            {th("trend", "Trend Type")}
+            <th>States Popular in</th>
+            <th>Product Extension Recommendations</th>
+            <th>Britannia portfolio fit</th>
           </tr>
         </thead>
         <tbody>
@@ -522,7 +467,6 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
                       ))}
                     </div>
                   </td>
-                  <td>{inferNationalCategory(f.extensions)}</td>
                   <td className="national-ext-cell">
                     {ext.primary ? <b>{ext.primary}</b> : null}
                     {ext.rest.length > 0 ? (
@@ -557,29 +501,30 @@ export const DocNationalCard = () => {
   const matrixPoints = useMemo(() => flavorMachineAsNational(), []);
 
   const sortedRows = useMemo(() => {
-    const rows = [...FLAVOR_MACHINE];
+    const rows = [...NATIONAL_FLAVORS];
     const dir = sortDir === "asc" ? 1 : -1;
     rows.sort((a, b) => {
       if (sortKey === "name") return a.name.localeCompare(b.name) * dir;
       if (sortKey === "conv") return (parsePct(a.convGrowth) - parsePct(b.convGrowth)) * dir;
       if (sortKey === "eng") return (parsePct(a.engGrowth) - parsePct(b.engGrowth)) * dir;
+      if (sortKey === "trend") return a.trendType.localeCompare(b.trendType) * dir;
       return 0;
     });
     return rows;
   }, [sortKey, sortDir]);
 
   const onFlavorClick = (f) => {
-    const row = FLAVOR_MACHINE.find((m) => m.name === f.name) || f;
+    const row = NATIONAL_FLAVORS.find((m) => m.name === f.name) || f;
     openDetail({
-      type: "Overall flavor machine",
+      type: "National flavor",
       title: row.name,
-      body: row.productCategory || f.extensions,
+      body: row.extensions,
       facts: [
         { k: "Conv. growth", v: row.convGrowth || f.convGrowth },
         { k: "Eng. growth", v: row.engGrowth || f.engGrowth },
-        { k: "Brand", v: row.brandFit || f.brandFit },
+        { k: "Brand fit", v: row.brandFit || f.brandFit },
       ],
-      source: "Overall flavor machine · demo",
+      source: "National Flavor Performance View",
     });
   };
 
@@ -595,8 +540,8 @@ export const DocNationalCard = () => {
   return (
     <div className="card flavor-machine-card">
       <div className="card-h">
-        <h3>Overall flavor machine</h3>
-        <span className="tag">{FLAVOR_MACHINE.length} flavors</span>
+        <h3>National Flavor Performance View</h3>
+        <span className="tag">{NATIONAL_FLAVORS.length} flavors</span>
       </div>
       <div className="card-body">
         <section className="flavor-machine-matrix-section">
@@ -604,8 +549,7 @@ export const DocNationalCard = () => {
           <NationalPrioritizationMatrix points={matrixPoints} onSelect={onFlavorClick} />
         </section>
         <section className="flavor-machine-table-section">
-          <p className="flavor-machine-section-label">Full flavor table</p>
-          <FlavorMachineTable
+          <NationalFlavorTable
             rows={sortedRows}
             onRowClick={onFlavorClick}
             sortKey={sortKey}
@@ -644,9 +588,10 @@ export const DocActionablesCard = ({ onRunDeliverable, busy }) => {
       </div>
       <div className="card-body generate-insights-body">
         <p className="generate-insights-lead">
-          Enter a flavor name, pick a deliverable type, and generate concept cards, storyboard, messaging, or positioning.
+          Enter a flavor name, pick a deliverable type, and generate concept mock-ups, a video storyboard, or a creative brief.
         </p>
-        <div className="deliverable-picker deliverable-picker--2x2" role="listbox" aria-label="Output type">
+
+        <div className="deliverable-picker deliverable-picker--3" role="listbox" aria-label="Output type">
           {DELIVERABLE_TYPES.map((d) => {
             const sel = selectedType === d.id;
             return (

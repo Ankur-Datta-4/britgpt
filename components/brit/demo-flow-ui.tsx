@@ -46,11 +46,16 @@ export const DataConfigForm = ({ locked, defaults, onConfirm }) => {
           <span className="tag">confirmed</span>
         </div>
         <div className="card-body">
-          <div className="scope-chips">
-            <span className="chip"><b>Sources:</b> {sources.join(", ")}</span>
-            <span className="chip"><b>Time:</b> {timeframe}</span>
-            <span className="chip"><b>Geography:</b> {geography}</span>
-            {context && <span className="chip"><b>Context:</b> {context}</span>}
+          <div className="scope-chips scope-chips--confirmed">
+            <div className="chip chip--block">
+              <span className="chip-label">Sources</span>
+              <span className="chip-value">{sources.join(", ")}</span>
+            </div>
+            <div className="scope-chips-meta">
+              <span className="chip"><b>Time:</b> {timeframe}</span>
+              <span className="chip"><b>Geography:</b> {geography}</span>
+              {context && <span className="chip"><b>Context:</b> {context}</span>}
+            </div>
           </div>
         </div>
       </div>
@@ -286,6 +291,42 @@ export const HeroThesisCard = () => (
   </div>
 );
 
+const StateMetricsByType = ({ metrics }) => {
+  const sweet = metrics.filter((m) => m.type === "Sweet");
+  const savory = metrics.filter((m) => m.type === "Savory");
+
+  const renderBlock = (title, rows) => (
+    <div className="state-metrics-split">
+      <p className="state-metrics-split-label">{title}</p>
+      <table className="state-metrics-table compact">
+        <thead>
+          <tr>
+            <th>Flavor</th>
+            <th>Conv. volume</th>
+            <th>Engagement</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((m) => (
+            <tr key={m.flavor}>
+              <td>{m.flavor}</td>
+              <td>{m.conv}</td>
+              <td>{m.eng}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  return (
+    <div className="state-metrics-split-grid">
+      {renderBlock("Sweet", sweet)}
+      {renderBlock("Savory", savory)}
+    </div>
+  );
+};
+
 /* ── 2 State table expandable ── */
 export const StateFlavorTableCard = () => {
   const [expanded, setExpanded] = useState(null);
@@ -333,26 +374,7 @@ export const StateFlavorTableCard = () => {
                           <div className="state-expand-panel">
                             <p className="state-strategic-line">{getStateInsight(row.state)}</p>
                             <p className="state-takeaway"><b>What this means:</b> Anchor launches to {row.sweet[0]} (sweet) and {row.savory[0]} (savory) before nationalizing.</p>
-                            <table className="state-metrics-table">
-                              <thead>
-                                <tr>
-                                  <th>Flavor</th>
-                                  <th>Type</th>
-                                  <th>Conv. volume</th>
-                                  <th>Engagement</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {metrics.map((m) => (
-                                  <tr key={m.flavor + m.type}>
-                                    <td>{m.flavor}</td>
-                                    <td>{m.type}</td>
-                                    <td>{m.conv}</td>
-                                    <td>{m.eng}</td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
+                            <StateMetricsByType metrics={metrics} />
                           </div>
                         </td>
                       </tr>

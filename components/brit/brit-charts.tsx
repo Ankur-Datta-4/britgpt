@@ -282,7 +282,7 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
             <span className="brit-priority-matrix__q brit-priority-matrix__q--br">Niche loyal</span>
           </div>
           <ResponsiveContainer width="100%" height={340}>
-            <ScatterChart margin={{ top: 20, right: 24, bottom: 36, left: 8 }}>
+            <ScatterChart margin={{ top: 20, right: 20, bottom: 36, left: 20 }}>
               <CartesianGrid stroke={CHART_THEME.grid} strokeDasharray="3 4" />
               <ReferenceLine x={midEng} stroke={CHART_THEME.muted} strokeDasharray="4 4" strokeOpacity={0.65} />
               <ReferenceLine y={midConv} stroke={CHART_THEME.muted} strokeDasharray="4 4" strokeOpacity={0.65} />

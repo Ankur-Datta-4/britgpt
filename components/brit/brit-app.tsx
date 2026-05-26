@@ -7,6 +7,7 @@ import { answerQuestion } from '@/lib/qa';
 import { enrichQAAnswer, hasLlmKeyAsync } from '@/lib/llm';
 import { runAction as executeAction } from '@/lib/actions';
 import { getAudienceDefaultsFromCohort } from '@/lib/audience-cohorts';
+import { DEMO_SOURCES } from '@/lib/demo-flow-data';
 import {
   DEFAULT_RESEARCH_PROMPT,
   DataConfigForm,
@@ -69,7 +70,7 @@ const wantsResearchPipeline = (text) => {
   if (!q) return false;
   if (/^(run|start)\s+(full\s+)?research/.test(q)) return true;
   const researchHints =
-    /research|flavour|flavor|state|trend|extension|biscoff|biscuit|sentiment|pan-india|across india|map india|discover|sweet|savory|savoury|honey chilli|gulkand/i;
+    /research|flavour|flavor|state|trend|extension|biscuit|sentiment|pan-india|across india|map india|discover|sweet|savory|savoury|honey chilli|gunpowder|podi|gulkand/i;
   if (q.length < 28 && !researchHints.test(q)) return false;
   return researchHints.test(q) || q.length > 55;
 };
@@ -209,31 +210,39 @@ const Sidebar = ({
    Composer
 ============================================================ */
 const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composerKey }) => {
-  const [v, setV] = useState("");
   const ta = useRef(null);
-  const canSend = !disabled && v.trim().length > 0;
+  const [canSend, setCanSend] = useState(false);
+
+  const syncComposer = useCallback(() => {
+    const el = ta.current;
+    const txt = el?.value?.trim() ?? "";
+    setCanSend(!disabled && txt.length > 0);
+    if (el) {
+      el.style.height = "auto";
+      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+    }
+  }, [disabled]);
 
   useEffect(() => {
     if (ta.current) {
+      ta.current.value = "";
       ta.current.style.height = "auto";
-      ta.current.style.height = Math.min(ta.current.scrollHeight, 200) + "px";
     }
-  }, [v]);
-
-  useEffect(() => {
+    setCanSend(false);
     if (!disabled && ta.current) {
       ta.current.focus();
     }
   }, [composerKey, disabled]);
 
   const send = () => {
-    const txt = v.trim();
+    const txt = ta.current?.value?.trim() ?? "";
     if (!txt || disabled) return;
     onSubmit(txt);
-    setV("");
     if (ta.current) {
+      ta.current.value = "";
       ta.current.style.height = "auto";
     }
+    setCanSend(false);
   };
 
   const chips = [
@@ -253,8 +262,9 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composer
       >
         <textarea
           ref={ta}
-          value={v}
-          onChange={(e) => setV(e.target.value)}
+          defaultValue=""
+          onChange={syncComposer}
+          onInput={syncComposer}
           placeholder={placeholder || "Ask a consumer research question…"}
           disabled={disabled}
           rows={2}
@@ -290,8 +300,14 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composer
         </div>
       </form>
       <div className="composer-foot">
-        Brit GPT can make mistakes. Cross-check important findings with your data team ·{" "}
-        <a href="#" onClick={(e) => { e.preventDefault(); onChipAction?.("privacy"); }}>privacy</a>
+        <p className="composer-foot-note">
+          Brit GPT can make mistakes. Cross-check important findings with your data team ·{" "}
+          <a href="#" onClick={(e) => { e.preventDefault(); onChipAction?.("privacy"); }}>privacy</a>
+        </p>
+        <div className="composer-foot-powered">
+          <span className="composer-foot-powered-label">Powered by</span>
+          <ConsumaLogo size="sm" className="composer-consuma-logo" />
+        </div>
       </div>
     </div>
   );
@@ -352,6 +368,13 @@ function MessageView({ m, ctx }) {
         {m.kind === "film_job" && (
           <FilmJobCard job={m} onClick={ctx.onFilmJobClick} />
         )}
+        {m.kind === "action_result" && (
+          <ActionResultPanel payload={m.payload} onOpenDetail={ctx.onOpenDetail} />
+        )}
+        {m.kind === "qa" && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
+        {m.kind === "research_reco" && (
+          <ResearchRecoCard tag={m.tag} query={m.query} hint={m.hint} onStart={ctx.onStartResearch} />
+        )}
         {m.kind === "exec" && (
           <ExecBlock
             script={m.script}
@@ -359,13 +382,6 @@ function MessageView({ m, ctx }) {
             onExportBrief={ctx.onExportBrief}
             onShareBrief={ctx.onShareBrief}
           />
-        )}
-        {m.kind === "action_result" && (
-          <ActionResultPanel payload={m.payload} onOpenDetail={ctx.onOpenDetail} />
-        )}
-        {m.kind === "qa" && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
-        {m.kind === "research_reco" && (
-          <ResearchRecoCard tag={m.tag} query={m.query} hint={m.hint} onStart={ctx.onStartResearch} />
         )}
       </div>
     </div>
@@ -412,8 +428,10 @@ export default function BritApp() {
   }, [phase]);
 
   useEffect(() => {
-    if (messages.length === 0 && phase === "running") {
+    if (messages.length === 0 && phase !== "idle") {
       setPhase("idle");
+      setActionBusy(false);
+      setFilmBusy(false);
       pipelineDoneRef.current = false;
     }
   }, [messages.length, phase]);
@@ -422,6 +440,16 @@ export default function BritApp() {
     setToast(text);
     setTimeout(() => setToast(null), 2800);
   }, []);
+
+  useEffect(() => {
+    const onHandoff = (e) => {
+      const { target, flavor, state } = e.detail || {};
+      const bits = [target, flavor, state].filter(Boolean);
+      showToast(bits.length ? `Sent to ${bits.join(" · ")}` : "Sent for handoff");
+    };
+    window.addEventListener("brit-handoff", onHandoff);
+    return () => window.removeEventListener("brit-handoff", onHandoff);
+  }, [showToast]);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -521,6 +549,7 @@ export default function BritApp() {
     pipelineDoneRef.current = !!snap.pipelineDone;
     setReportOpen(false);
     setActionBusy(false);
+    setFilmBusy(false);
     setTimeout(() => { persistSkipRef.current = false; }, 50);
   }, []);
 
@@ -662,7 +691,7 @@ export default function BritApp() {
     pushDelayed({
       role: "asst",
       kind: "text",
-      text: "I'll run this across your selected sources. Confirm data configuration and audience, then the engine will generate the full narrative.",
+      text: "Confirm your sources and audience below — then we'll pull your insights.",
     }, 280);
     pushDelayed({ role: "asst", kind: "data_config", defaults: { geography: "India" } }, 550);
   };
@@ -684,12 +713,7 @@ export default function BritApp() {
     setRunConfig(full);
     setMessages((ms) => ms.map((m) => (m.id === msgId ? { ...m, locked: true, defaults: audience } : m)));
     pushDelayed({ role: "user", text: "Run research with these settings." }, 200);
-    pushDelayed({
-      role: "asst",
-      kind: "text",
-      text: `Running across ${full.dataConfig?.sources?.length || 7} sources · ${full.dataConfig?.timeframe || "Last 1 Year"} · ${full.dataConfig?.geography || "India"}.`,
-    }, 450);
-    pushDelayed({ role: "asst", kind: "timeline" }, 750);
+    pushDelayed({ role: "asst", kind: "timeline" }, 450);
     setPhase("running");
   };
 
@@ -701,7 +725,7 @@ export default function BritApp() {
     const hasMessages = messagesRef.current.length > 0;
 
     if (currentPhase === "running" || actionBusy) {
-      showToast("Research is still running — wait for the pipeline to finish.");
+      showToast("Research is still in progress — hang tight.");
       return;
     }
 
@@ -740,7 +764,7 @@ export default function BritApp() {
       kind: "film_job",
       status: "queued",
       progress: 4,
-      progressText: "Queued…",
+      progressText: "Starting…",
       state,
       flavor,
     });
@@ -793,8 +817,9 @@ export default function BritApp() {
     const labels = {
       concept_cards: "Concept cards",
       storyboard: "Video ad storyboard",
-      content_engine: "Messaging & communication",
-      positioning: "Positioning recommendations",
+      creative_brief: "Creative brief",
+      content_engine: "Creative brief",
+      positioning: "Creative brief",
     };
     push({ role: "user", text: `${labels[actionId] || actionId} · ${flavor} · ${state}` });
     setActionBusy(true);
@@ -843,7 +868,7 @@ export default function BritApp() {
     setDetail({
       type: "Film render",
       title: `${job.flavor} · ${job.state}`,
-      body: job.progressText || "Rendering in the background. You can keep chatting or run other actions.",
+      body: job.progressText || "Creating in the background. You can keep chatting or run other actions.",
       facts: [{ k: "Progress", v: `${job.progress || 0}%` }],
       source: "Brit GPT · async film",
     });
@@ -862,29 +887,19 @@ export default function BritApp() {
     let delay = 250;
     const bump = (ms) => { delay += ms; return delay - ms; };
 
-    pushDelayed({ role: "asst", kind: "text", text: "Pipeline complete. Here's the headline thesis." }, bump(250));
-    pushDelayed({ role: "asst", kind: "insight", params: scope, script }, bump(350));
-    pushDelayed({
-      role: "asst",
-      kind: "muted",
-      text: "Overall flavor machine, state-wise tables, and actionable deliverables follow.",
-    }, bump(500));
+    pushDelayed({ role: "asst", kind: "insight", params: scope, script }, bump(250));
 
     const docSequence = [
-      "doc_national",
       "doc_states",
       "doc_winning",
+      "doc_cross",
+      "doc_national",
       "doc_actionables",
     ];
     docSequence.forEach((kind) => {
-      pushDelayed({ role: "asst", kind, script, params: scope }, bump(420));
+      pushDelayed({ role: "asst", kind, script, params: scope }, bump(1200));
     });
 
-    pushDelayed({
-      role: "asst",
-      kind: "muted",
-      text: "Ask a follow-up below, or generate deliverables from the actionables card.",
-    }, bump(400));
     setTimeout(() => setPhase("done"), delay + 100);
   }, [activeScript, params]);
 
@@ -903,6 +918,7 @@ export default function BritApp() {
     pipelineDoneRef.current = false;
     setReportOpen(false);
     setActionBusy(false);
+    setFilmBusy(false);
     msgIdRef.current = 0;
     setTimeout(() => { persistSkipRef.current = false; }, 50);
     showToast("New research session");
@@ -956,7 +972,7 @@ export default function BritApp() {
         return;
       }
       if (phase === "data_config") showToast("Confirm sources in the card above");
-      else showToast("Data universe: 7 sources · India · last 12 months");
+      else showToast(`Data universe: ${DEMO_SOURCES.length} sources · India · last 12 months`);
       return;
     }
     if (chipId === "brief") {
@@ -967,7 +983,7 @@ export default function BritApp() {
       setDetail({
         type: "Compare brands",
         title: "Britannia vs category",
-        body: "Compare mode: Biscoff premium dessert track vs Honey Chilli swicy snacks. Use state tables and national matrix in this run for side-by-side signals.",
+        body: "Compare mode: Honey Chilli (national sweet-heat) vs Gunpowder Podi (South savory). Use state tables and national matrix in this run for side-by-side signals.",
         source: "Flavor Insights India",
       });
       return;
@@ -976,7 +992,7 @@ export default function BritApp() {
       setDetail({
         type: "Privacy",
         title: "Data & privacy",
-        body: "Sessions are stored locally in your browser only. Research outputs use aggregated Flavor Insights India data. Do not paste PII into prompts.",
+        body: "Sessions are stored locally in your browser only. Research draws on Flavor Insights India conversation data. Do not paste personal information into prompts.",
         source: "Brit GPT",
       });
     }
@@ -1045,7 +1061,7 @@ export default function BritApp() {
           </div>
           <div className="topbar-right">
             {llmLiveOn && (
-              <span className="engine-mode-dot" title="Live LLM search (⌃⇧L to toggle)" />
+              <span className="engine-mode-dot" title="Live search on (⌃⇧L to toggle)" />
             )}
             <span className="credit-pill">credits <b>1,820</b></span>
           </div>
@@ -1104,7 +1120,7 @@ export default function BritApp() {
 function ResearchRecoCard({ tag, query, hint, onStart }) {
   return (
     <div className="research-reco-wrap">
-      <p className="research-reco-lead">Ready to run the full research pipeline on this?</p>
+      <p className="research-reco-lead">Ready to run full research on this?</p>
       <button type="button" className="welcome-hero research-reco-inline" onClick={() => onStart?.(query)}>
         <span className="hero-tag">{tag} · recommended</span>
         <span className="hero-q">{query}</span>
@@ -1119,15 +1135,11 @@ const WelcomeView = () => (
   <div className="welcome welcome-minimal">
     <div className="welcome-brand-stack">
       <BritanniaLogo size="lg" className="welcome-britannia" />
-      <div className="welcome-powered">
-        <span className="welcome-powered-label">Powered by</span>
-        <ConsumaLogo size="md" className="welcome-consuma-logo" />
-      </div>
     </div>
     <div className="badge">Consumer research · India</div>
     <h1>What would you like to <em>discover</em> today?</h1>
     <p className="welcome-sub">
-      Describe your study in the box below — we&apos;ll configure sources and run the full research pipeline.
+      Describe your study in the box below — we&apos;ll configure sources and run your research.
     </p>
   </div>
 );
