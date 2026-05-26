@@ -126,7 +126,7 @@ const Sidebar = ({
     <aside className="sidebar">
       <div className="side-h">
         <div className="brand">
-          <div className="brand-mark" />
+          <BritanniaLogo variant="square" size="md" className="brand-logo" />
           <div className="brand-name">
             Brit GPT
             <small>consumer research</small>

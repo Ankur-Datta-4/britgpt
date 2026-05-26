@@ -93,23 +93,14 @@ button { font-family: inherit; cursor: pointer; }
   display: flex; align-items: center; gap: 10px;
   white-space: nowrap;
 }
-.brand-mark {
-  width: 28px; height: 28px;
-  border-radius: 7px;
-  background:
-    radial-gradient(circle at 30% 30%, var(--red-glow), var(--red-deep) 70%);
-  box-shadow: 0 0 0 1px oklch(1 0 0 / 0.25) inset, 0 6px 16px -6px var(--red);
-  position: relative;
+.brand-logo {
   flex-shrink: 0;
 }
-.brand-mark::after {
-  content: "";
-  position: absolute;
-  inset: 6px;
-  border-radius: 3px;
-  border: 1px solid oklch(1 0 0 / 0.6);
-  border-bottom: none;
-  border-right: none;
+.britannia-logo--square {
+  display: block;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
 }
 .brand-name {
   font-family: var(--f-display);
