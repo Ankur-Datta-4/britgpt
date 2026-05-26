@@ -1,7 +1,6 @@
 import { BRIT_DATA } from "@/lib/data";
 import {
   generateBedrockFilm,
-  generateBedrockImage,
 } from "@/lib/bedrock";
 import { checkBedrockConfigured } from "@/lib/api-status";
 import { isLlmLiveEnabled } from "@/lib/llm-mode";
@@ -10,10 +9,161 @@ import { runActionWithLLM, buildHeroFilmPrompt } from "@/lib/llm";
 import { getBedrockKey } from "@/lib/config-client";
 import { resolveFilmPlaybackUrl } from "@/lib/film-url";
 
-const imagePromptFor = (concept: { sku: string; lane: string; title?: string }, region: string) =>
-  `Professional product photography, premium Indian FMCG biscuit snack pack on clean studio backdrop. ` +
-  `Product: ${concept.title || concept.sku}. Flavor lane: ${concept.lane}. Market: ${region}. ` +
-  `Britannia-style retail packaging, appetizing, sharp focus, soft shadow. NO FACES, NO PEOPLE, product focus only.`;
+type ConceptPromptVariant = "english" | "vernacular";
+
+const HINDI_BELT_STATES = new Set([
+  "Delhi",
+  "Delhi NCR",
+  "Uttar Pradesh",
+  "Madhya Pradesh",
+  "Rajasthan",
+  "Bihar",
+  "Haryana",
+  "Chhattisgarh",
+  "Jharkhand",
+  "Uttarakhand",
+  "Himachal Pradesh",
+]);
+
+const LANGUAGE_BY_STATE: Record<string, string> = {
+  "Tamil Nadu": "Tamil",
+  "West Bengal": "Bengali",
+  Karnataka: "Kannada",
+  Maharashtra: "Marathi",
+  Gujarat: "Gujarati",
+  Kerala: "Malayalam",
+  "Andhra Pradesh": "Telugu",
+  Telangana: "Telugu",
+  Punjab: "Punjabi",
+  Odisha: "Odia",
+  Assam: "English + Assamese",
+  Meghalaya: "English + Khasi",
+  Manipur: "English + Meitei",
+  Mizoram: "English + Mizo",
+  Nagaland: "English + Nagamese",
+  Tripura: "English + Bengali",
+  Sikkim: "English + Nepali",
+  "Arunachal Pradesh": "English + Hindi",
+};
+
+const inferPrimaryLanguage = (state: string) => {
+  if (!state || state === "Pan-India") return "English";
+  if (LANGUAGE_BY_STATE[state]) return LANGUAGE_BY_STATE[state];
+  if (HINDI_BELT_STATES.has(state)) return "Hindi";
+  return "English";
+};
+
+const inferStateCues = (state: string) => {
+  const cues: Record<string, string> = {
+    "Tamil Nadu": "home verandah, steel dabba, kolam cue",
+    "West Bengal": "balcony chai setup, adda vibe, subtle terracotta cues",
+    Karnataka: "Bengaluru apartment kitchen or cafe corner, modern-casual styling",
+    Maharashtra: "Mumbai/Pune home evening snack setup, warm family context",
+    "Delhi NCR": "urban home evening setup, winter chai/snack context",
+    Gujarat: "bright home kitchen table, sharing-with-family snack moment",
+  };
+  return cues[state] || "relatable Indian home or neighborhood snack-time context";
+};
+
+const inferLifeMoment = (lane: string) => {
+  const value = lane.toLowerCase();
+  if (value.includes("honey")) return "evening chai-time or school tiffin";
+  if (value.includes("podi") || value.includes("masala") || value.includes("spice")) {
+    return "rainy-evening chai break or road-trip snacking";
+  }
+  if (value.includes("coconut") || value.includes("jaggery")) return "after-school or weekend family sharing";
+  return "daily chai break or evening snack time";
+};
+
+const inferRtb = (lane: string) => {
+  const value = lane.toLowerCase();
+  if (value.includes("honey") && value.includes("chilli")) return "real honey with chilli finish";
+  if (value.includes("podi")) return "double-roasted podi spice blend";
+  if (value.includes("masala")) return "signature regional masala blend";
+  if (value.includes("coconut")) return "real coconut notes in every bite";
+  if (value.includes("coffee")) return "real coffee aroma profile";
+  return "ingredient-led flavor build true to regional taste";
+};
+
+const inferIngredientShots = (lane: string) => {
+  const value = lane.toLowerCase();
+  if (value.includes("honey") && value.includes("chilli")) return "honey drizzle + whole red chillies";
+  if (value.includes("podi")) return "small bowl of podi spice + curry leaves";
+  if (value.includes("tamarind")) return "tamarind pods + red chilli";
+  if (value.includes("coconut")) return "coconut half + jaggery chunks";
+  if (value.includes("coffee")) return "coffee beans + cocoa dust";
+  return "accurate ingredient shots matching the flavor profile";
+};
+
+const inferPromptVariant = (instructions?: string): ConceptPromptVariant => {
+  const text = (instructions || "").toLowerCase();
+  if (!text) return "english";
+  if (text.includes("vernacular") || text.includes("local language") || text.includes("regional language")) {
+    return "vernacular";
+  }
+  return "english";
+};
+
+const imagePromptFor = (
+  concept: { sku: string; lane: string; title?: string; imagePromptHint?: string },
+  opts: {
+    region: string;
+    state?: string;
+    flavor?: string;
+    variant?: ConceptPromptVariant;
+  }
+) => {
+  const state = opts.state || opts.region || "Pan-India";
+  const flavor = opts.flavor || concept.lane;
+  const productName = concept.title || concept.sku;
+  const language = inferPrimaryLanguage(state);
+  const culturalCue = inferStateCues(state);
+  const lifeMoment = inferLifeMoment(flavor);
+  const rtb = inferRtb(flavor);
+  const ingredientShots = inferIngredientShots(flavor);
+  const variant = opts.variant || "english";
+  const hint = concept.imagePromptHint ? ` Extra creative direction: ${concept.imagePromptHint}.` : "";
+
+  if (variant === "vernacular") {
+    return [
+      "You are a concept card designer for Britannia India.",
+      "Generate one 16:9 product concept card for a new snack flavor launch.",
+      `State context: ${state}. Primary language: ${language}${HINDI_BELT_STATES.has(state) ? " (Hindi fallback allowed)." : "."}`,
+      `Product: ${productName}. Flavor: ${flavor}. Market: ${opts.region}.`,
+      "LEFT HALF (50%): real, relatable person (or natural pair) actively eating/holding the product in a natural moment.",
+      `Use state-authentic cues: ${culturalCue}. Warm, inviting, non-studio lighting.`,
+      `RIGHT HALF (50%): headline in ${language} (8-12 words), conversational and flavor+state specific.`,
+      `Body copy in ${language}, 3-4 sentences: taste+texture first, include life moment (${lifeMoment}), include one RTB (${rtb}), end with how snack time becomes better.`,
+      "Do not use health or nutrition claims. Avoid words like healthy, nutritious, immunity, protein-rich.",
+      `Bottom-right: Britannia pack shot for ${productName}, 2-3 loose product pieces, and 1-2 ingredient visuals (${ingredientShots}).`,
+      "Background: warm solid or soft gradient, clean brand canvas, no busy patterns.",
+      "Optional bottom strip tagline: 6-8 words, conversational.",
+      "Critical rules: ingredient visuals must match the exact flavor; copy must feel local, warm, non-clinical.",
+      hint,
+    ]
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  return [
+    "You are a concept card designer for Britannia India.",
+    "Generate one 16:9 product concept card in English for a new snack flavor launch.",
+    `State context: ${state}.`,
+    `Product: ${productName}. Flavor: ${flavor}. Market: ${opts.region}.`,
+    "LEFT HALF (50%): real-looking person (or natural pair) actively holding/eating the product in an everyday moment.",
+    `State-authentic cues only: ${culturalCue}. Warm natural lighting. No celebrity/model look.`,
+    "RIGHT HALF (50%): headline in English (8-12 words), conversational, feeling-led, no ad jargon.",
+    `Body copy in English (3-4 sentences): (1) taste+texture first, (2) specific RTB (${rtb}), (3) life moment (${lifeMoment}), (4) close with product name and warm payoff.`,
+    "No health, nutritional, medicinal, competitive, or empty superlative claims.",
+    `Bottom-right: Britannia pack shot for ${productName}, 2-3 loose product pieces, and 1-2 ingredient visuals (${ingredientShots}).`,
+    "Background: warm solid/soft gradient brand canvas, clean and uncluttered.",
+    "Optional sign-off tagline: 6-8 words in English, conversational.",
+    "Ensure flavor-state specificity in both visuals and copy; never generic.",
+    hint,
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
 
 const videoPromptFor = (
   concept: { sku: string; title?: string; lane: string },
@@ -33,6 +183,9 @@ export const pickConceptSkus = (ctx: {
     scopeDefaults?: { region?: string };
   };
   params?: { region?: string };
+  state?: string;
+  flavor?: string;
+  instructions?: string;
 }) => {
   const script = ctx.script || {};
   const id = script.id || "default";
@@ -61,13 +214,19 @@ export const pickConceptSkus = (ctx: {
   }
   const region =
     ctx.params?.region || script.scopeDefaults?.region || "Pan-India";
+  const state = ctx.state || region;
+  const flavor = ctx.flavor;
+  const variant = inferPromptVariant(ctx.instructions);
   return out.slice(0, 3).map((c, i) => ({
     id: `concept-${i}`,
     title: String(c.name).slice(0, 42),
     sku: c.name,
     lane: c.lane,
     tagline: `Bold ${c.lane.toLowerCase()} flavor. Try the new ${c.name.toLowerCase()}!`,
-    imagePrompt: imagePromptFor({ sku: c.name, lane: c.lane }, region),
+    imagePrompt: imagePromptFor(
+      { sku: c.name, lane: c.lane },
+      { region, state, flavor, variant }
+    ),
     gradient: ["#c45c3e", "#8b2e1a", "#e8a87c", "#5c3d2e", "#d4a574", "#7a4a32"][
       i % 6
     ],
@@ -77,10 +236,15 @@ export const pickConceptSkus = (ctx: {
 const mergeLlmConcepts = (
   base: ReturnType<typeof pickConceptSkus>,
   llm: { concepts?: Record<string, string>[]; videoPrompt?: string } | null,
-  region: string
+  opts: {
+    region: string;
+    state?: string;
+    flavor?: string;
+    variant?: ConceptPromptVariant;
+  }
 ) =>
   (llm?.concepts?.length ? llm.concepts : base).slice(0, 3).map((c, i) => {
-    const b = base[i] || {};
+    const b = (base[i] || {}) as Partial<(typeof base)[number]>;
     const sku = (c as { sku?: string }).sku || b.sku || `Concept ${i + 1}`;
     const lane = (c as { lane?: string }).lane || b.lane || "";
     return {
@@ -88,10 +252,19 @@ const mergeLlmConcepts = (
       title: (c as { title?: string }).title || b.title || sku.slice(0, 42),
       sku,
       lane,
-      tagline: (c as { tagline?: string }).tagline || b.tagline || `New ${lane} flavor. Made for ${region}.`,
-      imagePrompt:
-        (c as { imagePrompt?: string }).imagePrompt ||
-        imagePromptFor({ sku, lane }, region),
+      tagline:
+        (c as { tagline?: string }).tagline ||
+        b.tagline ||
+        `New ${lane} flavor. Made for ${opts.region}.`,
+      imagePrompt: imagePromptFor(
+        {
+          sku,
+          lane,
+          title: (c as { title?: string }).title || b.title,
+          imagePromptHint: (c as { imagePrompt?: string }).imagePrompt,
+        },
+        opts
+      ),
       gradient: b.gradient || "#c45c3e",
     };
   });
@@ -99,6 +272,7 @@ const mergeLlmConcepts = (
 export const generateHeroFilmMock = async (
   ctx: {
     script?: {
+      title?: string;
       id?: string;
       exec?: { h2?: string; p?: string };
       scopeDefaults?: { region?: string };
@@ -162,6 +336,7 @@ export const generateHeroFilmMock = async (
 export const generateHeroFilm = async (
   ctx: {
     script?: {
+      title?: string;
       id?: string;
       exec?: { h2?: string; p?: string };
       scopeDefaults?: { region?: string };
@@ -261,17 +436,24 @@ const generateNanoBananaImage = async (prompt: string, signal?: AbortSignal) => 
 export const generateConceptCards = async (
   ctx: {
     script?: {
+      title?: string;
       id?: string;
       exec?: { h2?: string; p?: string };
       scopeDefaults?: { region?: string };
     };
     params?: { region?: string };
+    state?: string;
+    flavor?: string;
+    instructions?: string;
   } = {},
   onProgress?: (t: string) => void
 ) => {
   const script = ctx.script || {};
   const region =
     ctx.params?.region || script.scopeDefaults?.region || "Pan-India";
+  const state = ctx.state || region;
+  const flavor = ctx.flavor;
+  const variant = inferPromptVariant(ctx.instructions);
   let concepts = pickConceptSkus(ctx);
   const bedrockKey = getBedrockKey();
   const bedrockReady = await checkBedrockConfigured();
@@ -280,7 +462,7 @@ export const generateConceptCards = async (
     onProgress?.("Writing concepts…");
     try {
       const llm = await runActionWithLLM("concept_cards", ctx);
-      concepts = mergeLlmConcepts(concepts, llm, region);
+      concepts = mergeLlmConcepts(concepts, llm, { region, state, flavor, variant });
     } catch (e) {
       console.warn("Concept copy failed, using defaults:", e);
     }
@@ -294,7 +476,9 @@ export const generateConceptCards = async (
     concepts.map(async (c, i) => {
       try {
         onProgress?.(`Packshot ${i + 1} of 3…`);
-        const imagePrompt = c.imagePrompt || imagePromptFor(c, region);
+        const imagePrompt =
+          c.imagePrompt ||
+          imagePromptFor(c, { region, state, flavor, variant });
         
         let uri = "";
         let generated = false;
@@ -305,7 +489,7 @@ export const generateConceptCards = async (
           
           try {
             uri = await generateNanoBananaImage(
-              `Professional FMCG biscuit packshot mockup. CRITICAL: NO FACES, NO PEOPLE, NO MODELS. ONLY the product packaging and clean studio background. Premium Indian snack packaging, ${imagePrompt}`,
+              imagePrompt,
               controller.signal
             );
             generated = true;
