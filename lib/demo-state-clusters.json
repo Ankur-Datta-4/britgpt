@@ -18,7 +18,7 @@
     "rows": [
       { "flavor": "Honey Chilli", "convVolume": "24.8K", "engVolume": "181.3K" },
       { "flavor": "Korean Gochujang", "convVolume": "17.9K", "engVolume": "142.6K" },
-      { "flavor": "Chaat Masala", "convVolume": "15.6K", "engVolume": "104.4K" },
+      { "flavor": "Chaat Masala Blast", "convVolume": "15.6K", "engVolume": "104.4K" },
       { "flavor": "Peri Peri", "convVolume": "14.1K", "engVolume": "93.8K" },
       { "flavor": "Smoky BBQ", "convVolume": "11.4K", "engVolume": "76.1K" }
     ]
@@ -28,7 +28,7 @@
     "label": "Maharashtra",
     "insight": "Maharashtra overindexes on aggressive spice systems and crunchy formats, making it one of the strongest launchpads for bold savory experimentation.",
     "rows": [
-      { "flavor": "Thecha", "convVolume": "18.4K", "engVolume": "132.7K" },
+      { "flavor": "Thecha Spice", "convVolume": "18.4K", "engVolume": "132.7K" },
       { "flavor": "Bhakarwadi", "convVolume": "15.7K", "engVolume": "104.2K" },
       { "flavor": "Saoji Spice", "convVolume": "11.2K", "engVolume": "79.6K" },
       { "flavor": "Honey Chilli", "convVolume": "10.6K", "engVolume": "74.8K" },

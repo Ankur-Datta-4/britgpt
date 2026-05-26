@@ -1,7 +1,7 @@
 [
   { "name": "Honey Chilli", "convGrowth": "48.7%", "engGrowth": "63.4%", "productCategory": "Chips, Crackers, Nachos", "brandFit": "50-50 Golmaal" },
-  { "name": "Gunpowder Podi", "convGrowth": "46.8%", "engGrowth": "61.5%", "productCategory": "Crackers, Podi Chips, Khakhra", "brandFit": "NutriChoice" },
-  { "name": "Thecha", "convGrowth": "44.1%", "engGrowth": "57.9%", "productCategory": "Namkeen Crackers", "brandFit": "50-50" },
+  { "name": "Gunpowder Podi", "convGrowth": "46.2%", "engGrowth": "61.8%", "productCategory": "Crackers, Podi Chips, Khakhra", "brandFit": "NutriChoice" },
+  { "name": "Thecha Spice", "convGrowth": "44.8%", "engGrowth": "59.2%", "productCategory": "Namkeen Crackers", "brandFit": "50-50" },
   { "name": "Gulkand", "convGrowth": "42.3%", "engGrowth": "58.8%", "productCategory": "Cream Biscuits, Cakes", "brandFit": "Good Day" },
   { "name": "Date Jaggery Til", "convGrowth": "41.3%", "engGrowth": "52.4%", "productCategory": "Health Snack Bars", "brandFit": "NutriChoice" },
   { "name": "Rose Gulkand", "convGrowth": "40.9%", "engGrowth": "56.1%", "productCategory": "Cream Biscuits", "brandFit": "Marie Gold" },
@@ -39,5 +39,5 @@
   { "name": "Rasgulla Cream", "convGrowth": "22.6%", "engGrowth": "31.3%", "productCategory": "Cream Sandwich Biscuits", "brandFit": "Treat" },
   { "name": "Lemon Masala", "convGrowth": "21.7%", "engGrowth": "33.2%", "productCategory": "Salted Crackers", "brandFit": "Marie Gold" },
   { "name": "Sweet Pongal", "convGrowth": "20.7%", "engGrowth": "29.1%", "productCategory": "Festive Cookies", "brandFit": "Good Day" },
-  { "name": "Chaat Masala", "convGrowth": "19.6%", "engGrowth": "28.4%", "productCategory": "Mainstream Line Extensions", "brandFit": "50-50" }
+  { "name": "Chaat Masala Blast", "convGrowth": "38.6%", "engGrowth": "51.3%", "productCategory": "Mainstream Line Extensions", "brandFit": "50-50" }
 ]

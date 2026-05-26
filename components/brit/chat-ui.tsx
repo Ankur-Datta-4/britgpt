@@ -331,8 +331,8 @@ const RESEARCH_SCRIPTS = {
       body: HERO_THESIS.body,
       stats: [
         { k: "Honey Chilli conv.", v: "48.7", suffix: "%" },
-        { k: "Gunpowder Podi conv.", v: "46.8", suffix: "%" },
-        { k: "Flavors indexed", v: "38" },
+        { k: "Gunpowder Podi conv.", v: "46.2", suffix: "%" },
+        { k: "Flavors indexed", v: "39" },
         { k: "Sample", v: "1.53", suffix: "L" },
       ],
     },
