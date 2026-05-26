@@ -6,6 +6,7 @@ import { BRIT_DATA } from '@/lib/data';
 import { answerQuestion } from '@/lib/qa';
 import { enrichQAAnswer, hasLlmKeyAsync } from '@/lib/llm';
 import { runAction as executeAction } from '@/lib/actions';
+import { getAudienceDefaultsFromCohort } from '@/lib/audience-cohorts';
 import {
   DEFAULT_RESEARCH_PROMPT,
   DataConfigForm,
@@ -48,6 +49,7 @@ import {
   formatSessionTime,
 } from '@/lib/brit-sessions';
 import { exportBriefPdf, exportFullReport, shareText } from '@/lib/brief-export';
+import { BritanniaLogo, ConsumaLogo } from '@/components/brit/app-branding';
 
 const restoreScript = (stored) => {
   if (!stored) return null;
@@ -124,7 +126,7 @@ const Sidebar = ({
     <aside className="sidebar">
       <div className="side-h">
         <div className="brand">
-          <div className="brand-mark"></div>
+          <div className="brand-mark" />
           <div className="brand-name">
             Brit GPT
             <small>consumer research</small>
@@ -206,9 +208,10 @@ const Sidebar = ({
 /* ============================================================
    Composer
 ============================================================ */
-const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction }) => {
+const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composerKey }) => {
   const [v, setV] = useState("");
   const ta = useRef(null);
+  const canSend = !disabled && v.trim().length > 0;
 
   useEffect(() => {
     if (ta.current) {
@@ -217,11 +220,20 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction }) => {
     }
   }, [v]);
 
+  useEffect(() => {
+    if (!disabled && ta.current) {
+      ta.current.focus();
+    }
+  }, [composerKey, disabled]);
+
   const send = () => {
     const txt = v.trim();
     if (!txt || disabled) return;
     onSubmit(txt);
     setV("");
+    if (ta.current) {
+      ta.current.style.height = "auto";
+    }
   };
 
   const chips = [
@@ -232,15 +244,26 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction }) => {
 
   return (
     <div className="composer-wrap">
-      <div className="composer">
+      <form
+        className="composer"
+        onSubmit={(e) => {
+          e.preventDefault();
+          send();
+        }}
+      >
         <textarea
           ref={ta}
           value={v}
           onChange={(e) => setV(e.target.value)}
           placeholder={placeholder || "Ask a consumer research question…"}
           disabled={disabled}
+          rows={2}
+          aria-label="Research prompt"
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              send();
+            }
           }}
         />
         <div className="composer-bar">
@@ -255,9 +278,17 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction }) => {
               </span>
             ))}
           </div>
-          <button className="composer-send" onClick={send} disabled={disabled || !v.trim()} title="Send">↑</button>
+          <button
+            type="submit"
+            className="composer-send"
+            disabled={!canSend}
+            title="Send"
+            aria-label="Send message"
+          >
+            ↑
+          </button>
         </div>
-      </div>
+      </form>
       <div className="composer-foot">
         Brit GPT can make mistakes. Cross-check important findings with your data team ·{" "}
         <a href="#" onClick={(e) => { e.preventDefault(); onChipAction?.("privacy"); }}>privacy</a>
@@ -316,7 +347,6 @@ function MessageView({ m, ctx }) {
           <DocActionablesCard
             onRunDeliverable={ctx.onRunDeliverable}
             busy={ctx.actionBusy}
-            filmBusy={ctx.filmBusy}
           />
         )}
         {m.kind === "film_job" && (
@@ -356,6 +386,7 @@ export default function BritApp() {
   const [sessions, setSessions] = useState([]);
   const [messages, setMessages] = useState([]);
   const [phase, setPhase] = useState("idle");
+  const [audienceCohort, setAudienceCohort] = useState("millennials");
   const [params, setParams] = useState(null);
   const [runConfig, setRunConfig] = useState(null);
   const [activeScript, setActiveScript] = useState(null);
@@ -372,8 +403,20 @@ export default function BritApp() {
   const threadRef = useRef(null);
   const scriptRef = useRef(null);
   const messagesRef = useRef([]);
+  const phaseRef = useRef("idle");
   const pipelineDoneRef = useRef(false);
   const persistSkipRef = useRef(true);
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
+
+  useEffect(() => {
+    if (messages.length === 0 && phase === "running") {
+      setPhase("idle");
+      pipelineDoneRef.current = false;
+    }
+  }, [messages.length, phase]);
 
   const showToast = useCallback((text) => {
     setToast(text);
@@ -472,6 +515,7 @@ export default function BritApp() {
     setPhase(restoredPhase);
     setParams(snap.params || null);
     setRunConfig(snap.runConfig || null);
+    setAudienceCohort(snap.runConfig?.audience?.cohortId || "millennials");
     setActiveScript(script);
     msgIdRef.current = snap.msgIdCounter || 0;
     pipelineDoneRef.current = !!snap.pipelineDone;
@@ -495,6 +539,7 @@ export default function BritApp() {
     setSessionId(createSessionId());
     setMessages([]);
     setPhase("idle");
+    setAudienceCohort("millennials");
     setParams(null);
     setRunConfig(null);
     setActiveScript(null);
@@ -572,7 +617,7 @@ export default function BritApp() {
   const replyWithQA = async (text, intro, opts = {}) => {
     push({ role: "user", text });
     if (intro) pushDelayed({ role: "asst", kind: "text", text: intro }, 200);
-    pushDelayed({ role: "asst", kind: "typing", text: "Searching Flavor Insights India…" }, intro ? 450 : 280);
+    pushDelayed({ role: "asst", kind: "typing", text: "Searching Britannia consumer signals…" }, intro ? 450 : 280);
     await new Promise((r) => setTimeout(r, intro ? 700 : 500));
 
     let answer = answerFromDataset(text);
@@ -604,12 +649,14 @@ export default function BritApp() {
     scriptRef.current = script;
     setActiveScript(script);
     setParams({ region: "Pan-India", obj: "Product extension" });
+    setPhase("data_config");
 
     const hasUser = messagesRef.current.some(
       (m) => m.role === "user" && m.text?.trim() === prompt
     );
     if (!hasUser) {
       push({ role: "user", text: prompt });
+      messagesRef.current = [...messagesRef.current, { role: "user", text: prompt }];
     }
 
     pushDelayed({
@@ -618,17 +665,21 @@ export default function BritApp() {
       text: "I'll run this across your selected sources. Confirm data configuration and audience, then the engine will generate the full narrative.",
     }, 280);
     pushDelayed({ role: "asst", kind: "data_config", defaults: { geography: "India" } }, 550);
-    setPhase("data_config");
   };
 
   const onDataConfig = (msgId, dataConfig) => {
     setRunConfig((c) => ({ ...c, dataConfig }));
     setMessages((ms) => ms.map((m) => (m.id === msgId ? { ...m, locked: true, defaults: dataConfig } : m)));
-    pushDelayed({ role: "asst", kind: "audience_config" }, 350);
+    pushDelayed({
+      role: "asst",
+      kind: "audience_config",
+      defaults: getAudienceDefaultsFromCohort(audienceCohort),
+    }, 350);
     setPhase("audience_config");
   };
 
   const onAudienceConfig = (msgId, audience) => {
+    if (audience?.cohortId) setAudienceCohort(audience.cohortId);
     const full = { ...(runConfig || {}), audience };
     setRunConfig(full);
     setMessages((ms) => ms.map((m) => (m.id === msgId ? { ...m, locked: true, defaults: audience } : m)));
@@ -642,28 +693,39 @@ export default function BritApp() {
     setPhase("running");
   };
 
-  const handleUserSubmit = async (text) => {
+  const handleUserSubmit = useCallback(async (text) => {
     const q = text?.trim();
     if (!q) return;
 
-    if (phase === "idle" || phase === "reco") {
+    const currentPhase = phaseRef.current;
+    const hasMessages = messagesRef.current.length > 0;
+
+    if (currentPhase === "running" || actionBusy) {
+      showToast("Research is still running — wait for the pipeline to finish.");
+      return;
+    }
+
+    if (currentPhase === "data_config" || currentPhase === "audience_config") {
+      showToast("Confirm the configuration card above, then continue.");
+      return;
+    }
+
+    if (!hasMessages || currentPhase === "idle" || currentPhase === "reco") {
+      startDocPipeline(q);
+      return;
+    }
+
+    if (currentPhase === "done") {
       if (wantsResearchPipeline(q)) {
         startDocPipeline(q);
         return;
       }
       await replyWithQA(q);
-      setPhase("done");
       return;
     }
-    if (phase === "done") {
-      if (wantsResearchPipeline(q)) {
-        startDocPipeline(q);
-        return;
-      }
-      await replyWithQA(q);
-      return;
-    }
-  };
+
+    startDocPipeline(q);
+  }, [actionBusy, showToast, replyWithQA]);
 
   const updateFilmJob = useCallback((jobId, patch) => {
     setMessages((ms) => ms.map((m) => (m.id === jobId ? { ...m, ...patch } : m)));
@@ -729,10 +791,10 @@ export default function BritApp() {
     }
     if (actionBusy) return;
     const labels = {
-      content_engine: "Content & messaging",
-      concept_cards: "Create",
+      concept_cards: "Concept cards",
       storyboard: "Video ad storyboard",
-      positioning: "Positioning",
+      content_engine: "Messaging & communication",
+      positioning: "Positioning recommendations",
     };
     push({ role: "user", text: `${labels[actionId] || actionId} · ${flavor} · ${state}` });
     setActionBusy(true);
@@ -802,20 +864,17 @@ export default function BritApp() {
 
     pushDelayed({ role: "asst", kind: "text", text: "Pipeline complete. Here's the headline thesis." }, bump(250));
     pushDelayed({ role: "asst", kind: "insight", params: scope, script }, bump(350));
-    pushDelayed({ role: "asst", kind: "muted", text: script.muted || "State tables, clusters, charts, and national performance follow." }, bump(500));
+    pushDelayed({
+      role: "asst",
+      kind: "muted",
+      text: "Overall flavor machine, state-wise tables, and actionable deliverables follow.",
+    }, bump(500));
 
     const docSequence = [
+      "doc_national",
       "doc_states",
       "doc_winning",
-      "region",
-      "doc_cross",
-      "sentiment",
-      "trend",
-      "doc_national",
-      "flavour",
-      "quotes",
       "doc_actionables",
-      "exec",
     ];
     docSequence.forEach((kind) => {
       pushDelayed({ role: "asst", kind, script, params: scope }, bump(420));
@@ -836,6 +895,7 @@ export default function BritApp() {
     setSessionId(newId);
     setMessages([]);
     setPhase("idle");
+    setAudienceCohort("millennials");
     setParams(null);
     setRunConfig(null);
     setActiveScript(null);
@@ -964,7 +1024,7 @@ export default function BritApp() {
   };
 
   const canPickQuestion = (phase === "idle" && messages.length === 0) || phase === "done";
-  const composerLocked = ["data_config", "audience_config", "running"].includes(phase) || actionBusy;
+  const composerLocked = phase === "running" || actionBusy || filmBusy;
 
   return (
     <div className="app">
@@ -1006,6 +1066,8 @@ export default function BritApp() {
         </div>
 
         <ComposerInner
+          key={sessionId}
+          composerKey={sessionId}
           onSubmit={handleUserSubmit}
           onChipAction={handleChipAction}
           disabled={composerLocked}
@@ -1053,15 +1115,20 @@ function ResearchRecoCard({ tag, query, hint, onStart }) {
   );
 }
 
-function WelcomeView() {
-  return (
-    <div className="welcome welcome-minimal">
-      <div className="badge">Flavor Insights India · {BRIT_DATA?.meta?.date || "20 May 2026"}</div>
-      <h1>What would you like to <em>discover</em> today?</h1>
-      <p className="welcome-sub">
-        Ask a quick question, or describe a full study — research runs when your question needs the pipeline.
-      </p>
+const WelcomeView = () => (
+  <div className="welcome welcome-minimal">
+    <div className="welcome-brand-stack">
+      <BritanniaLogo size="lg" className="welcome-britannia" />
+      <div className="welcome-powered">
+        <span className="welcome-powered-label">Powered by</span>
+        <ConsumaLogo size="md" className="welcome-consuma-logo" />
+      </div>
     </div>
-  );
-}
+    <div className="badge">Consumer research · India</div>
+    <h1>What would you like to <em>discover</em> today?</h1>
+    <p className="welcome-sub">
+      Describe your study in the box below — we&apos;ll configure sources and run the full research pipeline.
+    </p>
+  </div>
+);
 

@@ -1,0 +1,466 @@
+[
+  {
+    "state": "Maharashtra",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Coated wafers, baked snacks",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Maharashtra",
+    "flavorType": "Savory",
+    "flavor": "Schezwan Masala",
+    "trendType": "Established",
+    "extensions": "Schezwan chips, spicy crackers",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Uttar Pradesh",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Sweet-spicy cream biscuits",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Uttar Pradesh",
+    "flavorType": "Savory",
+    "flavor": "Chaat Masala Blast",
+    "trendType": "Stable",
+    "extensions": "Chaat crackers, baked namkeen",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Tamil Nadu",
+    "flavorType": "Sweet",
+    "flavor": "Tamarind Candy",
+    "trendType": "Stable",
+    "extensions": "Tamarind cookies, chewy bites",
+    "brandFit": "Marie Gold"
+  },
+  {
+    "state": "Tamil Nadu",
+    "flavorType": "Savory",
+    "flavor": "Gunpowder Podi",
+    "trendType": "Emerging",
+    "extensions": "Podi khakhra, savory biscuits",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Karnataka",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Coated crackers, snack bites",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Karnataka",
+    "flavorType": "Savory",
+    "flavor": "Gunpowder Podi",
+    "trendType": "Emerging",
+    "extensions": "Podi crackers, podi snack mix",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Delhi NCR",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Sweet-spicy biscuits, coated snacks",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Delhi NCR",
+    "flavorType": "Savory",
+    "flavor": "Schezwan Masala",
+    "trendType": "Established",
+    "extensions": "Schezwan crackers, spicy chips",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "West Bengal",
+    "flavorType": "Sweet",
+    "flavor": "Mishti Doi Caramel",
+    "trendType": "Emerging",
+    "extensions": "Yogurt cream biscuits, dessert bars",
+    "brandFit": "Bourbon"
+  },
+  {
+    "state": "West Bengal",
+    "flavorType": "Savory",
+    "flavor": "Kasundi Mustard",
+    "trendType": "Emerging",
+    "extensions": "Mustard crackers, spicy sticks",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Telangana",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Sweet-spicy cookies",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Telangana",
+    "flavorType": "Savory",
+    "flavor": "Gunpowder Podi",
+    "trendType": "Emerging",
+    "extensions": "Podi crackers, baked chips",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Gujarat",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Crackers, baked sticks",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Gujarat",
+    "flavorType": "Savory",
+    "flavor": "Sev Masala",
+    "trendType": "Stable",
+    "extensions": "Sev crackers, crunchy namkeen",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Rajasthan",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Fusion cookies, snack wafers",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Rajasthan",
+    "flavorType": "Savory",
+    "flavor": "Dal Baati Masala",
+    "trendType": "Stable",
+    "extensions": "Masala crackers, baked bites",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Andhra Pradesh",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Cream crackers, baked chips, snack mix",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Andhra Pradesh",
+    "flavorType": "Savory",
+    "flavor": "Gunpowder Podi",
+    "trendType": "Emerging",
+    "extensions": "Podi crackers, podi khakhra, snack sticks",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Kerala",
+    "flavorType": "Sweet",
+    "flavor": "Banana Chips Jaggery",
+    "trendType": "Stable",
+    "extensions": "Banana cookies, jaggery wafers",
+    "brandFit": "Good Day"
+  },
+  {
+    "state": "Kerala",
+    "flavorType": "Savory",
+    "flavor": "Kerala Pepper Fry",
+    "trendType": "Emerging",
+    "extensions": "Pepper crackers, spicy chips",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Punjab",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Sweet-spicy snack bars",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Punjab",
+    "flavorType": "Savory",
+    "flavor": "Tandoori BBQ",
+    "trendType": "Stable",
+    "extensions": "BBQ crackers, baked chips",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Bihar",
+    "flavorType": "Sweet",
+    "flavor": "Tilkut Sesame Jaggery",
+    "trendType": "Seasonal",
+    "extensions": "Sesame cookies, protein bites",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Bihar",
+    "flavorType": "Savory",
+    "flavor": "Sattu Masala",
+    "trendType": "Emerging",
+    "extensions": "Sattu crackers, baked puffs",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Odisha",
+    "flavorType": "Sweet",
+    "flavor": "Chhena Poda Caramel",
+    "trendType": "Emerging",
+    "extensions": "Caramel cookies, cheesecake bites",
+    "brandFit": "Bourbon"
+  },
+  {
+    "state": "Odisha",
+    "flavorType": "Savory",
+    "flavor": "Dalma Spice",
+    "trendType": "Stable",
+    "extensions": "Lentil crackers, savory biscuits",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Madhya Pradesh",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Sweet-spicy cookies",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Madhya Pradesh",
+    "flavorType": "Savory",
+    "flavor": "Bhutte Ka Kees Masala",
+    "trendType": "Stable",
+    "extensions": "Corn crackers, masala sticks",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Haryana",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Established",
+    "extensions": "Snack biscuits, coated nuts",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Haryana",
+    "flavorType": "Savory",
+    "flavor": "Bajra Masala",
+    "trendType": "Emerging",
+    "extensions": "Millet crackers, healthy crisps",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Assam",
+    "flavorType": "Sweet",
+    "flavor": "Nolen Gur Toffee",
+    "trendType": "Seasonal",
+    "extensions": "Jaggery cookies, caramel biscuits",
+    "brandFit": "Good Day"
+  },
+  {
+    "state": "Assam",
+    "flavorType": "Savory",
+    "flavor": "Bhut Jolokia Spice",
+    "trendType": "Fad",
+    "extensions": "Spicy crackers, heat challenge snacks",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Jharkhand",
+    "flavorType": "Sweet",
+    "flavor": "Tilkut Sesame",
+    "trendType": "Seasonal",
+    "extensions": "Sesame cookies, jaggery bites",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Jharkhand",
+    "flavorType": "Savory",
+    "flavor": "Rugda Masala",
+    "trendType": "Emerging",
+    "extensions": "Earthy mushroom crackers",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Chhattisgarh",
+    "flavorType": "Sweet",
+    "flavor": "Tilgur Sesame Jaggery",
+    "trendType": "Seasonal",
+    "extensions": "Gur biscuits, millet cookies",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Chhattisgarh",
+    "flavorType": "Savory",
+    "flavor": "Chana Dal Masala",
+    "trendType": "Stable",
+    "extensions": "Namkeen crackers, crunchy bites",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Uttarakhand",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Emerging",
+    "extensions": "Sweet-spicy cookies",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Uttarakhand",
+    "flavorType": "Savory",
+    "flavor": "Bhang Chutney",
+    "trendType": "Fad",
+    "extensions": "Herb crackers, savory chips",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Himachal Pradesh",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Emerging",
+    "extensions": "Sweet-spicy snack bars",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Himachal Pradesh",
+    "flavorType": "Savory",
+    "flavor": "Chana Madra Spice",
+    "trendType": "Stable",
+    "extensions": "Creamy savory crackers",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Goa",
+    "flavorType": "Sweet",
+    "flavor": "Bebinca Caramel",
+    "trendType": "Emerging",
+    "extensions": "Caramel cookies, layered cakes",
+    "brandFit": "Bourbon"
+  },
+  {
+    "state": "Goa",
+    "flavorType": "Savory",
+    "flavor": "Recheado Masala",
+    "trendType": "Emerging",
+    "extensions": "Masala crackers, spicy wafers",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Manipur",
+    "flavorType": "Sweet",
+    "flavor": "Chak-Hao Black Rice Candy",
+    "trendType": "Emerging",
+    "extensions": "Black rice cookies, dessert bites",
+    "brandFit": "Good Day"
+  },
+  {
+    "state": "Manipur",
+    "flavorType": "Savory",
+    "flavor": "Naga King Chilli",
+    "trendType": "Fad",
+    "extensions": "Heat chips, spicy peanuts",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Meghalaya",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Emerging",
+    "extensions": "Sweet-spicy wafers",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Meghalaya",
+    "flavorType": "Savory",
+    "flavor": "Jadoh Spice",
+    "trendType": "Stable",
+    "extensions": "Savory crackers, rice crisps",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Nagaland",
+    "flavorType": "Sweet",
+    "flavor": "Wild Honey Crunch",
+    "trendType": "Emerging",
+    "extensions": "Honey cookies, granola bites",
+    "brandFit": "NutriChoice"
+  },
+  {
+    "state": "Nagaland",
+    "flavorType": "Savory",
+    "flavor": "Raja Mircha (Bhut Jolokia)",
+    "trendType": "Fad",
+    "extensions": "Ultra-spicy chips, coated nuts",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Arunachal Pradesh",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Emerging",
+    "extensions": "Sweet-spicy cookies, coated nuts",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Arunachal Pradesh",
+    "flavorType": "Savory",
+    "flavor": "Smoked Chilli (Raja Mircha)",
+    "trendType": "Fad",
+    "extensions": "Fiery chips, spice-coated peanuts",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Mizoram",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Emerging",
+    "extensions": "Coated snack bites",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Mizoram",
+    "flavorType": "Savory",
+    "flavor": "Bai Masala",
+    "trendType": "Stable",
+    "extensions": "Herb crackers, savory chips",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Tripura",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Emerging",
+    "extensions": "Sweet-spicy snack bites",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Tripura",
+    "flavorType": "Savory",
+    "flavor": "Berma Fermented Fish",
+    "trendType": "Fad",
+    "extensions": "Umami crackers, savory sticks",
+    "brandFit": "50-50"
+  },
+  {
+    "state": "Sikkim",
+    "flavorType": "Sweet",
+    "flavor": "Honey Chilli",
+    "trendType": "Emerging",
+    "extensions": "Sweet-spicy wafers",
+    "brandFit": "Treat"
+  },
+  {
+    "state": "Sikkim",
+    "flavorType": "Savory",
+    "flavor": "Gundruk Pickle",
+    "trendType": "Emerging",
+    "extensions": "Tangy crackers, pickle chips",
+    "brandFit": "50-50"
+  }
+]

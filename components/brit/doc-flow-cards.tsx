@@ -2,7 +2,9 @@
 "use client";
 
 import { useState, useEffect, useMemo, Fragment } from "react";
-import { NationalScatterChart } from "@/components/brit/brit-charts";
+import { NationalPrioritizationMatrix } from "@/components/brit/brit-charts";
+import { AgeCohortGrid } from "@/components/brit/age-cohort-grid";
+import { getAudienceDefaultsFromCohort } from "@/lib/audience-cohorts";
 import {
   DEFAULT_RESEARCH_PROMPT,
   DEMO_SOURCES,
@@ -13,13 +15,19 @@ import {
   DEMO_CITY_TIERS,
   FIXED_RUN_STATS,
   DEMO_STATES,
+  FLAVOR_MACHINE,
+  flavorMachineAsNational,
+  STATE_FLAVOR_CLUSTERS,
   NATIONAL_FLAVORS,
-  buildFlavorMetrics,
   getStateInsight,
-  STATE_WINNING_CLUSTERS,
+  getStateTakeaway,
+  getStateMetrics,
   CROSS_STATE_INSIGHTS,
   DELIVERABLE_TYPES,
   parsePct,
+  parseNationalStatePills,
+  parseNationalExtensions,
+  inferNationalCategory,
 } from "@/lib/demo-flow-data";
 
 const openDetail = (item) => {
@@ -100,12 +108,21 @@ export const DataConfigForm = ({ locked, defaults, onConfirm }) => {
 };
 
 export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
-  const [generations, setGenerations] = useState(defaults?.generations || []);
-  const [ages, setAges] = useState(defaults?.ages || []);
+  const base = getAudienceDefaultsFromCohort(defaults?.cohortId || "millennials");
+  const [generations, setGenerations] = useState(defaults?.generations || base.generations || []);
+  const [ages, setAges] = useState(defaults?.ages || base.ages || []);
   const [lifestyles, setLifestyles] = useState(defaults?.lifestyles || []);
   const [tiers, setTiers] = useState(defaults?.tiers || []);
   const toggle = (list, setList, item) =>
     setList(list.includes(item) ? list.filter((x) => x !== item) : [...list, item]);
+
+  const buildPayload = () => ({
+    cohortId: defaults?.cohortId || "millennials",
+    generations,
+    ages,
+    lifestyles,
+    tiers,
+  });
 
   if (locked) {
     return (
@@ -116,6 +133,8 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
         </div>
         <div className="card-body">
           <div className="scope-meta">
+            <div><span className="k">Generation</span><span className="v">{generations.join(", ") || "—"}</span></div>
+            <div><span className="k">Age</span><span className="v">{ages.join(", ") || "—"}</span></div>
             <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
             <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
             <div><span className="k">Data confidence</span><span className="v">{FIXED_RUN_STATS.confidence}</span></div>
@@ -128,13 +147,13 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
   return (
     <div className="card">
       <div className="card-h">
-        <h3>Target audience configuration</h3>
-        <span className="tag">step 2 of 2 · optional</span>
+        <h3>Target audience</h3>
+        <span className="tag">step 2 of 2</span>
       </div>
       <div className="card-body">
         <div className="scope-form">
           <div className="scope-field">
-            <div className="scope-label">Age generation <span className="hint">multi-select</span></div>
+            <div className="scope-label">Generation</div>
             <div className="opt-row">
               {DEMO_GENERATIONS.map((g) => (
                 <span key={g} className={"opt " + (generations.includes(g) ? "sel" : "")} onClick={() => toggle(generations, setGenerations, g)}>{g}</span>
@@ -142,7 +161,7 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
             </div>
           </div>
           <div className="scope-field">
-            <div className="scope-label">Age category</div>
+            <div className="scope-label">Age band</div>
             <div className="opt-row">
               {DEMO_AGE_CATEGORIES.map((a) => (
                 <span key={a} className={"opt " + (ages.includes(a) ? "sel" : "")} onClick={() => toggle(ages, setAges, a)}>{a}</span>
@@ -150,7 +169,7 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
             </div>
           </div>
           <div className="scope-field">
-            <div className="scope-label">Lifestyle</div>
+            <div className="scope-label">Lifestyle <span className="hint">optional</span></div>
             <div className="opt-row">
               {DEMO_LIFESTYLES.map((l) => (
                 <span key={l} className={"opt " + (lifestyles.includes(l) ? "sel" : "")} onClick={() => toggle(lifestyles, setLifestyles, l)}>{l}</span>
@@ -158,7 +177,7 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
             </div>
           </div>
           <div className="scope-field">
-            <div className="scope-label">City tier</div>
+            <div className="scope-label">City tier <span className="hint">optional</span></div>
             <div className="opt-row">
               {DEMO_CITY_TIERS.map((t) => (
                 <span key={t} className={"opt " + (tiers.includes(t) ? "sel" : "")} onClick={() => toggle(tiers, setTiers, t)}>{t}</span>
@@ -168,13 +187,12 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
           <div className="scope-meta">
             <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
             <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
-            <div><span className="k">Data confidence</span><span className="v">{FIXED_RUN_STATS.confidence}</span></div>
           </div>
         </div>
       </div>
       <div className="card-foot">
         <div className="note">Uses {FIXED_RUN_STATS.credits} credits · ~{FIXED_RUN_STATS.tat}</div>
-        <button type="button" className="btn-primary" onClick={() => onConfirm({ generations, ages, lifestyles, tiers })}>
+        <button type="button" className="btn-primary" disabled={generations.length < 1 || ages.length < 1} onClick={() => onConfirm(buildPayload())}>
           Run research
         </button>
       </div>
@@ -188,8 +206,8 @@ export const DocStateTableCard = () => {
   return (
     <div className="card">
       <div className="card-h">
-        <h3>State-by-state flavor deep dives</h3>
-        <span className="tag">click arrow · {DEMO_STATES.length} states</span>
+        <h3>State-wise view</h3>
+        <span className="tag">expand row · {DEMO_STATES.length} states</span>
       </div>
       <div className="card-body state-table-wrap">
         <table className="state-table">
@@ -199,9 +217,7 @@ export const DocStateTableCard = () => {
           <tbody>
             {DEMO_STATES.map((row) => {
               const isOpen = expanded === row.state;
-              const metrics = isOpen
-                ? [...buildFlavorMetrics(row.state, row.sweet, "Sweet"), ...buildFlavorMetrics(row.state, row.savory, "Savory")]
-                : [];
+              const metrics = isOpen ? getStateMetrics(row.state) : [];
               return (
                 <Fragment key={row.state}>
                   <tr className={"state-table-row " + (isOpen ? "open" : "")} onClick={() => setExpanded(isOpen ? null : row.state)}>
@@ -215,12 +231,12 @@ export const DocStateTableCard = () => {
                       <td colSpan={4}>
                         <div className="state-expand-panel">
                           <p className="muted" style={{ margin: "0 0 10px" }}>{getStateInsight(row.state)}</p>
-                          <p className="muted" style={{ margin: "0 0 12px" }}><b>What this means:</b> Anchor to {row.sweet[0]} and {row.savory[0]} before nationalizing.</p>
+                          <p className="muted" style={{ margin: "0 0 12px" }}><b>What this means:</b> {getStateTakeaway(row.state).replace(/^What this means:\s*/i, "")}</p>
                           <table className="state-metrics-table">
-                            <thead><tr><th>Flavor</th><th>Type</th><th>Conv.</th><th>Engagement</th></tr></thead>
+                            <thead><tr><th>Flavor</th><th>Type</th><th>Conv. volume</th><th>Total engagement</th></tr></thead>
                             <tbody>
                               {metrics.map((m) => (
-                                <tr key={m.flavor + m.type}><td>{m.flavor}</td><td>{m.type}</td><td>{m.conv}</td><td>{m.eng}</td></tr>
+                                <tr key={m.flavor + m.type}><td>{m.flavor}</td><td>{m.type}</td><td>{m.convVolume}</td><td>{m.totalEngagement}</td></tr>
                               ))}
                             </tbody>
                           </table>
@@ -239,30 +255,55 @@ export const DocStateTableCard = () => {
 };
 
 export const DocWinningClustersCard = () => {
-  const [open, setOpen] = useState(STATE_WINNING_CLUSTERS[0]?.id);
+  const [open, setOpen] = useState(STATE_FLAVOR_CLUSTERS[0]?.id);
+
   return (
     <div className="card">
       <div className="card-h">
-        <h3>Key state-wise winning flavors</h3>
-        <span className="tag">click to expand</span>
+        <h3>State-wise flavor tables</h3>
+        <span className="tag">regional clusters · click + to expand</span>
       </div>
-      <div className="card-body state-list">
-        {STATE_WINNING_CLUSTERS.map((c) => (
-          <div key={c.id} className={"state-row " + (open === c.id ? "open" : "")} onClick={() => setOpen(open === c.id ? null : c.id)}>
-            <div className="state-head">
-              <span className="state-name">{c.label}</span>
-              <span className="state-chev">{open === c.id ? "−" : "+"}</span>
+      <div className="card-body">
+        {STATE_FLAVOR_CLUSTERS.map((cluster) => {
+          const isOpen = open === cluster.id;
+          return (
+            <div key={cluster.id} className="state-cluster-block">
+              <button
+                type="button"
+                className={"state-cluster-head " + (isOpen ? "open" : "")}
+                onClick={() => setOpen(isOpen ? null : cluster.id)}
+              >
+                <span className="state-cluster-name">{cluster.label}</span>
+                <span className="state-chev">{isOpen ? "−" : "+"}</span>
+              </button>
+              {isOpen && (
+                <div className="state-cluster-body">
+                  <table className="state-metrics-table">
+                    <thead>
+                      <tr>
+                        <th>Flavor</th>
+                        <th>Conversation volume in state</th>
+                        <th>Engagement volume in state</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cluster.rows.map((r) => (
+                        <tr key={r.flavor}>
+                          <td><b>{r.flavor}</b></td>
+                          <td>{r.convVolume}</td>
+                          <td>{r.engVolume}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="state-cluster-insight">
+                    <b>Insight:</b> {cluster.insight}
+                  </p>
+                </div>
+              )}
             </div>
-            {open === c.id && (
-              <div className="state-detail">
-                {c.rows.map((r) => (
-                  <p key={r.flavor}><b>{r.flavor}</b> · {r.conv} conv · {r.eng} eng</p>
-                ))}
-                <p style={{ marginTop: 10 }}>{c.insight}</p>
-              </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -275,168 +316,418 @@ export const DocCrossStateCard = () => {
   const active = items.find((x) => x.id === activeId) || items[0];
 
   return (
-    <div className="card">
+    <div className="card cross-state-card">
       <div className="card-h">
         <h3>Cross-state insight synthesis</h3>
-        <span className="tag">zone · weather · age</span>
+        <span className="tag">overall flavor reads</span>
       </div>
       <div className="card-body">
-        <div className="scope-field">
-          <div className="scope-label">View by</div>
-          <div className="opt-row">
-            {[
-              { id: "zone", label: "Zone-wise" },
-              { id: "weather", label: "Weather / seasonal" },
-              { id: "age", label: "Age / demographic" },
-            ].map((d) => (
-              <span
-                key={d.id}
-                className={"opt " + (dim === d.id ? "sel" : "")}
-                onClick={() => { setDim(d.id); setActiveId(CROSS_STATE_INSIGHTS[d.id][0].id); }}
-              >
-                {d.label}
-              </span>
-            ))}
-          </div>
+        <p className="muted cross-state-lead">
+          Patterns that emerge when state-level data is read together — geographic clusters, seasonal triggers, and age-driven purchase behavior.
+        </p>
+        <div className="cross-state-tabs">
+          {[
+            { id: "zone", label: "Zone-wise" },
+            { id: "weather", label: "Weather" },
+            { id: "age", label: "Age & demographic" },
+          ].map((d) => (
+            <button
+              key={d.id}
+              type="button"
+              className={"cross-state-tab " + (dim === d.id ? "sel" : "")}
+              onClick={() => {
+                setDim(d.id);
+                setActiveId(CROSS_STATE_INSIGHTS[d.id][0].id);
+              }}
+            >
+              {d.label}
+            </button>
+          ))}
         </div>
-        <div className="scope-field">
-          <div className="opt-row">
-            {items.map((item) => (
-              <span key={item.id} className={"opt " + (activeId === item.id ? "sel" : "")} onClick={() => setActiveId(item.id)}>
-                {item.label}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div className="card" style={{ marginTop: 12, boxShadow: "none" }}>
-          <div className="card-body">
-            <h4 style={{ margin: "0 0 8px", fontSize: 15 }}>{active.label}</h4>
-            <p className="muted" style={{ margin: 0 }}>{active.insight}</p>
-            {active.keyFlavors && <p className="muted"><b>Key flavors:</b> {active.keyFlavors}</p>}
-            {active.peakFlavors && <p className="muted"><b>Peak:</b> {active.peakFlavors}</p>}
-            {active.topFlavors && <p className="muted"><b>Top:</b> {active.topFlavors}</p>}
-            {active.signal && <p className="muted"><b>Opportunity:</b> {active.signal}</p>}
-            {active.implication && <p className="muted"><b>Implication:</b> {active.implication}</p>}
-            {active.trial && <p className="muted"><b>Trial:</b> {active.trial}</p>}
-          </div>
-        </div>
+
+        {dim === "age" ? (
+          <>
+            <AgeCohortGrid
+              selectedId={activeId}
+              onSelect={setActiveId}
+              variant="dark"
+              sectionLabel="Demographic trends"
+            />
+            {active?.trial && (
+              <p className="muted cross-state-footnote"><b>Signal:</b> {active.trial}</p>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="scope-field">
+              <div className="opt-row">
+                {items.map((item) => (
+                  <span
+                    key={item.id}
+                    className={"opt " + (activeId === item.id ? "sel" : "")}
+                    onClick={() => setActiveId(item.id)}
+                  >
+                    {item.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="card cross-state-detail" style={{ marginTop: 12, boxShadow: "none" }}>
+              <div className="card-body">
+                <h4 style={{ margin: "0 0 8px", fontSize: 15 }}>{active.label}</h4>
+                <p className="muted" style={{ margin: 0 }}>{active.insight}</p>
+                {active.keyFlavors && <p className="muted"><b>Key flavors:</b> {active.keyFlavors}</p>}
+                {active.peakFlavors && <p className="muted"><b>Peak:</b> {active.peakFlavors}</p>}
+                {active.signal && <p className="muted"><b>Opportunity:</b> {active.signal}</p>}
+                {active.implication && <p className="muted"><b>Implication:</b> {active.implication}</p>}
+              </div>
+            </div>
+          </>
+        )}
       </div>
+    </div>
+  );
+};
+
+const formatGrowth = (value) => {
+  const n = parseFloat(String(value).replace("%", ""));
+  if (Number.isNaN(n)) return value;
+  return `+${n}%`;
+};
+
+const FlavorMachineTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => {
+  const sortIndicator = (key) => {
+    if (sortKey !== key) return "";
+    return sortDir === "asc" ? " ↑" : " ↓";
+  };
+
+  const th = (key, label) => (
+    <th>
+      <button type="button" className="national-th-sort" onClick={() => onSort(key)}>
+        {label}
+        <span className="national-th-sort-ind">{sortIndicator(key)}</span>
+      </button>
+    </th>
+  );
+
+  return (
+    <div className="national-table-wrap">
+      <table className="national-table national-table--interactive">
+        <thead>
+          <tr>
+            {th("name", "Flavor")}
+            {th("conv", "Conversation growth rate")}
+            {th("eng", "Engagement growth rate")}
+            <th>Product category portfolio</th>
+            <th>Brand in portfolio</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((f) => (
+            <tr
+              key={f.name}
+              className="clickable-row"
+              onClick={() => onRowClick(f)}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onRowClick(f);
+                }
+              }}
+            >
+              <td><b>{f.name}</b></td>
+              <td><span className="national-growth">{formatGrowth(f.convGrowth)}</span></td>
+              <td><span className="national-growth">{formatGrowth(f.engGrowth)}</span></td>
+              <td>{f.productCategory}</td>
+              <td><span className="national-brand-pill">{f.brandFit}</span></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => {
+  const sortIndicator = (key) => {
+    if (sortKey !== key) return "";
+    return sortDir === "asc" ? " ↑" : " ↓";
+  };
+
+  const th = (key, label) => (
+    <th>
+      <button type="button" className="national-th-sort" onClick={() => onSort(key)}>
+        {label}
+        <span className="national-th-sort-ind">{sortIndicator(key)}</span>
+      </button>
+    </th>
+  );
+
+  return (
+    <div className="national-table-wrap">
+      <table className="national-table national-table--interactive">
+        <thead>
+          <tr>
+            {th("name", "Flavor")}
+            {th("conv", "Conv. growth")}
+            {th("eng", "Eng. growth")}
+            {th("trend", "Trend")}
+            <th>States</th>
+            {th("category", "Category")}
+            <th>Product extension ideas</th>
+            <th>Brand fit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan={8} className="national-table-empty">
+                No flavors match this trend filter.
+              </td>
+            </tr>
+          ) : (
+            rows.map((f) => {
+              const ext = parseNationalExtensions(f.extensions);
+              const brands = f.brandFit.split(",").map((b) => b.trim()).filter(Boolean);
+              return (
+                <tr
+                  key={f.name}
+                  className="clickable-row"
+                  onClick={() => onRowClick(f)}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onRowClick(f);
+                    }
+                  }}
+                >
+                  <td><b>{f.name}</b></td>
+                  <td><span className="national-growth">{formatGrowth(f.convGrowth)}</span></td>
+                  <td><span className="national-growth">{formatGrowth(f.engGrowth)}</span></td>
+                  <td>
+                    <span className={"trend-pill trend-" + f.trendType.toLowerCase()}>{f.trendType}</span>
+                  </td>
+                  <td>
+                    <div className="national-pill-row">
+                      {parseNationalStatePills(f.states).map((s) => (
+                        <span
+                          key={s.abbr + s.full}
+                          className={"national-state-pill " + (s.isNational ? "national-state-pill--national" : "")}
+                          title={s.full}
+                        >
+                          {s.abbr}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td>{inferNationalCategory(f.extensions)}</td>
+                  <td className="national-ext-cell">
+                    {ext.primary ? <b>{ext.primary}</b> : null}
+                    {ext.rest.length > 0 ? (
+                      <span className="national-ext-rest">
+                        {ext.primary ? ", " : ""}
+                        {ext.rest.join(", ")}
+                      </span>
+                    ) : null}
+                  </td>
+                  <td>
+                    <div className="national-pill-row">
+                      {brands.map((b) => (
+                        <span key={b} className={"national-brand-pill national-brand-pill--" + b.toLowerCase().replace(/\s+/g, "-")}>
+                          {b}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };
 
 export const DocNationalCard = () => {
-  const top = NATIONAL_FLAVORS.slice(0, 16);
-  const matrixFlavors = top.slice(0, 12);
+  const [sortKey, setSortKey] = useState("conv");
+  const [sortDir, setSortDir] = useState("desc");
+  const matrixPoints = useMemo(() => flavorMachineAsNational(), []);
+
+  const sortedRows = useMemo(() => {
+    const rows = [...FLAVOR_MACHINE];
+    const dir = sortDir === "asc" ? 1 : -1;
+    rows.sort((a, b) => {
+      if (sortKey === "name") return a.name.localeCompare(b.name) * dir;
+      if (sortKey === "conv") return (parsePct(a.convGrowth) - parsePct(b.convGrowth)) * dir;
+      if (sortKey === "eng") return (parsePct(a.engGrowth) - parsePct(b.engGrowth)) * dir;
+      return 0;
+    });
+    return rows;
+  }, [sortKey, sortDir]);
+
+  const onFlavorClick = (f) => {
+    const row = FLAVOR_MACHINE.find((m) => m.name === f.name) || f;
+    openDetail({
+      type: "Overall flavor machine",
+      title: row.name,
+      body: row.productCategory || f.extensions,
+      facts: [
+        { k: "Conv. growth", v: row.convGrowth || f.convGrowth },
+        { k: "Eng. growth", v: row.engGrowth || f.engGrowth },
+        { k: "Brand", v: row.brandFit || f.brandFit },
+      ],
+      source: "Overall flavor machine · demo",
+    });
+  };
+
+  const onSort = (key) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir(key === "name" || key === "trend" || key === "category" ? "asc" : "desc");
+    }
+  };
 
   return (
-    <div className="card">
+    <div className="card flavor-machine-card">
       <div className="card-h">
-        <h3>National flavor performance</h3>
-        <span className="tag">2×2 matrix · click dots</span>
+        <h3>Overall flavor machine</h3>
+        <span className="tag">{FLAVOR_MACHINE.length} flavors</span>
       </div>
       <div className="card-body">
-        <NationalScatterChart
-          points={matrixFlavors}
-          onSelect={(f) =>
-            openDetail({ type: "National flavor", title: f.name, body: f.extensions, source: "Section 5" })
-          }
-        />
-        <div className="national-table-wrap">
-          <table className="national-table">
-            <thead>
-              <tr><th>Flavor</th><th>Conv.</th><th>Eng.</th><th>Trend</th><th>States</th><th>Extensions</th><th>Brand</th></tr>
-            </thead>
-            <tbody>
-              {top.map((f) => (
-                <tr key={f.name} className="clickable-row" onClick={() => openDetail({ type: "National flavor", title: f.name, body: f.extensions, facts: [{ k: "Growth", v: f.convGrowth }, { k: "Engagement", v: f.engGrowth }], source: "May 2026" })}>
-                  <td><b>{f.name}</b></td>
-                  <td>{f.convGrowth}</td>
-                  <td>{f.engGrowth}</td>
-                  <td><span className={"trend-pill trend-" + f.trendType.toLowerCase()}>{f.trendType}</span></td>
-                  <td>{f.states}</td>
-                  <td>{f.extensions}</td>
-                  <td>{f.brandFit}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <section className="flavor-machine-matrix-section">
+          <p className="flavor-machine-section-label">Conversation vs engagement · prioritization matrix</p>
+          <NationalPrioritizationMatrix points={matrixPoints} onSelect={onFlavorClick} />
+        </section>
+        <section className="flavor-machine-table-section">
+          <p className="flavor-machine-section-label">Full flavor table</p>
+          <FlavorMachineTable
+            rows={sortedRows}
+            onRowClick={onFlavorClick}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSort={onSort}
+          />
+        </section>
       </div>
     </div>
   );
 };
 
-export const DocActionablesCard = ({ onRunDeliverable, busy, filmBusy }) => {
-  const [expandedState, setExpandedState] = useState(null);
+export const DocActionablesCard = ({ onRunDeliverable, busy }) => {
+  const [selectedType, setSelectedType] = useState("content_cards");
   const [selectedState, setSelectedState] = useState("Maharashtra");
-  const [selectedFlavor, setSelectedFlavor] = useState("Honey Chilli");
+  const [flavorName, setFlavorName] = useState("Honey Chilli");
   const [instructions, setInstructions] = useState("");
-  const stateRow = DEMO_STATES.find((s) => s.state === selectedState);
-  const flavorOptions = useMemo(() => (stateRow ? [...stateRow.sweet, ...stateRow.savory] : ["Honey Chilli"]), [stateRow]);
+  const active = DELIVERABLE_TYPES.find((d) => d.id === selectedType) || DELIVERABLE_TYPES[0];
+  const flavorSuggestions = useMemo(() => FLAVOR_MACHINE.map((f) => f.name), []);
 
-  useEffect(() => {
-    if (!flavorOptions.includes(selectedFlavor)) setSelectedFlavor(flavorOptions[0]);
-  }, [selectedState, flavorOptions, selectedFlavor]);
+  const handleGo = () => {
+    if (busy || !flavorName.trim()) return;
+    onRunDeliverable?.({
+      actionId: active.actionId,
+      state: selectedState,
+      flavor: flavorName.trim(),
+      instructions,
+    });
+  };
 
   return (
-    <div className="card">
+    <div className="card actionables-card">
       <div className="card-h">
-        <h3>Actionables for next steps</h3>
-        <span className="tag">state + flavor → deliverable</span>
+        <h3>Actionable options</h3>
+        <span className="tag">deliverables</span>
       </div>
-      <div className="card-body">
-        <p className="muted" style={{ marginTop: 0 }}>Select state and flavor, then generate messaging, concept cards, storyboard, or positioning.</p>
-        <div className="state-list" style={{ maxHeight: 200, overflowY: "auto", margin: "12px 0" }}>
-          {DEMO_STATES.slice(0, 12).map((s) => (
-            <div
-              key={s.state}
-              className={"state-row " + (selectedState === s.state ? "open" : "")}
-              onClick={() => { setSelectedState(s.state); setExpandedState(s.state); }}
-            >
-              <div className="state-head">
-                <span className="state-name">{s.state}</span>
-                <span className="state-chev">{selectedState === s.state ? "✓" : "+"}</span>
-              </div>
-            </div>
-          ))}
+      <div className="card-body generate-insights-body">
+        <p className="generate-insights-lead">
+          Enter a flavor name, pick a deliverable type, and generate concept cards, storyboard, messaging, or positioning.
+        </p>
+        <div className="deliverable-picker deliverable-picker--2x2" role="listbox" aria-label="Output type">
+          {DELIVERABLE_TYPES.map((d) => {
+            const sel = selectedType === d.id;
+            return (
+              <button
+                key={d.id}
+                type="button"
+                role="option"
+                aria-selected={sel}
+                className={"deliverable-card " + (sel ? "sel" : "")}
+                onClick={() => setSelectedType(d.id)}
+              >
+                <span className={"deliverable-card-icon " + d.iconClass} aria-hidden>
+                  {d.icon}
+                </span>
+                {d.label ? <span className="deliverable-card-title">{d.label}</span> : null}
+                <p className="deliverable-card-desc">{d.description}</p>
+                <span className="deliverable-card-mark" aria-hidden>
+                  {sel ? "✓" : ""}
+                </span>
+              </button>
+            );
+          })}
         </div>
-        {expandedState && (
-          <div className="scope-form" style={{ marginBottom: 14 }}>
-            <div className="scope-field">
-              <div className="scope-label">State</div>
-              <select className="scope-input" value={selectedState} onChange={(e) => setSelectedState(e.target.value)}>
-                {DEMO_STATES.map((s) => <option key={s.state} value={s.state}>{s.state}</option>)}
-              </select>
-            </div>
-            <div className="scope-field">
-              <div className="scope-label">Flavor</div>
-              <select className="scope-input" value={selectedFlavor} onChange={(e) => setSelectedFlavor(e.target.value)}>
-                {flavorOptions.map((f) => <option key={f} value={f}>{f}</option>)}
-              </select>
-            </div>
-            <div className="scope-field">
-              <div className="scope-label">Instructions <span className="hint">optional</span></div>
-              <input className="scope-input" value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="e.g. premium pack, chai-time…" />
-            </div>
+
+        <div className="generate-insights-configure">
+          <div className="configure-eyebrow">
+            <span className="configure-gear" aria-hidden>⚙</span>
+            Configure: {active.configureTitle}
           </div>
-        )}
-        <div className="actions-reco-chips">
-          {DELIVERABLE_TYPES.map((d) => (
-            <button
-              key={d.id}
-              type="button"
-              className={"reco-chip " + (d.primary ? "reco-chip-primary" : "")}
-              disabled={d.actionId === "create_film" ? filmBusy : busy}
-              onClick={() => onRunDeliverable?.({ actionId: d.actionId, state: selectedState, flavor: selectedFlavor, instructions })}
+          <div className="configure-field configure-field--flavor">
+            <label className="configure-label" htmlFor="gi-flavor-name">Flavor name</label>
+            <input
+              id="gi-flavor-name"
+              className="configure-select configure-flavor-input"
+              list="flavor-machine-names"
+              value={flavorName}
+              onChange={(e) => setFlavorName(e.target.value)}
+              placeholder="e.g. Honey Chilli, Gunpowder Podi, Thecha…"
+            />
+            <datalist id="flavor-machine-names">
+              {flavorSuggestions.map((name) => (
+                <option key={name} value={name} />
+              ))}
+            </datalist>
+          </div>
+          <div className="configure-field">
+            <label className="configure-label" htmlFor="gi-state">State context <span className="hint">optional</span></label>
+            <select
+              id="gi-state"
+              className="configure-select"
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
             >
-              <span className="reco-icon">◆</span>
-              <span className="reco-label-wrap">
-                <span className="reco-label-text">{d.label}</span>
-                <span className="reco-sub">{d.sub}</span>
-              </span>
+              {DEMO_STATES.map((s) => (
+                <option key={s.state} value={s.state}>{s.state}</option>
+              ))}
+            </select>
+          </div>
+          <div className="configure-field">
+            <label className="configure-label" htmlFor="gi-instructions">
+              Specific instructions <span className="hint">optional</span>
+            </label>
+            <textarea
+              id="gi-instructions"
+              className="configure-textarea"
+              rows={3}
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              placeholder="e.g. Focus on Instagram Reels for 18–24 age group, use regional language hooks, include a festive angle…"
+            />
+          </div>
+          <div className="configure-actions">
+            <button
+              type="button"
+              className="configure-go"
+              disabled={busy || !flavorName.trim()}
+              onClick={handleGo}
+            >
+              <span aria-hidden>✦</span> Go
             </button>
-          ))}
+          </div>
         </div>
       </div>
     </div>

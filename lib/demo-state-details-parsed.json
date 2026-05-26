@@ -1,0 +1,1916 @@
+{
+  "Andhra Pradesh": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "18.4K",
+        "totalEngagement": "132.7K"
+      },
+      {
+        "flavor": "Tamarind Candy",
+        "type": "Sweet",
+        "convVolume": "14.8K",
+        "totalEngagement": "104.2K"
+      },
+      {
+        "flavor": "Bellam Coconut",
+        "type": "Sweet",
+        "convVolume": "12.1K",
+        "totalEngagement": "87.9K"
+      },
+      {
+        "flavor": "Pootharekulu Crunch",
+        "type": "Sweet",
+        "convVolume": "10.6K",
+        "totalEngagement": "76.4K"
+      },
+      {
+        "flavor": "Mango Pickle Candy",
+        "type": "Sweet",
+        "convVolume": "9.9K",
+        "totalEngagement": "71.3K"
+      },
+      {
+        "flavor": "Gunpowder Podi",
+        "type": "Savory",
+        "convVolume": "24.2K",
+        "totalEngagement": "184.8K"
+      },
+      {
+        "flavor": "Gongura Masala",
+        "type": "Savory",
+        "convVolume": "19.6K",
+        "totalEngagement": "148.5K"
+      },
+      {
+        "flavor": "Mirchi Bajji Spice",
+        "type": "Savory",
+        "convVolume": "15.7K",
+        "totalEngagement": "118.4K"
+      },
+      {
+        "flavor": "Chicken 65 Masala",
+        "type": "Savory",
+        "convVolume": "14.3K",
+        "totalEngagement": "106.8K"
+      },
+      {
+        "flavor": "Pesarattu Chutney",
+        "type": "Savory",
+        "convVolume": "11.8K",
+        "totalEngagement": "88.9K"
+      }
+    ],
+    "insight": "Andhra Pradesh: Honey Chilli leads sweet conversations; Gunpowder Podi anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Andhra Pradesh reward Honey Chilli for sweet occasions and Gunpowder Podi for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Arunachal Pradesh": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "8.7K",
+        "totalEngagement": "61.4K"
+      },
+      {
+        "flavor": "Kiwi Candy",
+        "type": "Sweet",
+        "convVolume": "7.2K",
+        "totalEngagement": "52.8K"
+      },
+      {
+        "flavor": "Orange Blossom",
+        "type": "Sweet",
+        "convVolume": "6.4K",
+        "totalEngagement": "45.3K"
+      },
+      {
+        "flavor": "Bamboo Shoot Honey",
+        "type": "Sweet",
+        "convVolume": "5.8K",
+        "totalEngagement": "41.9K"
+      },
+      {
+        "flavor": "Wild Berry Candy",
+        "type": "Sweet",
+        "convVolume": "5.2K",
+        "totalEngagement": "37.1K"
+      },
+      {
+        "flavor": "Smoked Chilli (Raja Mircha)",
+        "type": "Savory",
+        "convVolume": "13.6K",
+        "totalEngagement": "101.7K"
+      },
+      {
+        "flavor": "Bamboo Shoot Masala",
+        "type": "Savory",
+        "convVolume": "11.1K",
+        "totalEngagement": "82.6K"
+      },
+      {
+        "flavor": "Thukpa Spice",
+        "type": "Savory",
+        "convVolume": "9.8K",
+        "totalEngagement": "74.3K"
+      },
+      {
+        "flavor": "Fermented Soybean",
+        "type": "Savory",
+        "convVolume": "8.9K",
+        "totalEngagement": "66.5K"
+      },
+      {
+        "flavor": "Black Sesame Salt",
+        "type": "Savory",
+        "convVolume": "7.1K",
+        "totalEngagement": "52.2K"
+      }
+    ],
+    "insight": "Arunachal Pradesh: Honey Chilli leads sweet conversations; Smoked Chilli (Raja Mircha) anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Arunachal Pradesh reward Honey Chilli for sweet occasions and Smoked Chilli (Raja Mircha) for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Assam": {
+    "metrics": [
+      {
+        "flavor": "Nolen Gur Toffee",
+        "type": "Sweet",
+        "convVolume": "15.3K",
+        "totalEngagement": "112.6K"
+      },
+      {
+        "flavor": "Pitha Rice Cake",
+        "type": "Sweet",
+        "convVolume": "12.7K",
+        "totalEngagement": "94.1K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "11.6K",
+        "totalEngagement": "83.7K"
+      },
+      {
+        "flavor": "Assam Tea Caramel",
+        "type": "Sweet",
+        "convVolume": "10.2K",
+        "totalEngagement": "72.9K"
+      },
+      {
+        "flavor": "Coconut Laru Bite",
+        "type": "Sweet",
+        "convVolume": "8.8K",
+        "totalEngagement": "63.5K"
+      },
+      {
+        "flavor": "Bhut Jolokia Spice",
+        "type": "Savory",
+        "convVolume": "19.4K",
+        "totalEngagement": "149.2K"
+      },
+      {
+        "flavor": "Khar Masala",
+        "type": "Savory",
+        "convVolume": "14.8K",
+        "totalEngagement": "109.7K"
+      },
+      {
+        "flavor": "Fish Curry Masala",
+        "type": "Savory",
+        "convVolume": "12.9K",
+        "totalEngagement": "96.4K"
+      },
+      {
+        "flavor": "Bamboo Shoot Pickle",
+        "type": "Savory",
+        "convVolume": "11.2K",
+        "totalEngagement": "81.6K"
+      },
+      {
+        "flavor": "Mustard Seed Mix",
+        "type": "Savory",
+        "convVolume": "9.4K",
+        "totalEngagement": "68.8K"
+      }
+    ],
+    "insight": "Assam: Nolen Gur Toffee leads sweet conversations; Bhut Jolokia Spice anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Assam reward Nolen Gur Toffee for sweet occasions and Bhut Jolokia Spice for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Bihar": {
+    "metrics": [
+      {
+        "flavor": "Tilkut Sesame Jaggery",
+        "type": "Sweet",
+        "convVolume": "17.6K",
+        "totalEngagement": "126.3K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "14.9K",
+        "totalEngagement": "108.8K"
+      },
+      {
+        "flavor": "Khaja Caramel",
+        "type": "Sweet",
+        "convVolume": "11.7K",
+        "totalEngagement": "82.5K"
+      },
+      {
+        "flavor": "Anarsa Coconut",
+        "type": "Sweet",
+        "convVolume": "9.8K",
+        "totalEngagement": "69.7K"
+      },
+      {
+        "flavor": "Thekua Crunch",
+        "type": "Sweet",
+        "convVolume": "8.9K",
+        "totalEngagement": "63.1K"
+      },
+      {
+        "flavor": "Sattu Masala",
+        "type": "Savory",
+        "convVolume": "21.8K",
+        "totalEngagement": "162.9K"
+      },
+      {
+        "flavor": "Litti Chokha Spice",
+        "type": "Savory",
+        "convVolume": "18.6K",
+        "totalEngagement": "136.8K"
+      },
+      {
+        "flavor": "Mustard Pickle",
+        "type": "Savory",
+        "convVolume": "13.7K",
+        "totalEngagement": "98.4K"
+      },
+      {
+        "flavor": "Chaat Masala",
+        "type": "Savory",
+        "convVolume": "11.5K",
+        "totalEngagement": "82.1K"
+      },
+      {
+        "flavor": "Gunpowder Podi",
+        "type": "Savory",
+        "convVolume": "10.2K",
+        "totalEngagement": "74.6K"
+      }
+    ],
+    "insight": "Bihar: Tilkut Sesame Jaggery leads sweet conversations; Sattu Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Bihar reward Tilkut Sesame Jaggery for sweet occasions and Sattu Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Chhattisgarh": {
+    "metrics": [
+      {
+        "flavor": "Tilgur Sesame Jaggery",
+        "type": "Sweet",
+        "convVolume": "13.4K",
+        "totalEngagement": "96.8K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "12.6K",
+        "totalEngagement": "88.7K"
+      },
+      {
+        "flavor": "Mahua Flower Candy",
+        "type": "Sweet",
+        "convVolume": "10.8K",
+        "totalEngagement": "77.1K"
+      },
+      {
+        "flavor": "Coconut Barfi Bite",
+        "type": "Sweet",
+        "convVolume": "8.7K",
+        "totalEngagement": "61.3K"
+      },
+      {
+        "flavor": "Mango Aamchur Toffee",
+        "type": "Sweet",
+        "convVolume": "7.9K",
+        "totalEngagement": "56.4K"
+      },
+      {
+        "flavor": "Chana Dal Masala",
+        "type": "Savory",
+        "convVolume": "16.8K",
+        "totalEngagement": "123.7K"
+      },
+      {
+        "flavor": "Red Chilli Chutney",
+        "type": "Savory",
+        "convVolume": "14.7K",
+        "totalEngagement": "107.5K"
+      },
+      {
+        "flavor": "Bafauri Spice",
+        "type": "Savory",
+        "convVolume": "11.9K",
+        "totalEngagement": "85.6K"
+      },
+      {
+        "flavor": "Farra Masala",
+        "type": "Savory",
+        "convVolume": "9.8K",
+        "totalEngagement": "71.8K"
+      },
+      {
+        "flavor": "Garlic Podi",
+        "type": "Savory",
+        "convVolume": "8.6K",
+        "totalEngagement": "63.2K"
+      }
+    ],
+    "insight": "Chhattisgarh: Tilgur Sesame Jaggery leads sweet conversations; Chana Dal Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Chhattisgarh reward Tilgur Sesame Jaggery for sweet occasions and Chana Dal Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Delhi NCR": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "26.8K",
+        "totalEngagement": "201.7K"
+      },
+      {
+        "flavor": "Dark Choc Sea Salt",
+        "type": "Sweet",
+        "convVolume": "21.4K",
+        "totalEngagement": "164.8K"
+      },
+      {
+        "flavor": "Churma & Jaggery",
+        "type": "Sweet",
+        "convVolume": "18.6K",
+        "totalEngagement": "139.5K"
+      },
+      {
+        "flavor": "Rose Paan Candy",
+        "type": "Sweet",
+        "convVolume": "16.3K",
+        "totalEngagement": "118.7K"
+      },
+      {
+        "flavor": "Mango Aamchur Twist",
+        "type": "Sweet",
+        "convVolume": "14.1K",
+        "totalEngagement": "102.9K"
+      },
+      {
+        "flavor": "Schezwan Masala",
+        "type": "Savory",
+        "convVolume": "24.7K",
+        "totalEngagement": "188.6K"
+      },
+      {
+        "flavor": "Chaat Masala Blast",
+        "type": "Savory",
+        "convVolume": "22.3K",
+        "totalEngagement": "171.4K"
+      },
+      {
+        "flavor": "Dahi Papri Spice",
+        "type": "Savory",
+        "convVolume": "18.2K",
+        "totalEngagement": "132.8K"
+      },
+      {
+        "flavor": "Tandoori BBQ",
+        "type": "Savory",
+        "convVolume": "15.6K",
+        "totalEngagement": "116.3K"
+      },
+      {
+        "flavor": "Gunpowder Podi",
+        "type": "Savory",
+        "convVolume": "13.8K",
+        "totalEngagement": "102.1K"
+      }
+    ],
+    "insight": "Delhi NCR: Honey Chilli leads sweet conversations; Schezwan Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Delhi NCR reward Honey Chilli for sweet occasions and Schezwan Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Goa": {
+    "metrics": [
+      {
+        "flavor": "Bebinca Caramel",
+        "type": "Sweet",
+        "convVolume": "12.9K",
+        "totalEngagement": "95.8K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "11.8K",
+        "totalEngagement": "86.4K"
+      },
+      {
+        "flavor": "Coconut Jaggery",
+        "type": "Sweet",
+        "convVolume": "9.6K",
+        "totalEngagement": "71.3K"
+      },
+      {
+        "flavor": "Cashew Feni Candy",
+        "type": "Sweet",
+        "convVolume": "8.7K",
+        "totalEngagement": "64.2K"
+      },
+      {
+        "flavor": "Dodol Toffee",
+        "type": "Sweet",
+        "convVolume": "7.9K",
+        "totalEngagement": "58.6K"
+      },
+      {
+        "flavor": "Recheado Masala",
+        "type": "Savory",
+        "convVolume": "17.8K",
+        "totalEngagement": "136.7K"
+      },
+      {
+        "flavor": "Vindaloo Spice",
+        "type": "Savory",
+        "convVolume": "16.2K",
+        "totalEngagement": "122.4K"
+      },
+      {
+        "flavor": "Cafreal Marinade",
+        "type": "Savory",
+        "convVolume": "13.4K",
+        "totalEngagement": "101.5K"
+      },
+      {
+        "flavor": "Xacuti Masala",
+        "type": "Savory",
+        "convVolume": "11.7K",
+        "totalEngagement": "86.3K"
+      },
+      {
+        "flavor": "Prawn Balchão",
+        "type": "Savory",
+        "convVolume": "10.2K",
+        "totalEngagement": "74.8K"
+      }
+    ],
+    "insight": "Goa: Bebinca Caramel leads sweet conversations; Recheado Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Goa reward Bebinca Caramel for sweet occasions and Recheado Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Gujarat": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "20.1K",
+        "totalEngagement": "148.3K"
+      },
+      {
+        "flavor": "Mohanthal Crunch",
+        "type": "Sweet",
+        "convVolume": "17.6K",
+        "totalEngagement": "129.8K"
+      },
+      {
+        "flavor": "Basundi Caramel",
+        "type": "Sweet",
+        "convVolume": "15.4K",
+        "totalEngagement": "112.6K"
+      },
+      {
+        "flavor": "Ghari Toffee",
+        "type": "Sweet",
+        "convVolume": "13.7K",
+        "totalEngagement": "99.1K"
+      },
+      {
+        "flavor": "Mango Pickle Candy",
+        "type": "Sweet",
+        "convVolume": "11.6K",
+        "totalEngagement": "84.5K"
+      },
+      {
+        "flavor": "Sev Masala",
+        "type": "Savory",
+        "convVolume": "23.4K",
+        "totalEngagement": "176.5K"
+      },
+      {
+        "flavor": "Dhokla Chutney Spice",
+        "type": "Savory",
+        "convVolume": "19.2K",
+        "totalEngagement": "144.8K"
+      },
+      {
+        "flavor": "Thepla Methi",
+        "type": "Savory",
+        "convVolume": "16.8K",
+        "totalEngagement": "123.4K"
+      },
+      {
+        "flavor": "Khakhra Masala",
+        "type": "Savory",
+        "convVolume": "14.6K",
+        "totalEngagement": "106.7K"
+      },
+      {
+        "flavor": "Jamnagari Chilli",
+        "type": "Savory",
+        "convVolume": "12.9K",
+        "totalEngagement": "94.3K"
+      }
+    ],
+    "insight": "Gujarat: Honey Chilli leads sweet conversations; Sev Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Gujarat reward Honey Chilli for sweet occasions and Sev Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Haryana": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "15.8K",
+        "totalEngagement": "116.9K"
+      },
+      {
+        "flavor": "Churma Jaggery",
+        "type": "Sweet",
+        "convVolume": "13.7K",
+        "totalEngagement": "99.6K"
+      },
+      {
+        "flavor": "Singri Candy",
+        "type": "Sweet",
+        "convVolume": "10.9K",
+        "totalEngagement": "81.4K"
+      },
+      {
+        "flavor": "Rabri Caramel",
+        "type": "Sweet",
+        "convVolume": "9.6K",
+        "totalEngagement": "69.8K"
+      },
+      {
+        "flavor": "Rose Paan Candy",
+        "type": "Sweet",
+        "convVolume": "8.7K",
+        "totalEngagement": "63.1K"
+      },
+      {
+        "flavor": "Bajra Masala",
+        "type": "Savory",
+        "convVolume": "18.6K",
+        "totalEngagement": "139.7K"
+      },
+      {
+        "flavor": "Chaat Masala Blast",
+        "type": "Savory",
+        "convVolume": "16.4K",
+        "totalEngagement": "122.5K"
+      },
+      {
+        "flavor": "Methi Masala",
+        "type": "Savory",
+        "convVolume": "13.1K",
+        "totalEngagement": "96.2K"
+      },
+      {
+        "flavor": "Tandoori BBQ",
+        "type": "Savory",
+        "convVolume": "11.8K",
+        "totalEngagement": "87.4K"
+      },
+      {
+        "flavor": "Besan Spice Mix",
+        "type": "Savory",
+        "convVolume": "10.4K",
+        "totalEngagement": "75.6K"
+      }
+    ],
+    "insight": "Haryana: Honey Chilli leads sweet conversations; Bajra Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Haryana reward Honey Chilli for sweet occasions and Bajra Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Himachal Pradesh": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "11.2K",
+        "totalEngagement": "82.7K"
+      },
+      {
+        "flavor": "Apple Cinnamon",
+        "type": "Sweet",
+        "convVolume": "10.4K",
+        "totalEngagement": "76.1K"
+      },
+      {
+        "flavor": "Babru Toffee",
+        "type": "Sweet",
+        "convVolume": "8.7K",
+        "totalEngagement": "63.8K"
+      },
+      {
+        "flavor": "Walnut Honey",
+        "type": "Sweet",
+        "convVolume": "7.9K",
+        "totalEngagement": "58.2K"
+      },
+      {
+        "flavor": "Mittha Sweet Rice",
+        "type": "Sweet",
+        "convVolume": "6.8K",
+        "totalEngagement": "49.7K"
+      },
+      {
+        "flavor": "Chana Madra Spice",
+        "type": "Savory",
+        "convVolume": "15.3K",
+        "totalEngagement": "113.6K"
+      },
+      {
+        "flavor": "Siddu Masala",
+        "type": "Savory",
+        "convVolume": "13.1K",
+        "totalEngagement": "97.5K"
+      },
+      {
+        "flavor": "Pahadi Chilli",
+        "type": "Savory",
+        "convVolume": "11.6K",
+        "totalEngagement": "85.4K"
+      },
+      {
+        "flavor": "Kullu Trout Masala",
+        "type": "Savory",
+        "convVolume": "9.8K",
+        "totalEngagement": "72.8K"
+      },
+      {
+        "flavor": "Dham Spice",
+        "type": "Savory",
+        "convVolume": "8.5K",
+        "totalEngagement": "63.3K"
+      }
+    ],
+    "insight": "Himachal Pradesh: Honey Chilli leads sweet conversations; Chana Madra Spice anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Himachal Pradesh reward Honey Chilli for sweet occasions and Chana Madra Spice for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Jharkhand": {
+    "metrics": [
+      {
+        "flavor": "Tilkut Sesame",
+        "type": "Sweet",
+        "convVolume": "13.8K",
+        "totalEngagement": "101.2K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "12.1K",
+        "totalEngagement": "88.9K"
+      },
+      {
+        "flavor": "Arsa Jaggery",
+        "type": "Sweet",
+        "convVolume": "10.3K",
+        "totalEngagement": "74.8K"
+      },
+      {
+        "flavor": "Malpua Caramel",
+        "type": "Sweet",
+        "convVolume": "8.8K",
+        "totalEngagement": "63.6K"
+      },
+      {
+        "flavor": "Dhuska Coconut",
+        "type": "Sweet",
+        "convVolume": "7.4K",
+        "totalEngagement": "53.9K"
+      },
+      {
+        "flavor": "Rugda Masala",
+        "type": "Savory",
+        "convVolume": "16.9K",
+        "totalEngagement": "124.4K"
+      },
+      {
+        "flavor": "Litti Spice",
+        "type": "Savory",
+        "convVolume": "14.7K",
+        "totalEngagement": "109.1K"
+      },
+      {
+        "flavor": "Sattu Mix",
+        "type": "Savory",
+        "convVolume": "13.2K",
+        "totalEngagement": "96.7K"
+      },
+      {
+        "flavor": "Bamboo Shoot Pickle",
+        "type": "Savory",
+        "convVolume": "10.1K",
+        "totalEngagement": "73.8K"
+      },
+      {
+        "flavor": "Red Chilli Chutney",
+        "type": "Savory",
+        "convVolume": "8.7K",
+        "totalEngagement": "63.4K"
+      }
+    ],
+    "insight": "Jharkhand: Tilkut Sesame leads sweet conversations; Rugda Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Jharkhand reward Tilkut Sesame for sweet occasions and Rugda Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Karnataka": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "21.4K",
+        "totalEngagement": "159.2K"
+      },
+      {
+        "flavor": "Jaggery Sesame",
+        "type": "Sweet",
+        "convVolume": "18.3K",
+        "totalEngagement": "136.4K"
+      },
+      {
+        "flavor": "Tamarind Candy",
+        "type": "Sweet",
+        "convVolume": "15.6K",
+        "totalEngagement": "114.3K"
+      },
+      {
+        "flavor": "Coconut Jaggery",
+        "type": "Sweet",
+        "convVolume": "13.4K",
+        "totalEngagement": "97.1K"
+      },
+      {
+        "flavor": "Filter Coffee Caramel",
+        "type": "Sweet",
+        "convVolume": "11.8K",
+        "totalEngagement": "86.2K"
+      },
+      {
+        "flavor": "Gunpowder Podi",
+        "type": "Savory",
+        "convVolume": "27.8K",
+        "totalEngagement": "214.7K"
+      },
+      {
+        "flavor": "Bisi Bele Masala",
+        "type": "Savory",
+        "convVolume": "20.4K",
+        "totalEngagement": "154.8K"
+      },
+      {
+        "flavor": "Akki Roti Spice",
+        "type": "Savory",
+        "convVolume": "17.2K",
+        "totalEngagement": "129.6K"
+      },
+      {
+        "flavor": "Urad Dal Chutney",
+        "type": "Savory",
+        "convVolume": "14.9K",
+        "totalEngagement": "111.5K"
+      },
+      {
+        "flavor": "Mysore Rasam",
+        "type": "Savory",
+        "convVolume": "13.1K",
+        "totalEngagement": "98.2K"
+      }
+    ],
+    "insight": "Karnataka: Honey Chilli leads sweet conversations; Gunpowder Podi anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Karnataka reward Honey Chilli for sweet occasions and Gunpowder Podi for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Kerala": {
+    "metrics": [
+      {
+        "flavor": "Banana Chips Jaggery",
+        "type": "Sweet",
+        "convVolume": "17.6K",
+        "totalEngagement": "131.4K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "15.2K",
+        "totalEngagement": "112.7K"
+      },
+      {
+        "flavor": "Coconut Barfi",
+        "type": "Sweet",
+        "convVolume": "13.1K",
+        "totalEngagement": "96.3K"
+      },
+      {
+        "flavor": "Unniyappam Cardamom",
+        "type": "Sweet",
+        "convVolume": "10.9K",
+        "totalEngagement": "79.8K"
+      },
+      {
+        "flavor": "Jackfruit Candy",
+        "type": "Sweet",
+        "convVolume": "9.6K",
+        "totalEngagement": "70.4K"
+      },
+      {
+        "flavor": "Kerala Pepper Fry",
+        "type": "Savory",
+        "convVolume": "23.8K",
+        "totalEngagement": "182.1K"
+      },
+      {
+        "flavor": "Malabar Curry Masala",
+        "type": "Savory",
+        "convVolume": "20.7K",
+        "totalEngagement": "156.6K"
+      },
+      {
+        "flavor": "Banana Chips Masala",
+        "type": "Savory",
+        "convVolume": "17.1K",
+        "totalEngagement": "128.9K"
+      },
+      {
+        "flavor": "Coconut Chutney",
+        "type": "Savory",
+        "convVolume": "14.3K",
+        "totalEngagement": "107.4K"
+      },
+      {
+        "flavor": "Fish Moilee Spice",
+        "type": "Savory",
+        "convVolume": "12.2K",
+        "totalEngagement": "91.5K"
+      }
+    ],
+    "insight": "Kerala: Banana Chips Jaggery leads sweet conversations; Kerala Pepper Fry anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Kerala reward Banana Chips Jaggery for sweet occasions and Kerala Pepper Fry for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Madhya Pradesh": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "16.7K",
+        "totalEngagement": "123.8K"
+      },
+      {
+        "flavor": "Mawa Bati Toffee",
+        "type": "Sweet",
+        "convVolume": "14.1K",
+        "totalEngagement": "103.4K"
+      },
+      {
+        "flavor": "Jalebi Saffron",
+        "type": "Sweet",
+        "convVolume": "12.8K",
+        "totalEngagement": "92.7K"
+      },
+      {
+        "flavor": "Gajak Sesame",
+        "type": "Sweet",
+        "convVolume": "10.7K",
+        "totalEngagement": "78.5K"
+      },
+      {
+        "flavor": "Lavang Latika",
+        "type": "Sweet",
+        "convVolume": "8.9K",
+        "totalEngagement": "64.2K"
+      },
+      {
+        "flavor": "Bhutte Ka Kees Masala",
+        "type": "Savory",
+        "convVolume": "19.6K",
+        "totalEngagement": "148.7K"
+      },
+      {
+        "flavor": "Poha Masala",
+        "type": "Savory",
+        "convVolume": "17.8K",
+        "totalEngagement": "132.1K"
+      },
+      {
+        "flavor": "Dal Bafla Spice",
+        "type": "Savory",
+        "convVolume": "15.2K",
+        "totalEngagement": "114.8K"
+      },
+      {
+        "flavor": "Indori Namkeen",
+        "type": "Savory",
+        "convVolume": "13.4K",
+        "totalEngagement": "99.6K"
+      },
+      {
+        "flavor": "Garlic Chutney",
+        "type": "Savory",
+        "convVolume": "11.1K",
+        "totalEngagement": "82.4K"
+      }
+    ],
+    "insight": "Madhya Pradesh: Honey Chilli leads sweet conversations; Bhutte Ka Kees Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Madhya Pradesh reward Honey Chilli for sweet occasions and Bhutte Ka Kees Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Maharashtra": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "22.8K",
+        "totalEngagement": "171.6K"
+      },
+      {
+        "flavor": "Caramel Corn",
+        "type": "Sweet",
+        "convVolume": "18.7K",
+        "totalEngagement": "139.4K"
+      },
+      {
+        "flavor": "Mango Pickle Candy",
+        "type": "Sweet",
+        "convVolume": "15.6K",
+        "totalEngagement": "114.8K"
+      },
+      {
+        "flavor": "Rose & Saffron",
+        "type": "Sweet",
+        "convVolume": "13.2K",
+        "totalEngagement": "96.5K"
+      },
+      {
+        "flavor": "Dark Choc Chilli",
+        "type": "Sweet",
+        "convVolume": "11.4K",
+        "totalEngagement": "82.3K"
+      },
+      {
+        "flavor": "Schezwan Masala",
+        "type": "Savory",
+        "convVolume": "26.7K",
+        "totalEngagement": "204.8K"
+      },
+      {
+        "flavor": "Mumbai Cutting Chai",
+        "type": "Savory",
+        "convVolume": "22.1K",
+        "totalEngagement": "168.5K"
+      },
+      {
+        "flavor": "Vada Pav Masala",
+        "type": "Savory",
+        "convVolume": "19.6K",
+        "totalEngagement": "147.4K"
+      },
+      {
+        "flavor": "Garlic Podi",
+        "type": "Savory",
+        "convVolume": "16.3K",
+        "totalEngagement": "121.9K"
+      },
+      {
+        "flavor": "Kokum Chaat",
+        "type": "Savory",
+        "convVolume": "13.8K",
+        "totalEngagement": "102.7K"
+      }
+    ],
+    "insight": "Maharashtra: Honey Chilli leads sweet conversations; Schezwan Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Maharashtra reward Honey Chilli for sweet occasions and Schezwan Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Manipur": {
+    "metrics": [
+      {
+        "flavor": "Chak-Hao Black Rice Candy",
+        "type": "Sweet",
+        "convVolume": "10.8K",
+        "totalEngagement": "78.9K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "9.7K",
+        "totalEngagement": "70.2K"
+      },
+      {
+        "flavor": "Pineapple Candy",
+        "type": "Sweet",
+        "convVolume": "8.6K",
+        "totalEngagement": "61.8K"
+      },
+      {
+        "flavor": "Wild Honey Crunch",
+        "type": "Sweet",
+        "convVolume": "7.4K",
+        "totalEngagement": "53.5K"
+      },
+      {
+        "flavor": "Passion Fruit Toffee",
+        "type": "Sweet",
+        "convVolume": "6.9K",
+        "totalEngagement": "49.1K"
+      },
+      {
+        "flavor": "Naga King Chilli",
+        "type": "Savory",
+        "convVolume": "16.2K",
+        "totalEngagement": "123.6K"
+      },
+      {
+        "flavor": "Eromba Spice",
+        "type": "Savory",
+        "convVolume": "13.7K",
+        "totalEngagement": "102.4K"
+      },
+      {
+        "flavor": "Singju Masala",
+        "type": "Savory",
+        "convVolume": "11.4K",
+        "totalEngagement": "84.8K"
+      },
+      {
+        "flavor": "Fermented Fish Masala",
+        "type": "Savory",
+        "convVolume": "9.6K",
+        "totalEngagement": "71.2K"
+      },
+      {
+        "flavor": "Kangshoi Herb Mix",
+        "type": "Savory",
+        "convVolume": "8.1K",
+        "totalEngagement": "59.7K"
+      }
+    ],
+    "insight": "Manipur: Chak-Hao Black Rice Candy leads sweet conversations; Naga King Chilli anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Manipur reward Chak-Hao Black Rice Candy for sweet occasions and Naga King Chilli for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Meghalaya": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "9.8K",
+        "totalEngagement": "72.5K"
+      },
+      {
+        "flavor": "Wild Honey Crunch",
+        "type": "Sweet",
+        "convVolume": "8.7K",
+        "totalEngagement": "64.1K"
+      },
+      {
+        "flavor": "Orange Blossom",
+        "type": "Sweet",
+        "convVolume": "7.3K",
+        "totalEngagement": "53.6K"
+      },
+      {
+        "flavor": "Pineapple Candy",
+        "type": "Sweet",
+        "convVolume": "6.4K",
+        "totalEngagement": "46.8K"
+      },
+      {
+        "flavor": "Black Sesame Toffee",
+        "type": "Sweet",
+        "convVolume": "5.8K",
+        "totalEngagement": "42.7K"
+      },
+      {
+        "flavor": "Jadoh Spice",
+        "type": "Savory",
+        "convVolume": "15.8K",
+        "totalEngagement": "118.4K"
+      },
+      {
+        "flavor": "Doh Khleh Masala",
+        "type": "Savory",
+        "convVolume": "13.6K",
+        "totalEngagement": "101.3K"
+      },
+      {
+        "flavor": "Tungrymbai Fermented Soy",
+        "type": "Savory",
+        "convVolume": "11.2K",
+        "totalEngagement": "82.7K"
+      },
+      {
+        "flavor": "Smoked Meat Rub",
+        "type": "Savory",
+        "convVolume": "9.9K",
+        "totalEngagement": "72.5K"
+      },
+      {
+        "flavor": "Lakadong Turmeric Mix",
+        "type": "Savory",
+        "convVolume": "8.3K",
+        "totalEngagement": "61.4K"
+      }
+    ],
+    "insight": "Meghalaya: Honey Chilli leads sweet conversations; Jadoh Spice anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Meghalaya reward Honey Chilli for sweet occasions and Jadoh Spice for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Mizoram": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "8.9K",
+        "totalEngagement": "65.7K"
+      },
+      {
+        "flavor": "Passion Fruit Candy",
+        "type": "Sweet",
+        "convVolume": "7.8K",
+        "totalEngagement": "56.2K"
+      },
+      {
+        "flavor": "Banana Blossom Honey",
+        "type": "Sweet",
+        "convVolume": "6.7K",
+        "totalEngagement": "48.4K"
+      },
+      {
+        "flavor": "Vawksa Rep Toffee",
+        "type": "Sweet",
+        "convVolume": "5.9K",
+        "totalEngagement": "42.1K"
+      },
+      {
+        "flavor": "Citrus Candy",
+        "type": "Sweet",
+        "convVolume": "5.2K",
+        "totalEngagement": "37.3K"
+      },
+      {
+        "flavor": "Bai Masala",
+        "type": "Savory",
+        "convVolume": "14.4K",
+        "totalEngagement": "107.8K"
+      },
+      {
+        "flavor": "Sawhchiar Spice",
+        "type": "Savory",
+        "convVolume": "12.1K",
+        "totalEngagement": "89.6K"
+      },
+      {
+        "flavor": "Smoked Pork Rub",
+        "type": "Savory",
+        "convVolume": "10.8K",
+        "totalEngagement": "79.3K"
+      },
+      {
+        "flavor": "Bamboo Shoot Pickle",
+        "type": "Savory",
+        "convVolume": "8.9K",
+        "totalEngagement": "65.4K"
+      },
+      {
+        "flavor": "Bird's Eye Chilli",
+        "type": "Savory",
+        "convVolume": "7.6K",
+        "totalEngagement": "55.2K"
+      }
+    ],
+    "insight": "Mizoram: Honey Chilli leads sweet conversations; Bai Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Mizoram reward Honey Chilli for sweet occasions and Bai Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Nagaland": {
+    "metrics": [
+      {
+        "flavor": "Wild Honey Crunch",
+        "type": "Sweet",
+        "convVolume": "10.6K",
+        "totalEngagement": "78.8K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "9.4K",
+        "totalEngagement": "69.5K"
+      },
+      {
+        "flavor": "Anishi Candy",
+        "type": "Sweet",
+        "convVolume": "7.8K",
+        "totalEngagement": "57.6K"
+      },
+      {
+        "flavor": "Passion Fruit Toffee",
+        "type": "Sweet",
+        "convVolume": "6.9K",
+        "totalEngagement": "49.8K"
+      },
+      {
+        "flavor": "Rice Beer Caramel",
+        "type": "Sweet",
+        "convVolume": "5.7K",
+        "totalEngagement": "41.2K"
+      },
+      {
+        "flavor": "Raja Mircha (Bhut Jolokia)",
+        "type": "Savory",
+        "convVolume": "18.9K",
+        "totalEngagement": "146.3K"
+      },
+      {
+        "flavor": "Smoked Pork Masala",
+        "type": "Savory",
+        "convVolume": "16.7K",
+        "totalEngagement": "127.8K"
+      },
+      {
+        "flavor": "Axone Fermented Soy",
+        "type": "Savory",
+        "convVolume": "13.8K",
+        "totalEngagement": "102.5K"
+      },
+      {
+        "flavor": "Bamboo Shoot Pickle",
+        "type": "Savory",
+        "convVolume": "11.6K",
+        "totalEngagement": "84.1K"
+      },
+      {
+        "flavor": "Naga Garlic Chutney",
+        "type": "Savory",
+        "convVolume": "9.7K",
+        "totalEngagement": "71.9K"
+      }
+    ],
+    "insight": "Nagaland: Wild Honey Crunch leads sweet conversations; Raja Mircha (Bhut Jolokia) anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Nagaland reward Wild Honey Crunch for sweet occasions and Raja Mircha (Bhut Jolokia) for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Odisha": {
+    "metrics": [
+      {
+        "flavor": "Chhena Poda Caramel",
+        "type": "Sweet",
+        "convVolume": "18.1K",
+        "totalEngagement": "136.5K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "15.7K",
+        "totalEngagement": "116.8K"
+      },
+      {
+        "flavor": "Rasagola Toffee",
+        "type": "Sweet",
+        "convVolume": "13.6K",
+        "totalEngagement": "99.2K"
+      },
+      {
+        "flavor": "Mango Candy",
+        "type": "Sweet",
+        "convVolume": "11.4K",
+        "totalEngagement": "82.7K"
+      },
+      {
+        "flavor": "Coconut Laddoo Bite",
+        "type": "Sweet",
+        "convVolume": "9.8K",
+        "totalEngagement": "70.6K"
+      },
+      {
+        "flavor": "Dalma Spice",
+        "type": "Savory",
+        "convVolume": "20.7K",
+        "totalEngagement": "158.4K"
+      },
+      {
+        "flavor": "Pakhala Masala",
+        "type": "Savory",
+        "convVolume": "17.6K",
+        "totalEngagement": "133.8K"
+      },
+      {
+        "flavor": "Crab Masala",
+        "type": "Savory",
+        "convVolume": "14.2K",
+        "totalEngagement": "106.1K"
+      },
+      {
+        "flavor": "Santula Spice Mix",
+        "type": "Savory",
+        "convVolume": "12.3K",
+        "totalEngagement": "91.7K"
+      },
+      {
+        "flavor": "Mustard Panch Phoron",
+        "type": "Savory",
+        "convVolume": "10.1K",
+        "totalEngagement": "74.8K"
+      }
+    ],
+    "insight": "Odisha: Chhena Poda Caramel leads sweet conversations; Dalma Spice anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Odisha reward Chhena Poda Caramel for sweet occasions and Dalma Spice for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Punjab": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "18.9K",
+        "totalEngagement": "142.3K"
+      },
+      {
+        "flavor": "Pinni Jaggery",
+        "type": "Sweet",
+        "convVolume": "15.8K",
+        "totalEngagement": "117.6K"
+      },
+      {
+        "flavor": "Phirni Saffron",
+        "type": "Sweet",
+        "convVolume": "13.2K",
+        "totalEngagement": "98.4K"
+      },
+      {
+        "flavor": "Churma Toffee",
+        "type": "Sweet",
+        "convVolume": "11.1K",
+        "totalEngagement": "81.9K"
+      },
+      {
+        "flavor": "Rabri Caramel",
+        "type": "Sweet",
+        "convVolume": "9.7K",
+        "totalEngagement": "71.3K"
+      },
+      {
+        "flavor": "Tandoori BBQ",
+        "type": "Savory",
+        "convVolume": "24.3K",
+        "totalEngagement": "187.6K"
+      },
+      {
+        "flavor": "Amritsari Masala",
+        "type": "Savory",
+        "convVolume": "20.4K",
+        "totalEngagement": "154.8K"
+      },
+      {
+        "flavor": "Sarson Mustard",
+        "type": "Savory",
+        "convVolume": "16.9K",
+        "totalEngagement": "128.7K"
+      },
+      {
+        "flavor": "Chaat Masala Blast",
+        "type": "Savory",
+        "convVolume": "14.8K",
+        "totalEngagement": "109.6K"
+      },
+      {
+        "flavor": "Achari Spice",
+        "type": "Savory",
+        "convVolume": "12.6K",
+        "totalEngagement": "93.5K"
+      }
+    ],
+    "insight": "Punjab: Honey Chilli leads sweet conversations; Tandoori BBQ anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Punjab reward Honey Chilli for sweet occasions and Tandoori BBQ for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Rajasthan": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "19.6K",
+        "totalEngagement": "148.2K"
+      },
+      {
+        "flavor": "Ghevar Saffron",
+        "type": "Sweet",
+        "convVolume": "17.1K",
+        "totalEngagement": "128.6K"
+      },
+      {
+        "flavor": "Churma Jaggery",
+        "type": "Sweet",
+        "convVolume": "14.8K",
+        "totalEngagement": "109.5K"
+      },
+      {
+        "flavor": "Mawa Kachori Bite",
+        "type": "Sweet",
+        "convVolume": "12.7K",
+        "totalEngagement": "92.8K"
+      },
+      {
+        "flavor": "Moong Dal Barfi",
+        "type": "Sweet",
+        "convVolume": "10.4K",
+        "totalEngagement": "76.1K"
+      },
+      {
+        "flavor": "Dal Baati Masala",
+        "type": "Savory",
+        "convVolume": "23.6K",
+        "totalEngagement": "181.7K"
+      },
+      {
+        "flavor": "Ker Sangri Pickle",
+        "type": "Savory",
+        "convVolume": "18.7K",
+        "totalEngagement": "141.9K"
+      },
+      {
+        "flavor": "Laal Maas Spice",
+        "type": "Savory",
+        "convVolume": "16.1K",
+        "totalEngagement": "122.8K"
+      },
+      {
+        "flavor": "Mirchi Vada Masala",
+        "type": "Savory",
+        "convVolume": "13.8K",
+        "totalEngagement": "104.2K"
+      },
+      {
+        "flavor": "Pyaaz Kachori Spice",
+        "type": "Savory",
+        "convVolume": "11.7K",
+        "totalEngagement": "87.4K"
+      }
+    ],
+    "insight": "Rajasthan: Honey Chilli leads sweet conversations; Dal Baati Masala anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Rajasthan reward Honey Chilli for sweet occasions and Dal Baati Masala for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Sikkim": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "8.6K",
+        "totalEngagement": "63.8K"
+      },
+      {
+        "flavor": "Cardamom Tea Toffee",
+        "type": "Sweet",
+        "convVolume": "7.1K",
+        "totalEngagement": "52.4K"
+      },
+      {
+        "flavor": "Wild Berry Candy",
+        "type": "Sweet",
+        "convVolume": "6.3K",
+        "totalEngagement": "45.9K"
+      },
+      {
+        "flavor": "Mandarin Orange Candy",
+        "type": "Sweet",
+        "convVolume": "5.6K",
+        "totalEngagement": "40.7K"
+      },
+      {
+        "flavor": "Buckwheat Honey",
+        "type": "Sweet",
+        "convVolume": "4.9K",
+        "totalEngagement": "35.3K"
+      },
+      {
+        "flavor": "Gundruk Pickle",
+        "type": "Savory",
+        "convVolume": "13.7K",
+        "totalEngagement": "102.1K"
+      },
+      {
+        "flavor": "Kinema Fermented Soy",
+        "type": "Savory",
+        "convVolume": "11.8K",
+        "totalEngagement": "87.6K"
+      },
+      {
+        "flavor": "Dalle Khursani Chilli",
+        "type": "Savory",
+        "convVolume": "10.2K",
+        "totalEngagement": "75.4K"
+      },
+      {
+        "flavor": "Phagshapa Spice",
+        "type": "Savory",
+        "convVolume": "8.6K",
+        "totalEngagement": "63.2K"
+      },
+      {
+        "flavor": "Thukpa Masala",
+        "type": "Savory",
+        "convVolume": "7.5K",
+        "totalEngagement": "54.8K"
+      }
+    ],
+    "insight": "Sikkim: Honey Chilli leads sweet conversations; Gundruk Pickle anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Sikkim reward Honey Chilli for sweet occasions and Gundruk Pickle for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Tamil Nadu": {
+    "metrics": [
+      {
+        "flavor": "Tamarind Candy",
+        "type": "Sweet",
+        "convVolume": "19.8K",
+        "totalEngagement": "147.2K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "17.6K",
+        "totalEngagement": "129.5K"
+      },
+      {
+        "flavor": "Raw Mango Salt",
+        "type": "Sweet",
+        "convVolume": "15.2K",
+        "totalEngagement": "112.8K"
+      },
+      {
+        "flavor": "Coconut Sugar Bites",
+        "type": "Sweet",
+        "convVolume": "12.9K",
+        "totalEngagement": "95.7K"
+      },
+      {
+        "flavor": "Elachi Milk Toffee",
+        "type": "Sweet",
+        "convVolume": "10.7K",
+        "totalEngagement": "78.1K"
+      },
+      {
+        "flavor": "Gunpowder Podi",
+        "type": "Savory",
+        "convVolume": "29.4K",
+        "totalEngagement": "228.6K"
+      },
+      {
+        "flavor": "Milagu Vadai Spice",
+        "type": "Savory",
+        "convVolume": "22.1K",
+        "totalEngagement": "169.7K"
+      },
+      {
+        "flavor": "Chettinad Pepper",
+        "type": "Savory",
+        "convVolume": "19.8K",
+        "totalEngagement": "151.3K"
+      },
+      {
+        "flavor": "Kottu Masala",
+        "type": "Savory",
+        "convVolume": "16.7K",
+        "totalEngagement": "124.9K"
+      },
+      {
+        "flavor": "Kara Boondi Mix",
+        "type": "Savory",
+        "convVolume": "13.8K",
+        "totalEngagement": "103.2K"
+      }
+    ],
+    "insight": "Tamil Nadu: Tamarind Candy leads sweet conversations; Gunpowder Podi anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Tamil Nadu reward Tamarind Candy for sweet occasions and Gunpowder Podi for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Telangana": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "20.8K",
+        "totalEngagement": "156.4K"
+      },
+      {
+        "flavor": "Qubani Ka Meetha Toffee",
+        "type": "Sweet",
+        "convVolume": "17.2K",
+        "totalEngagement": "127.8K"
+      },
+      {
+        "flavor": "Double Ka Meetha Caramel",
+        "type": "Sweet",
+        "convVolume": "14.6K",
+        "totalEngagement": "108.5K"
+      },
+      {
+        "flavor": "Mango Pickle Candy",
+        "type": "Sweet",
+        "convVolume": "12.8K",
+        "totalEngagement": "94.1K"
+      },
+      {
+        "flavor": "Tamarind Candy",
+        "type": "Sweet",
+        "convVolume": "10.9K",
+        "totalEngagement": "80.7K"
+      },
+      {
+        "flavor": "Gunpowder Podi",
+        "type": "Savory",
+        "convVolume": "27.1K",
+        "totalEngagement": "209.8K"
+      },
+      {
+        "flavor": "Hyderabadi Biryani Masala",
+        "type": "Savory",
+        "convVolume": "24.6K",
+        "totalEngagement": "188.5K"
+      },
+      {
+        "flavor": "Mirchi Ka Salan",
+        "type": "Savory",
+        "convVolume": "18.3K",
+        "totalEngagement": "139.6K"
+      },
+      {
+        "flavor": "Gongura Masala",
+        "type": "Savory",
+        "convVolume": "15.7K",
+        "totalEngagement": "118.2K"
+      },
+      {
+        "flavor": "Pesarattu Chutney",
+        "type": "Savory",
+        "convVolume": "12.6K",
+        "totalEngagement": "93.7K"
+      }
+    ],
+    "insight": "Telangana: Honey Chilli leads sweet conversations; Gunpowder Podi anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Telangana reward Honey Chilli for sweet occasions and Gunpowder Podi for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Tripura": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "9.1K",
+        "totalEngagement": "67.3K"
+      },
+      {
+        "flavor": "Pineapple Candy",
+        "type": "Sweet",
+        "convVolume": "7.8K",
+        "totalEngagement": "57.1K"
+      },
+      {
+        "flavor": "Rice Cake Jaggery",
+        "type": "Sweet",
+        "convVolume": "6.6K",
+        "totalEngagement": "48.5K"
+      },
+      {
+        "flavor": "Wild Honey Crunch",
+        "type": "Sweet",
+        "convVolume": "5.9K",
+        "totalEngagement": "42.8K"
+      },
+      {
+        "flavor": "Banana Candy",
+        "type": "Sweet",
+        "convVolume": "5.1K",
+        "totalEngagement": "36.9K"
+      },
+      {
+        "flavor": "Berma Fermented Fish",
+        "type": "Savory",
+        "convVolume": "14.8K",
+        "totalEngagement": "112.6K"
+      },
+      {
+        "flavor": "Mosdeng Masala",
+        "type": "Savory",
+        "convVolume": "12.4K",
+        "totalEngagement": "92.7K"
+      },
+      {
+        "flavor": "Chakhwi Spice",
+        "type": "Savory",
+        "convVolume": "10.7K",
+        "totalEngagement": "79.4K"
+      },
+      {
+        "flavor": "Bamboo Shoot Pickle",
+        "type": "Savory",
+        "convVolume": "8.9K",
+        "totalEngagement": "65.2K"
+      },
+      {
+        "flavor": "Mui Borok Chilli",
+        "type": "Savory",
+        "convVolume": "7.3K",
+        "totalEngagement": "53.5K"
+      }
+    ],
+    "insight": "Tripura: Honey Chilli leads sweet conversations; Berma Fermented Fish anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Tripura reward Honey Chilli for sweet occasions and Berma Fermented Fish for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Uttar Pradesh": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "24.2K",
+        "totalEngagement": "183.6K"
+      },
+      {
+        "flavor": "Petha Saffron",
+        "type": "Sweet",
+        "convVolume": "19.7K",
+        "totalEngagement": "148.1K"
+      },
+      {
+        "flavor": "Rabri Toffee",
+        "type": "Sweet",
+        "convVolume": "16.3K",
+        "totalEngagement": "121.4K"
+      },
+      {
+        "flavor": "Balushahi Caramel",
+        "type": "Sweet",
+        "convVolume": "13.8K",
+        "totalEngagement": "102.5K"
+      },
+      {
+        "flavor": "Mango Aamchur Twist",
+        "type": "Sweet",
+        "convVolume": "11.6K",
+        "totalEngagement": "85.9K"
+      },
+      {
+        "flavor": "Chaat Masala Blast",
+        "type": "Savory",
+        "convVolume": "27.6K",
+        "totalEngagement": "214.3K"
+      },
+      {
+        "flavor": "Lucknowi Kebab Spice",
+        "type": "Savory",
+        "convVolume": "22.8K",
+        "totalEngagement": "174.6K"
+      },
+      {
+        "flavor": "Galawati Masala",
+        "type": "Savory",
+        "convVolume": "18.9K",
+        "totalEngagement": "142.8K"
+      },
+      {
+        "flavor": "Tunday Spice",
+        "type": "Savory",
+        "convVolume": "15.7K",
+        "totalEngagement": "118.4K"
+      },
+      {
+        "flavor": "Schezwan Masala",
+        "type": "Savory",
+        "convVolume": "13.1K",
+        "totalEngagement": "98.7K"
+      }
+    ],
+    "insight": "Uttar Pradesh: Honey Chilli leads sweet conversations; Chaat Masala Blast anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Uttar Pradesh reward Honey Chilli for sweet occasions and Chaat Masala Blast for everyday savory — pilot extensions on those two anchors first."
+  },
+  "Uttarakhand": {
+    "metrics": [
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "11.4K",
+        "totalEngagement": "84.2K"
+      },
+      {
+        "flavor": "Bal Mithai",
+        "type": "Sweet",
+        "convVolume": "9.7K",
+        "totalEngagement": "71.6K"
+      },
+      {
+        "flavor": "Singori Coconut",
+        "type": "Sweet",
+        "convVolume": "8.1K",
+        "totalEngagement": "59.3K"
+      },
+      {
+        "flavor": "Jhangora Millet Honey",
+        "type": "Sweet",
+        "convVolume": "7.2K",
+        "totalEngagement": "52.4K"
+      },
+      {
+        "flavor": "Apple Cinnamon",
+        "type": "Sweet",
+        "convVolume": "6.5K",
+        "totalEngagement": "46.8K"
+      },
+      {
+        "flavor": "Bhang Chutney",
+        "type": "Savory",
+        "convVolume": "16.4K",
+        "totalEngagement": "124.7K"
+      },
+      {
+        "flavor": "Kafuli Spice",
+        "type": "Savory",
+        "convVolume": "13.8K",
+        "totalEngagement": "102.3K"
+      },
+      {
+        "flavor": "Pahadi Chilli",
+        "type": "Savory",
+        "convVolume": "11.9K",
+        "totalEngagement": "88.1K"
+      },
+      {
+        "flavor": "Chainsoo Masala",
+        "type": "Savory",
+        "convVolume": "9.8K",
+        "totalEngagement": "72.6K"
+      },
+      {
+        "flavor": "Kumaoni Raita Spice",
+        "type": "Savory",
+        "convVolume": "8.4K",
+        "totalEngagement": "61.8K"
+      }
+    ],
+    "insight": "Uttarakhand: Honey Chilli leads sweet conversations; Bhang Chutney anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in Uttarakhand reward Honey Chilli for sweet occasions and Bhang Chutney for everyday savory — pilot extensions on those two anchors first."
+  },
+  "West Bengal": {
+    "metrics": [
+      {
+        "flavor": "Mishti Doi Caramel",
+        "type": "Sweet",
+        "convVolume": "22.1K",
+        "totalEngagement": "168.8K"
+      },
+      {
+        "flavor": "Nolen Gur Toffee",
+        "type": "Sweet",
+        "convVolume": "19.6K",
+        "totalEngagement": "147.5K"
+      },
+      {
+        "flavor": "Honey Chilli",
+        "type": "Sweet",
+        "convVolume": "16.8K",
+        "totalEngagement": "124.7K"
+      },
+      {
+        "flavor": "Gondhoraj Lemon Candy",
+        "type": "Sweet",
+        "convVolume": "14.2K",
+        "totalEngagement": "104.1K"
+      },
+      {
+        "flavor": "Narkel Naru Bite",
+        "type": "Sweet",
+        "convVolume": "11.7K",
+        "totalEngagement": "85.3K"
+      },
+      {
+        "flavor": "Kasundi Mustard",
+        "type": "Savory",
+        "convVolume": "25.4K",
+        "totalEngagement": "196.7K"
+      },
+      {
+        "flavor": "Panch Phoron Mix",
+        "type": "Savory",
+        "convVolume": "21.2K",
+        "totalEngagement": "161.5K"
+      },
+      {
+        "flavor": "Jhalmuri Spice",
+        "type": "Savory",
+        "convVolume": "18.4K",
+        "totalEngagement": "139.2K"
+      },
+      {
+        "flavor": "Hilsa Fry Masala",
+        "type": "Savory",
+        "convVolume": "15.6K",
+        "totalEngagement": "117.3K"
+      },
+      {
+        "flavor": "Gunpowder Podi",
+        "type": "Savory",
+        "convVolume": "12.8K",
+        "totalEngagement": "95.4K"
+      }
+    ],
+    "insight": "West Bengal: Mishti Doi Caramel leads sweet conversations; Kasundi Mustard anchors savory — localize packs before national scale.",
+    "takeaway": "What this means: Consumers in West Bengal reward Mishti Doi Caramel for sweet occasions and Kasundi Mustard for everyday savory — pilot extensions on those two anchors first."
+  }
+}

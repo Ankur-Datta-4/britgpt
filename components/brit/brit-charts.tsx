@@ -19,7 +19,7 @@ import {
   LineChart,
   ScatterChart,
   Scatter,
-  ZAxis,
+  ReferenceLine,
 } from "recharts";
 
 export const CHART_THEME = {
@@ -41,6 +41,12 @@ const tooltipStyle = {
   fontSize: "12px",
   color: "var(--fg)",
   boxShadow: "var(--shadow-card)",
+};
+
+const median = (values) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
 export const RegionBarChart = ({ data, onSelect }) => {
@@ -213,39 +219,128 @@ export const FlavorGrowthChart = ({ flavours, onSelect }) => {
   );
 };
 
-export const NationalScatterChart = ({ points, onSelect }) => {
+const MATRIX_TREND_COLORS = {
+  Established: "#5B8DEF",
+  Emerging: "#3DDC84",
+  Seasonal: "#F0A04B",
+  "Regional Classic": "#A78BFA",
+  Fad: "#F05252",
+  Stable: "#7A808A",
+};
+
+const matrixTrendColor = (trendType) =>
+  MATRIX_TREND_COLORS[trendType] || MATRIX_TREND_COLORS.Stable;
+
+const PrioritizationDot = ({ cx, cy, payload, onSelect }) => {
+  if (cx == null || cy == null || !payload) return null;
+  const color = matrixTrendColor(payload.trendType);
+
+  return (
+    <g
+      style={{ cursor: "pointer" }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect?.(payload.raw);
+      }}
+    >
+      <circle cx={cx} cy={cy} r={7} fill={color} stroke={CHART_THEME.cream} strokeWidth={2} />
+    </g>
+  );
+};
+
+export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
   const data = points.map((p) => ({
     name: p.name,
     conv: parseFloat(String(p.convGrowth).replace("%", "")) || 0,
     eng: parseFloat(String(p.engGrowth).replace("%", "")) || 0,
+    trendType: p.trendType,
     raw: p,
   }));
 
+  const convs = data.map((d) => d.conv);
+  const engs = data.map((d) => d.eng);
+  const pad = 4;
+  const maxConv = Math.ceil(Math.max(...convs, 10) + pad);
+  const maxEng = Math.ceil(Math.max(...engs, 10) + pad);
+  const midConv = median(convs);
+  const midEng = median(engs);
+
+  const plotData = data;
+
   return (
-    <div className="brit-chart-wrap brit-chart-wrap--scatter">
-      <ResponsiveContainer width="100%" height={280}>
-        <ScatterChart margin={{ top: 16, right: 16, bottom: 24, left: 8 }}>
-          <CartesianGrid stroke={CHART_THEME.grid} strokeDasharray="3 4" />
-          <XAxis type="number" dataKey="conv" name="Conv. growth" unit="%" tick={{ fill: CHART_THEME.muted, fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis type="number" dataKey="eng" name="Eng. growth" unit="%" tick={{ fill: CHART_THEME.muted, fontSize: 10 }} axisLine={false} tickLine={false} />
-          <ZAxis range={[80, 80]} />
-          <Tooltip
-            contentStyle={tooltipStyle}
-            cursor={{ strokeDasharray: "3 3" }}
-            formatter={(v, name) => [`${v}%`, name === "conv" ? "Conv. growth" : "Eng. growth"]}
-            labelFormatter={(_, payload) => payload?.[0]?.payload?.name}
-          />
-          <Scatter
-            data={data}
-            fill={CHART_THEME.red}
-            onClick={(d) => onSelect?.(d.raw)}
-          />
-        </ScatterChart>
-      </ResponsiveContainer>
-      <div className="brit-chart-axis-hint">
-        <span>→ Conversation growth</span>
-        <span>↑ Engagement growth</span>
+    <div className="brit-priority-matrix">
+      <div className="brit-priority-matrix__plot">
+        <div className="brit-priority-matrix__y-label">
+          <span className="brit-priority-matrix__y-high">High buzz</span>
+          <span className="brit-priority-matrix__y-low">Low</span>
+        </div>
+        <div className="brit-priority-matrix__chart-area">
+          <div className="brit-priority-matrix__quadrants" aria-hidden>
+            <span className="brit-priority-matrix__q brit-priority-matrix__q--tl">Build momentum</span>
+            <span className="brit-priority-matrix__q brit-priority-matrix__q--tr">Prioritize</span>
+            <span className="brit-priority-matrix__q brit-priority-matrix__q--bl">Fading / fad</span>
+            <span className="brit-priority-matrix__q brit-priority-matrix__q--br">Niche loyal</span>
+          </div>
+          <ResponsiveContainer width="100%" height={340}>
+            <ScatterChart margin={{ top: 20, right: 24, bottom: 36, left: 8 }}>
+              <CartesianGrid stroke={CHART_THEME.grid} strokeDasharray="3 4" />
+              <ReferenceLine x={midEng} stroke={CHART_THEME.muted} strokeDasharray="4 4" strokeOpacity={0.65} />
+              <ReferenceLine y={midConv} stroke={CHART_THEME.muted} strokeDasharray="4 4" strokeOpacity={0.65} />
+              <XAxis
+                type="number"
+                dataKey="eng"
+                domain={[0, maxEng]}
+                tick={{ fill: CHART_THEME.muted, fontSize: 10 }}
+                tickFormatter={(v) => `${v}%`}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                type="number"
+                dataKey="conv"
+                domain={[0, maxConv]}
+                tick={{ fill: CHART_THEME.muted, fontSize: 10 }}
+                tickFormatter={(v) => `${v}%`}
+                axisLine={false}
+                tickLine={false}
+                width={36}
+              />
+              <Tooltip
+                contentStyle={tooltipStyle}
+                cursor={{ stroke: CHART_THEME.muted, strokeDasharray: "3 3" }}
+                formatter={(v, name) => [
+                  `${v}%`,
+                  name === "eng" ? "Engagement growth" : "Conversation buzz",
+                ]}
+                labelFormatter={(_, payload) => payload?.[0]?.payload?.name}
+              />
+              <Scatter
+                data={plotData}
+                shape={(props) => <PrioritizationDot {...props} onSelect={onSelect} />}
+              />
+            </ScatterChart>
+          </ResponsiveContainer>
+          <div className="brit-priority-matrix__x-label">Engagement growth</div>
+        </div>
+      </div>
+      <div className="brit-priority-matrix__legend">
+        {[
+          ["Established", MATRIX_TREND_COLORS.Established],
+          ["Emerging", MATRIX_TREND_COLORS.Emerging],
+          ["Seasonal", MATRIX_TREND_COLORS.Seasonal],
+          ["Regional classic", MATRIX_TREND_COLORS["Regional Classic"]],
+          ["Fad", MATRIX_TREND_COLORS.Fad],
+          ["Stable", MATRIX_TREND_COLORS.Stable],
+        ].map(([label, color]) => (
+          <span key={label} className="brit-priority-matrix__legend-item">
+            <i style={{ background: color }} />
+            {label}
+          </span>
+        ))}
       </div>
     </div>
   );
 };
+
+/** @deprecated use NationalPrioritizationMatrix */
+export const NationalScatterChart = NationalPrioritizationMatrix;

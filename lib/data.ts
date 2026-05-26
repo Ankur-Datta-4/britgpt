@@ -4,7 +4,7 @@
 ============================================================ */
 export const BRIT_DATA = {
   meta: {
-    title: "Sweet & Savory Flavor Insights",
+    title: "Britannia Consumer Research",
     date: "20 May 2026",
     generatedBy: "Consuma AI Rapid Research Platform",
     generationTime: "under 30 minutes",

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "south-podi",
+    "label": "Tamil Nadu + Karnataka",
+    "insight": "Podi is evolving beyond accompaniment culture into a scalable modern snacking language. Consumers increasingly associate podi flavors with authenticity, layered spice depth, and regional pride.",
+    "rows": [
+      { "flavor": "Gunpowder Podi", "convVolume": "22.1K", "engVolume": "166.8K" },
+      { "flavor": "Gunpowder Butter", "convVolume": "18.7K", "engVolume": "139.2K" },
+      { "flavor": "Gunpowder Cheese", "convVolume": "16.2K", "engVolume": "121.8K" },
+      { "flavor": "Jigarthanda", "convVolume": "9.8K", "engVolume": "68.5K" },
+      { "flavor": "Lemon Masala", "convVolume": "12.4K", "engVolume": "82.7K" }
+    ]
+  },
+  {
+    "id": "delhi-ncr",
+    "label": "Delhi + NCR",
+    "insight": "North India's urban snacking culture is shifting toward swicy and fusion-led flavors that feel globally inspired yet culturally familiar through Indo-Chinese food cues.",
+    "rows": [
+      { "flavor": "Honey Chilli", "convVolume": "24.8K", "engVolume": "181.3K" },
+      { "flavor": "Korean Gochujang", "convVolume": "17.9K", "engVolume": "142.6K" },
+      { "flavor": "Chaat Masala", "convVolume": "15.6K", "engVolume": "104.4K" },
+      { "flavor": "Peri Peri", "convVolume": "14.1K", "engVolume": "93.8K" },
+      { "flavor": "Smoky BBQ", "convVolume": "11.4K", "engVolume": "76.1K" }
+    ]
+  },
+  {
+    "id": "maharashtra",
+    "label": "Maharashtra",
+    "insight": "Maharashtra overindexes on aggressive spice systems and crunchy formats, making it one of the strongest launchpads for bold savory experimentation.",
+    "rows": [
+      { "flavor": "Thecha", "convVolume": "18.4K", "engVolume": "132.7K" },
+      { "flavor": "Bhakarwadi", "convVolume": "15.7K", "engVolume": "104.2K" },
+      { "flavor": "Saoji Spice", "convVolume": "11.2K", "engVolume": "79.6K" },
+      { "flavor": "Honey Chilli", "convVolume": "10.6K", "engVolume": "74.8K" },
+      { "flavor": "Caramel Chikki", "convVolume": "9.6K", "engVolume": "68.3K" }
+    ]
+  },
+  {
+    "id": "up-raj",
+    "label": "Uttar Pradesh + Rajasthan",
+    "insight": "Festive indulgence remains a major emotional entry point in North India, especially when traditional dessert flavors are reframed through modern snacking formats.",
+    "rows": [
+      { "flavor": "Gulkand", "convVolume": "19.6K", "engVolume": "145.8K" },
+      { "flavor": "Thandai", "convVolume": "16.3K", "engVolume": "121.4K" },
+      { "flavor": "Banarasi Paan", "convVolume": "14.7K", "engVolume": "108.9K" },
+      { "flavor": "Jalebi Rabri", "convVolume": "13.2K", "engVolume": "98.5K" },
+      { "flavor": "Ghevar Cream", "convVolume": "10.1K", "engVolume": "73.7K" }
+    ]
+  },
+  {
+    "id": "east",
+    "label": "West Bengal + Odisha",
+    "insight": "Eastern India's dairy dessert culture creates whitespace for premium dessert-snacking hybrids with café-style visual and indulgence appeal.",
+    "rows": [
+      { "flavor": "Burnt Caramel", "convVolume": "16.1K", "engVolume": "118.4K" },
+      { "flavor": "Mishti Doi", "convVolume": "15.3K", "engVolume": "109.6K" },
+      { "flavor": "Chhena Poda", "convVolume": "14.8K", "engVolume": "103.2K" },
+      { "flavor": "Rasgulla Cream", "convVolume": "10.7K", "engVolume": "74.3K" },
+      { "flavor": "Kosha Spice", "convVolume": "8.9K", "engVolume": "62.8K" }
+    ]
+  }
+]

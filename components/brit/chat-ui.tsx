@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { BRIT_DATA } from '@/lib/data';
-import { DEMO_STATES, HERO_THESIS } from '@/lib/demo-flow-data';
+import { DEMO_STATES, HERO_THESIS, RRP_TIMELINE_STAGES, BRITANNIA_CONSUMER_QUOTES } from '@/lib/demo-flow-data';
 import { ACTIONS, runAction } from '@/lib/actions';
 import { getApiKey, setApiKey, hasApiKey } from '@/lib/config-client';
 import {
@@ -36,15 +36,6 @@ const REGIONS = ["Pan-India", "North", "South", "West", "East", "Metro"];
 const TIMEFRAMES = ["90 days", "6 months", "12 months", "24 months"];
 const OBJECTIVES = ["Product extension", "New SKU launch", "Pricing strategy", "Channel mix", "Brand refresh"];
 const FILTERS = ["Urban", "Rural", "Premium tier", "Mass tier", "Gen-Z", "Millennials", "Families"];
-
-const TIMELINE_STAGES = [
-  { id: "context", title: "Setting context", desc: "Parsing brief · mapping portfolio scope", dur: 1600 },
-  { id: "aggregate", title: "Source aggregation", desc: "Instagram · Reddit · X · YouTube · Amazon · Flipkart · LinkedIn", dur: 1900 },
-  { id: "collect", title: "Collecting data", desc: "Pulling 1.53L+ conversations across India", dur: 2100 },
-  { id: "clean", title: "Cleaning data", desc: "Deduping · language · spam · entity resolution", dur: 1800 },
-  { id: "analyse", title: "Analysing data", desc: "State flavors · growth · engagement · extensions", dur: 2200 },
-  { id: "report", title: "Report generation", desc: "Synthesising narrative · matrices · actionables", dur: 2000 },
-];
 
 const SOURCE_NAMES = [
   "Instagram", "Reddit", "X", "YouTube", "Amazon Reviews", "Flipkart Reviews",
@@ -142,11 +133,7 @@ const RESEARCH_SCRIPTS = {
       { name: "Gunpowder Podi", grow: "+55%", bars: [3,4,5,5,6,6,7], down: false },
       { name: "Thecha", grow: "+55%", bars: [3,3,4,5,6,6,7], down: false },
     ],
-    quotes: [
-      { text: "Delhi savory top-5 includes Honey Chilli — street-food swicy is crossing into packaged snacks.", att: "Delhi · Flavor Insights state table" },
-      { text: "Maharashtra pairs Puran Poli / Modak sweets with Misal Pav, Vada Pav, Thecha — fusion room at 19.43%.", att: "Maharashtra · 1.53L conversation sample" },
-      { text: "Gunpowder Podi spans TN, KA, AP — 55% global-spice interest supports layered spice systems.", att: "Savory opportunities · Consuma AI" },
-    ],
+    quotes: BRITANNIA_CONSUMER_QUOTES,
     exec: {
       h2: "Launch state-anchored flavor platforms — start with Maharashtra sweet + Thecha savory, and Delhi Honey Chilli.",
       p: "Index local top-5 flavors per state before nationalizing. Priority anchors: Caramel Chikki + Thecha (MH), Gunpowder Podi (South), Honey Chilli (Delhi/NCR).",
@@ -337,16 +324,16 @@ const RESEARCH_SCRIPTS = {
     id: "default",
     title: "Sweet & savory insights",
     scopeDefaults: { region: "South", obj: "Product extension" },
-    muted: "Regional affinity, sentiment composition, the 12-month trend, flavour explorer, and direct consumer voice.",
-    cards: ["region", "sentiment", "trend", "flavour", "quotes", "summary", "exec"],
+    muted: "State deep dives, winning flavors, cross-state synthesis, national matrix, and actionables.",
+    cards: ["summary", "exec"],
     insight: {
-      highlight: "Biscoff + Honey Chilli",
-      body: "combinations show the strongest consumer affinity — Biscoff as premium dessert system, Honey Chilli as the swicy snack bet.",
+      highlight: HERO_THESIS.headline,
+      body: HERO_THESIS.body,
       stats: [
-        { k: "Biscoff positive", v: "43.1", suffix: "%" },
-        { k: "Honey Chilli share", v: "18", suffix: "%" },
-        { k: "Fusion interest", v: "19.4", suffix: "%" },
-        { k: "Sample", v: "1.5", suffix: "L" },
+        { k: "Honey Chilli conv.", v: "48.7", suffix: "%" },
+        { k: "Gunpowder Podi conv.", v: "46.8", suffix: "%" },
+        { k: "Flavors indexed", v: "38" },
+        { k: "Sample", v: "1.53", suffix: "L" },
       ],
     },
     regionsData: REGIONS_DATA,
@@ -355,11 +342,7 @@ const RESEARCH_SCRIPTS = {
     sentData: SENT_DATA,
     sentCenter: BISCOFF_POSITIVE_PCT,
     sentMentions: BISCOFF_CONVERSATIONS,
-    quotes: [
-      { text: "Biscoff already travels across desserts, beverages and hacks; the unlock is premium formulation and ingredient transparency.", att: `Biscoff · ${BISCOFF_CONVERSATIONS.toLocaleString("en-IN")} conversations` },
-      { text: `Hot Honey Chilli Crisp — ${GLOBAL_SPICE_INTEREST}% global-spice interest, ${SAVORY_INNOVATION_DEMAND}% savory innovation demand.`, att: `Honey Chilli · ${HONEY_CHILLI_CONVERSATIONS.toLocaleString("en-IN")} conversations` },
-      { text: "Gunpowder Podi: sharper, layered spice systems beyond plain masala.", att: "TN · KA · AP" },
-    ],
+    quotes: BRITANNIA_CONSUMER_QUOTES,
     exec: {
       h2: "Launch Biscoff as a premium dessert system and pilot Honey Chilli swicy snacks — first in South India.",
       p: `Three signals: ${BISCOFF_POSITIVE_PCT}% Biscoff positive, ${HONEY_CHILLI_FAV_SHARE}% Honey Chilli favorite-snack share, ${GLOBAL_SPICE_INTEREST}% global-spice interest.`,
@@ -373,6 +356,7 @@ const matchResearchScript = (query) => {
   const presets = D().predefinedQuestions || [];
   const preset = presets.find((p) => ql === p.q.toLowerCase() || ql.includes(p.id));
   if (preset && RESEARCH_SCRIPTS[preset.id]) return RESEARCH_SCRIPTS[preset.id];
+  if (/britannia|performing|good day|marie gold|nutrichoice|50-50|treat/.test(ql)) return RESEARCH_SCRIPTS.default;
   if (/flavour|flavor|state|trend/.test(ql)) return RESEARCH_SCRIPTS.flavour;
   if (/biscoff|dessert/.test(ql)) return RESEARCH_SCRIPTS.biscoff;
   if (/swicy|honey.chilli|honey chilli/.test(ql)) return RESEARCH_SCRIPTS.swicy;
@@ -559,7 +543,7 @@ function ScopeForm({ defaults, locked, onRun }) {
    TimelineBlock — cinematic execution timeline (inline)
 ============================================================ */
 function TimelineBlock({ onDone }) {
-  const stages = TIMELINE_STAGES;
+  const stages = RRP_TIMELINE_STAGES;
   const [idx, setIdx] = useState(0);
   const [prog, setProg] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -581,9 +565,11 @@ function TimelineBlock({ onDone }) {
       else if (idx + 1 < stages.length) {
         setIdx(idx + 1);
         setProg(0);
-      } else if (!finished.current) {
+      }       else if (!finished.current) {
         finished.current = true;
-        setTimeout(() => onDoneRef.current?.(), 500);
+        setIdx(stages.length);
+        setProg(1);
+        setTimeout(() => onDoneRef.current?.(), 600);
       }
     };
     raf = requestAnimationFrame(step);
@@ -600,13 +586,16 @@ function TimelineBlock({ onDone }) {
     setSrcCount(want);
   }, [idx, prog]);
 
+  const allDone = idx >= stages.length;
+
   const overall = useMemo(() => {
-    const total = stages.reduce((a,s)=>a+s.dur, 0);
+    if (allDone) return 100;
+    const total = stages.reduce((a, s) => a + s.dur, 0);
     let done = 0;
     for (let i = 0; i < idx; i++) done += stages[i].dur;
     done += prog * (stages[idx]?.dur || 0);
-    return Math.round((done / total) * 100);
-  }, [idx, prog]);
+    return Math.min(100, Math.round((done / total) * 100));
+  }, [idx, prog, allDone, stages]);
 
   const sourcePills = SOURCE_NAMES.slice(0, srcCount);
 
@@ -618,8 +607,8 @@ function TimelineBlock({ onDone }) {
       </div>
       <div className="tl-list">
         {stages.map((s, i) => {
-          const status = i < idx ? "done" : i === idx ? "active" : "queued";
-          const p = i < idx ? 1 : i === idx ? prog : 0;
+          const status = allDone || i < idx ? "done" : i === idx ? "active" : "queued";
+          const p = allDone || i < idx ? 1 : i === idx ? prog : 0;
           return (
             <div key={s.id} className={"tl-row " + status}>
               <div className="tl-num">{status === "done" ? "✓" : String(i+1).padStart(2,"0")}</div>
@@ -666,10 +655,9 @@ function InsightBlock({ params, script }) {
   });
   return (
     <div className="insight">
-      <div className="eyebrow">Key insight · confidence 84% · click any metric</div>
-      <h2>
-        <em>{ins.highlight}</em> {ins.body.replace("{region}", reg)}
-      </h2>
+      <div className="eyebrow">Insight · opening hero</div>
+      <h2>{HERO_THESIS.title}</h2>
+      <p className="insight-lead">{ins.highlight}. {ins.body.replace("{region}", reg)}</p>
       <div className="insight-stats">
         {ins.stats.map((st, i) => (
           <ClickableStat key={i} label={st.k} value={st.v}
