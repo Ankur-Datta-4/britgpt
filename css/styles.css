@@ -3104,6 +3104,66 @@ button { font-family: inherit; cursor: pointer; }
 .hero-thesis-body { margin: 0; font-size: 15px; line-height: 1.55; color: var(--fg-mid); }
 
 .state-table-wrap { overflow-x: auto; margin-top: 4px; }
+.state-volume-table-section {
+  margin: 8px 0 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-sm);
+  background: #fff;
+}
+.state-volume-table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.state-volume-table-head h3 {
+  margin: 0;
+  font-family: var(--f-serif);
+  font-size: 22px;
+  font-weight: 500;
+}
+.state-volume-table-wrap {
+  overflow: hidden;
+  padding: 8px;
+  background: #fff;
+}
+.state-volume-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+.state-volume-table th {
+  padding: 8px 6px;
+  text-align: left;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  border-bottom: 1px solid var(--line-soft);
+  white-space: normal;
+}
+.state-volume-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--fg-mid);
+  vertical-align: middle;
+}
+.state-volume-table td:first-child,
+.state-volume-table th:first-child {
+  width: 13%;
+}
+.state-volume-table td:not(:first-child),
+.state-volume-table th:not(:first-child) {
+  width: 10.875%;
+}
+.state-volume-table td b {
+  color: var(--fg);
+  font-weight: 600;
+}
 .state-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .state-table th {
   text-align: left;
