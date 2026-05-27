@@ -3601,13 +3601,13 @@ button { font-family: inherit; cursor: pointer; }
   flex-direction: column;
   justify-content: space-between;
   pointer-events: none;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--fg-dim);
+  color: var(--fg-muted);
 }
-.brit-priority-matrix__y-high { color: var(--fg-muted); }
+.brit-priority-matrix__y-high { color: var(--fg); }
 .brit-priority-matrix__chart-area {
   position: relative;
   width: 100%;
@@ -3615,7 +3615,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .brit-priority-matrix__quadrants {
   position: absolute;
-  inset: 20px 20px 52px 20px;
+  inset: 24px 24px 56px 64px;
   pointer-events: none;
   z-index: 2;
 }
@@ -3625,24 +3625,24 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--fg-dim);
+  color: var(--fg-muted);
 }
 .brit-priority-matrix__q--tr {
-  top: 8%;
-  right: 6%;
+  top: 10%;
+  right: 8%;
   color: var(--red-deep);
   font-size: 11px;
 }
-.brit-priority-matrix__q--tl { top: 8%; left: 4%; }
-.brit-priority-matrix__q--bl { bottom: 14%; left: 4%; }
-.brit-priority-matrix__q--br { bottom: 14%; right: 4%; text-align: right; }
+.brit-priority-matrix__q--tl { top: 10%; left: 3%; }
+.brit-priority-matrix__q--bl { bottom: 16%; left: 3%; }
+.brit-priority-matrix__q--br { bottom: 16%; right: 4%; text-align: right; }
 .brit-priority-matrix__x-label {
   text-align: center;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fg-dim);
+  color: var(--fg-muted);
   margin-top: -4px;
   padding-bottom: 8px;
 }

@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import { NationalPrioritizationMatrix } from "@/components/brit/brit-charts";
 import { AgeCohortGrid } from "@/components/brit/age-cohort-grid";
 import { getAudienceDefaultsFromCohort } from "@/lib/audience-cohorts";
@@ -15,6 +15,7 @@ import {
   DEMO_CITY_TIERS,
   FIXED_RUN_STATS,
   DEMO_STATES,
+  STATE_WINNING_FLAVORS,
   FLAVOR_MACHINE,
   flavorMachineAsNational,
   NATIONAL_FLAVORS,
@@ -242,25 +243,48 @@ const StateMetricsByType = ({ metrics }) => {
 
 /* ── Doc output cards (`.card` + existing patterns) ── */
 export const DocStateTableCard = () => {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
   return (
     <div className="card">
       <div className="card-h">
         <h3>State-by-state flavor deep dives</h3>
-        <span className="tag">top 5 sweet | savory · {DEMO_STATES.length} states</span>
+        <span className="tag">expand row · {DEMO_STATES.length} states</span>
       </div>
       <div className="card-body state-table-wrap">
         <table className="state-table">
           <thead>
-            <tr><th>State</th><th>Top 5 sweet</th><th>Top 5 savory</th></tr>
+            <tr><th>State</th><th>Top 5 sweet</th><th>Top 5 savory</th><th></th></tr>
           </thead>
           <tbody>
-            {DEMO_STATES.map((row) => (
-              <tr key={row.state} className="state-table-row">
-                <td className="state-table-name">{row.state}</td>
-                <td>{row.sweet.join(", ")}</td>
-                <td>{row.savory.join(", ")}</td>
-              </tr>
-            ))}
+            {DEMO_STATES.map((row) => {
+              const isOpen = expanded === row.state;
+              const metrics = isOpen ? getStateMetrics(row.state) : [];
+
+              return (
+                <Fragment key={row.state}>
+                  <tr className={"state-table-row " + (isOpen ? "open" : "")} onClick={() => setExpanded(isOpen ? null : row.state)}>
+                    <td className="state-table-name">{row.state}</td>
+                    <td>{row.sweet.join(", ")}</td>
+                    <td>{row.savory.join(", ")}</td>
+                    <td className="state-table-expand">{isOpen ? "▾" : "▸"}</td>
+                  </tr>
+                  {isOpen && (
+                    <tr className="state-table-detail-row">
+                      <td colSpan={4}>
+                        <div className="state-expand-panel">
+                          <p className="muted" style={{ margin: "0 0 10px" }}>{getStateInsight(row.state)}</p>
+                          <p className="muted" style={{ margin: "0 0 12px" }}>
+                            <b>What this means:</b> {getStateTakeaway(row.state).replace(/^What this means:\s*/i, "")}
+                          </p>
+                          <StateMetricsByType metrics={metrics} />
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -269,41 +293,37 @@ export const DocStateTableCard = () => {
 };
 
 export const DocWinningClustersCard = () => {
-  const [open, setOpen] = useState(DEMO_STATES[0]?.state ?? null);
-
   return (
     <div className="card">
       <div className="card-h">
         <h3>Key state-wise winning flavors</h3>
-        <span className="tag">{DEMO_STATES.length} states · click to expand</span>
+        <span className="tag">{STATE_WINNING_FLAVORS.length} flavor rows</span>
       </div>
-      <div className="card-body">
-        {DEMO_STATES.map((row) => {
-          const isOpen = open === row.state;
-          const metrics = getStateMetrics(row.state);
-          return (
-            <div key={row.state} className="state-cluster-block">
-              <button
-                type="button"
-                className={"state-cluster-head " + (isOpen ? "open" : "")}
-                onClick={() => setOpen(isOpen ? null : row.state)}
-              >
-                <span className="state-cluster-name">{row.state}</span>
-                <span className="state-chev">{isOpen ? "−" : "+"}</span>
-              </button>
-              {isOpen && (
-                <div className="state-cluster-body">
-                  <p className="muted" style={{ margin: "0 0 10px" }}>{getStateInsight(row.state)}</p>
-                  <StateMetricsByType metrics={metrics} />
-                  <p className="state-cluster-insight">
-                    <b>What this means:</b>{" "}
-                    {getStateTakeaway(row.state).replace(/^What this means:\s*/i, "")}
-                  </p>
-                </div>
-              )}
-            </div>
-          );
-        })}
+      <div className="card-body state-table-wrap">
+        <table className="national-table">
+          <thead>
+            <tr>
+              <th>State</th>
+              <th>Flavor Type</th>
+              <th>Flavor</th>
+              <th>Trend Type</th>
+              <th>Product Extension Ideas</th>
+              <th>Brand Fit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {STATE_WINNING_FLAVORS.map((row, idx) => (
+              <tr key={`${row.state}-${row.flavorType}-${row.flavor}-${idx}`}>
+                <td className="state-table-name">{row.state}</td>
+                <td>{row.flavorType}</td>
+                <td><b>{row.flavor}</b></td>
+                <td>{row.trendType}</td>
+                <td>{row.extensions}</td>
+                <td>{row.brandFit}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

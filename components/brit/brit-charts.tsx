@@ -270,10 +270,6 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
   return (
     <div className="brit-priority-matrix">
       <div className="brit-priority-matrix__plot">
-        <div className="brit-priority-matrix__y-label">
-          <span className="brit-priority-matrix__y-high">High buzz</span>
-          <span className="brit-priority-matrix__y-low">Low</span>
-        </div>
         <div className="brit-priority-matrix__chart-area">
           <div className="brit-priority-matrix__quadrants" aria-hidden>
             <span className="brit-priority-matrix__q brit-priority-matrix__q--tl">Build momentum</span>
@@ -282,32 +278,31 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
             <span className="brit-priority-matrix__q brit-priority-matrix__q--br">Niche loyal</span>
           </div>
           <ResponsiveContainer width="100%" height={340}>
-            <ScatterChart margin={{ top: 20, right: 20, bottom: 36, left: 20 }}>
-              <CartesianGrid stroke={CHART_THEME.grid} strokeDasharray="3 4" />
-              <ReferenceLine x={midEng} stroke={CHART_THEME.muted} strokeDasharray="4 4" strokeOpacity={0.65} />
-              <ReferenceLine y={midConv} stroke={CHART_THEME.muted} strokeDasharray="4 4" strokeOpacity={0.65} />
+            <ScatterChart margin={{ top: 20, right: 20, bottom: 36, left: 28 }}>
+              <ReferenceLine x={midEng} stroke={CHART_THEME.muted} strokeDasharray="4 4" strokeOpacity={0.3} />
+              <ReferenceLine y={midConv} stroke={CHART_THEME.muted} strokeDasharray="4 4" strokeOpacity={0.3} />
               <XAxis
                 type="number"
                 dataKey="eng"
                 domain={[0, maxEng]}
-                tick={{ fill: CHART_THEME.muted, fontSize: 10 }}
+                tick={{ fill: "#6F695E", fontSize: 11 }}
                 tickFormatter={(v) => `${v}%`}
-                axisLine={false}
+                axisLine={{ stroke: "#D2CCC0", strokeWidth: 1 }}
                 tickLine={false}
               />
               <YAxis
                 type="number"
                 dataKey="conv"
                 domain={[0, maxConv]}
-                tick={{ fill: CHART_THEME.muted, fontSize: 10 }}
+                tick={{ fill: "#6F695E", fontSize: 11 }}
                 tickFormatter={(v) => `${v}%`}
-                axisLine={false}
+                axisLine={{ stroke: "#D2CCC0", strokeWidth: 1 }}
                 tickLine={false}
-                width={36}
+                width={44}
               />
               <Tooltip
                 contentStyle={tooltipStyle}
-                cursor={{ stroke: CHART_THEME.muted, strokeDasharray: "3 3" }}
+                cursor={false}
                 formatter={(v, name) => [
                   `${v}%`,
                   name === "eng" ? "Engagement growth" : "Conversation buzz",
