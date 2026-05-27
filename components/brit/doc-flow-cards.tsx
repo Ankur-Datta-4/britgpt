@@ -310,17 +310,14 @@ const compactVolume = (value: string) => {
 
 const StateVolumeTable = ({
   title,
-  subtitle,
   rows,
 }: {
   title: string;
-  subtitle: string;
   rows: Array<{ flavor: string; values: string[] }>;
 }) => (
   <section className="state-volume-table-section">
     <div className="state-volume-table-head">
       <h3>{title}</h3>
-      <span className="tag">{subtitle}</span>
     </div>
     <div className="state-volume-table-wrap">
       <table className="state-volume-table">
@@ -352,7 +349,6 @@ const StateVolumeTable = ({
 export const DocConversationByStateCard = () => (
   <StateVolumeTable
     title="Conversation by state"
-    subtitle="flavor mentions by state"
     rows={CONVERSATION_BY_STATE_ROWS}
   />
 );
@@ -360,7 +356,6 @@ export const DocConversationByStateCard = () => (
 export const DocEngagementByStateCard = () => (
   <StateVolumeTable
     title="Engagement by state"
-    subtitle="flavor engagement by state"
     rows={ENGAGEMENT_BY_STATE_ROWS}
   />
 );
