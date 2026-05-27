@@ -102,7 +102,7 @@ const RESEARCH_SCRIPTS = {
     title: "Top flavours by state",
     scopeDefaults: { region: "Pan-India", obj: "Product extension" },
     muted: "State-level sweet & savory top-5 lists, flavor opportunity scores, and regional snack share.",
-    cards: ["states", "flavour", "region", "quotes", "summary", "doc_states", "doc_winning", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
+    cards: ["states", "flavour", "region", "quotes", "summary", "doc_states", "doc_winning", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
     insight: {
       highlight: "Honey Chilli & Gunpowder Podi",
       body: HERO_THESIS.body,
@@ -137,7 +137,7 @@ const RESEARCH_SCRIPTS = {
     title: "Regional sweet sentiment",
     scopeDefaults: { region: "East", obj: "Product extension" },
     muted: "Heritage sweets sentiment — Mishti Doi, Nolen Gur, and regional dessert trust across East India.",
-    cards: ["sentiment", "trend", "quotes", "summary", "doc_states", "doc_winning", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
+    cards: ["sentiment", "trend", "quotes", "summary", "doc_states", "doc_winning", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
     insight: {
       highlight: "Mishti Doi & Nolen Gur",
       body: "lead regional sweet conversations — heritage formats outperform novelty in West Bengal and Assam. Consumers reward authentic provenance over imported dessert cues.",
@@ -174,7 +174,7 @@ const RESEARCH_SCRIPTS = {
     title: "Extension opportunities",
     scopeDefaults: { region: "Pan-India", obj: "Product extension" },
     muted: "Indian sweet and savory extension ideas — Honey Chilli, Gunpowder Podi, and regional flavor platforms.",
-    cards: ["extensions", "flavour", "region", "summary", "doc_states", "doc_winning", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
+    cards: ["extensions", "flavour", "region", "summary", "doc_states", "doc_winning", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
     insight: {
       highlight: "Honey Chilli & Gunpowder Podi",
       body: "drive the clearest extension opportunities — national sweet-heat formats and South podi-led savory biscuits, backed by 48.7% and 46.2% conversation growth.",
@@ -287,7 +287,7 @@ const RESEARCH_SCRIPTS = {
     title: "Sweet & savory insights",
     scopeDefaults: { region: "South", obj: "Product extension" },
     muted: "State deep dives, winning flavors, cross-state synthesis, national matrix, and actionables.",
-    cards: ["summary", "quotes", "doc_states", "doc_winning", "doc_cross", "doc_national", "doc_conv_state", "doc_eng_state", "doc_actionables"],
+    cards: ["summary", "quotes", "doc_states", "doc_winning", "doc_verbatims", "doc_cross", "doc_national", "doc_conv_state", "doc_eng_state", "doc_actionables"],
     insight: {
       highlight: HERO_THESIS.headline,
       body: HERO_THESIS.body,

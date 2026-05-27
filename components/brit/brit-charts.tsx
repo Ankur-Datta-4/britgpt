@@ -248,6 +248,48 @@ const PrioritizationDot = ({ cx, cy, payload, onSelect }) => {
   );
 };
 
+const MatrixTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  const p = payload[0]?.payload;
+  if (!p) return null;
+  const raw = p.raw || {};
+  const flavor = raw.name || p.name;
+  const trendType = raw.trendType || p.trendType || "—";
+  const states = raw.states ? String(raw.states) : "—";
+  const brandFit = raw.brandFit ? String(raw.brandFit) : "—";
+  const extensionPreview = raw.extensions
+    ? String(raw.extensions).split(",").map((x) => x.trim()).filter(Boolean).slice(0, 2).join(", ")
+    : "—";
+
+  return (
+    <div className="brit-matrix-tooltip">
+      <div className="brit-matrix-tooltip__title" title={flavor}>{flavor}</div>
+      <div className="brit-matrix-tooltip__metrics">
+        <span>Conversation: {p.conv}%</span>
+        <span>Engagement: {p.eng}%</span>
+      </div>
+      <div className="brit-matrix-tooltip__grid">
+        <div>
+          <span>Trend</span>
+          <b>{trendType}</b>
+        </div>
+        <div>
+          <span>Brand fit</span>
+          <b>{brandFit}</b>
+        </div>
+        <div>
+          <span>States</span>
+          <b title={states}>{states}</b>
+        </div>
+        <div>
+          <span>Extensions</span>
+          <b title={raw.extensions || extensionPreview}>{extensionPreview}</b>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
   const data = points.map((p) => ({
     name: p.name,
@@ -301,13 +343,8 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
                 width={44}
               />
               <Tooltip
-                contentStyle={tooltipStyle}
+                content={<MatrixTooltip />}
                 cursor={false}
-                formatter={(v, name) => [
-                  `${v}%`,
-                  name === "eng" ? "Engagement growth" : "Conversation buzz",
-                ]}
-                labelFormatter={(_, payload) => payload?.[0]?.payload?.name}
               />
               <Scatter
                 data={plotData}

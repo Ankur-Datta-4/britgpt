@@ -3729,6 +3729,59 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 50%;
   display: inline-block;
 }
+.brit-matrix-tooltip {
+  min-width: 260px;
+  max-width: 340px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+}
+.brit-matrix-tooltip__title {
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.brit-matrix-tooltip__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 11px;
+  color: var(--fg-mid);
+}
+.brit-matrix-tooltip__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 10px;
+}
+.brit-matrix-tooltip__grid div {
+  min-width: 0;
+}
+.brit-matrix-tooltip__grid span {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 10px;
+  font-family: var(--f-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.brit-matrix-tooltip__grid b {
+  display: block;
+  font-size: 11px;
+  color: var(--fg);
+  font-weight: 600;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 .national-toolbar {
   display: flex;
   align-items: center;

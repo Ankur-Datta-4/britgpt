@@ -18,6 +18,7 @@ import {
   DocNationalCard,
   DocConversationByStateCard,
   DocEngagementByStateCard,
+  DocVerbatimsCard,
   DocActionablesCard,
 } from '@/components/brit/doc-flow-cards';
 import {
@@ -361,6 +362,7 @@ function MessageView({ m, ctx }) {
         {m.kind === "doc_national" && <DocNationalCard />}
         {m.kind === "doc_conv_state" && <DocConversationByStateCard />}
         {m.kind === "doc_eng_state" && <DocEngagementByStateCard />}
+        {m.kind === "doc_verbatims" && <DocVerbatimsCard />}
         {m.kind === "flavour" && <FlavourCard script={m.script} />}
         {m.kind === "quotes" && <QuotesCard script={m.script} />}
         {m.kind === "doc_actionables" && (
@@ -896,6 +898,7 @@ export default function BritApp() {
     const docSequence = [
       "doc_states",
       "doc_winning",
+      "doc_verbatims",
       "doc_cross",
       "doc_national",
       "doc_conv_state",

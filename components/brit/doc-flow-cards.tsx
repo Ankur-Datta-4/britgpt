@@ -253,27 +253,27 @@ const STATE_VOLUME_COLUMNS = [
 ];
 
 const CONVERSATION_BY_STATE_ROWS = [
-  { flavor: "Chanachur", values: ["3,847", "4,463", "5,218", "3,094", "7,126", "18,437", "6,372", "34,182"] },
-  { flavor: "Chatpata", values: ["6,183", "8,742", "9,481", "6,917", "12,386", "10,731", "11,154", "14,623"] },
-  { flavor: "Chettinad Pepper", values: ["8,697", "8,596", "8,056", "8,073", "8,482", "5,437", "8,209", "6,184"] },
-  { flavor: "Coconut Jaggery", values: ["1,519", "476", "6,132", "4,141", "620", "2,873", "17,066", "3,294"] },
-  { flavor: "Coffee", values: ["60,084", "107,549", "46,826", "512", "128,715", "11,482", "55,847", "16,943"] },
-  { flavor: "Dark Choc Chilli", values: ["24", "25", "44", "4", "7", "13", "32", "19"] },
-  { flavor: "Elaichi Cream", values: ["1", "151", "257", "436", "745", "117", "1", "146"] },
-  { flavor: "Garlic Chilli", values: ["25,971", "17,716", "8,011", "8,028", "25,763", "6,847", "6,280", "7,561"] },
-  { flavor: "Gunpowder Podi", values: ["5,004", "1,610", "22,892", "2,993", "2,565", "3,684", "5,437", "4,173"] },
-  { flavor: "Honey Chilli", values: ["1,513", "5,442", "3,897", "3,433", "5,778", "3,281", "5,931", "4,612"] },
-  { flavor: "Jhalmuri", values: ["1,863", "2,947", "3,584", "1,472", "2,386", "22,413", "3,128", "48,276"] },
-  { flavor: "Kokum Spice", values: ["3,098", "1,488", "5,645", "4,355", "10,279", "2,948", "3,793", "3,486"] },
-  { flavor: "Malai Kesar", values: ["370", "232", "12,389", "200", "11,835", "347", "272", "583"] },
-  { flavor: "Mango Pickle", values: ["52,919", "44,401", "56,297", "46,326", "37,232", "28,314", "45,330", "39,218"] },
-  { flavor: "Nipattu", values: ["4,183", "642", "15,472", "3,861", "1,783", "517", "9,284", "731"] },
-  { flavor: "Nolen Gur", values: ["283", "731", "364", "247", "489", "4,628", "226", "31,482"] },
-  { flavor: "Recheado Spice", values: ["174", "224", "389", "265", "677", "98", "168", "137"] },
-  { flavor: "Rose Saffron", values: ["112", "33", "72", "233", "32", "69", "66", "128"] },
-  { flavor: "Saoji Chilli", values: ["2,573", "741", "4,098", "655", "6,304", "1,143", "2,067", "1,584"] },
-  { flavor: "Schezwan", values: ["11,186", "15,396", "15,105", "11,809", "27,146", "7,862", "16,795", "9,638"] },
-  { flavor: "Smoky Garlic", values: ["159", "1,369", "162", "39", "66", "57", "102", "83"] },
+  { flavor: "Chanachur", values: ["418,362", "503,184", "648,291", "297,418", "812,647", "2,184,376", "691,284", "3,926,482"] },
+  { flavor: "Chatpata", values: ["638,174", "982,631", "1,148,284", "702,463", "1,584,218", "1,083,462", "1,296,184", "1,742,635"] },
+  { flavor: "Chettinad Pepper", values: ["295,965", "288,593", "243,811", "250,483", "317,689", "186,472", "253,089", "214,638"] },
+  { flavor: "Coconut Jaggery", values: ["154,527", "29,379", "552,029", "201,230", "17,267", "128,463", "2,409,937", "172,581"] },
+  { flavor: "Coffee", values: ["7,869,320", "11,820,226", "2,731,837", "44,447", "14,436,264", "1,286,482", "6,674,319", "2,048,375"] },
+  { flavor: "Dark Choc Chilli", values: ["4,246", "4,691", "184", "9", "192", "2,681", "4,142", "3,127"] },
+  { flavor: "Elaichi Cream", values: ["3", "5,853", "375", "10,082", "15,256", "2,947", "4", "3,628"] },
+  { flavor: "Garlic Chilli", values: ["1,503,735", "1,794,098", "1,509,340", "823,285", "1,532,954", "586,372", "1,249,727", "648,283"] },
+  { flavor: "Gunpowder Podi", values: ["550,888", "106,115", "3,087,191", "294,467", "459,540", "392,748", "721,783", "451,276"] },
+  { flavor: "Honey Chilli", values: ["356,138", "1,082,028", "915,542", "528,487", "1,232,018", "381,264", "1,297,624", "524,183"] },
+  { flavor: "Jhalmuri", values: ["218,374", "341,582", "486,193", "174,283", "268,471", "3,182,746", "392,648", "6,248,315"] },
+  { flavor: "Kokum Spice", values: ["531,558", "89,082", "943,885", "819,431", "985,424", "274,183", "699,664", "352,817"] },
+  { flavor: "Malai Kesar", values: ["106,660", "58,017", "80,871", "65,280", "83,955", "41,286", "97,464", "63,582"] },
+  { flavor: "Mango Pickle", values: ["6,667,944", "9,745,019", "8,925,061", "8,203,724", "8,482,143", "4,286,471", "9,575,426", "6,182,374"] },
+  { flavor: "Nipattu", values: ["486,271", "58,362", "1,864,283", "391,742", "164,381", "43,286", "1,092,648", "62,483"] },
+  { flavor: "Nolen Gur", values: ["28,174", "64,382", "32,648", "24,183", "41,286", "586,372", "21,746", "3,861,274"] },
+  { flavor: "Recheado Spice", values: ["5,816", "9,976", "19,836", "21,846", "8,921", "4,183", "3,296", "5,128"] },
+  { flavor: "Rose Saffron", values: ["4,406", "8,451", "1,604", "6,528", "945", "2,183", "191", "3,847"] },
+  { flavor: "Saoji Chilli", values: ["272,638", "33,263", "433,458", "20,164", "522,626", "96,483", "106,788", "132,648"] },
+  { flavor: "Schezwan", values: ["2,175,658", "3,227,645", "2,561,131", "2,974,473", "6,239,632", "1,086,274", "3,298,223", "1,472,683"] },
+  { flavor: "Smoky Garlic", values: ["8,342", "22,361", "4,490", "1,349", "1,892", "1,486", "3,498", "2,183"] },
 ];
 
 const ENGAGEMENT_BY_STATE_ROWS = [
@@ -300,12 +300,30 @@ const ENGAGEMENT_BY_STATE_ROWS = [
   { flavor: "Smoky Garlic", values: ["8,342", "22,361", "4,490", "1,349", "1,892", "1,486", "3,498", "2,183"] },
 ];
 
-const compactVolume = (value: string) => {
+const parseVolume = (value: string) => Number(String(value).replace(/,/g, "")) || 0;
+
+const totalConversationByFlavor = (row: { flavor: string; values: string[] }) =>
+  row.values.reduce((sum, value) => sum + parseVolume(value), 0);
+
+const CONVERSATION_ROWS_SORTED = [...CONVERSATION_BY_STATE_ROWS].sort(
+  (a, b) => totalConversationByFlavor(b) - totalConversationByFlavor(a)
+);
+
+const conversationRankByFlavor = new Map(
+  CONVERSATION_ROWS_SORTED.map((row, idx) => [row.flavor, idx])
+);
+
+const ENGAGEMENT_ROWS_SORTED = [...ENGAGEMENT_BY_STATE_ROWS].sort(
+  (a, b) =>
+    (conversationRankByFlavor.get(a.flavor) ?? Number.MAX_SAFE_INTEGER) -
+    (conversationRankByFlavor.get(b.flavor) ?? Number.MAX_SAFE_INTEGER)
+);
+
+const normalizeVolume = (value: string) => {
   const n = Number(String(value).replace(/,/g, ""));
   if (Number.isNaN(n)) return value;
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
-  return String(n);
+  return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}K`;
 };
 
 const StateVolumeTable = ({
@@ -335,7 +353,7 @@ const StateVolumeTable = ({
               <td><b>{row.flavor}</b></td>
               {row.values.map((value, idx) => (
                 <td key={`${row.flavor}-${STATE_VOLUME_COLUMNS[idx].full}`} title={value}>
-                  {compactVolume(value)}
+                  {normalizeVolume(value)}
                 </td>
               ))}
             </tr>
@@ -349,15 +367,106 @@ const StateVolumeTable = ({
 export const DocConversationByStateCard = () => (
   <StateVolumeTable
     title="Conversation by state"
-    rows={CONVERSATION_BY_STATE_ROWS}
+    rows={CONVERSATION_ROWS_SORTED}
   />
 );
 
 export const DocEngagementByStateCard = () => (
   <StateVolumeTable
     title="Engagement by state"
-    rows={ENGAGEMENT_BY_STATE_ROWS}
+    rows={ENGAGEMENT_ROWS_SORTED}
   />
+);
+
+const FLAVOR_VERBATIMS = [
+  {
+    flavor: "Honey Chilli",
+    product: "Treat Honey Chilli Crackers",
+    verbatim: "Bought this for evening chai with my family - sweet on first bite, then the chilli comes in nicely.",
+    source: "Blinkit",
+    rating: "4.5/5",
+  },
+  {
+    flavor: "Gunpowder Podi",
+    product: "NutriChoice Gunpowder Podi Khakhra",
+    verbatim: "This actually tastes like real podi from home and works great as a quick office snack.",
+    source: "Amazon",
+    rating: "4.4/5",
+  },
+  {
+    flavor: "Schezwan",
+    product: "50-50 Schezwan Crackers",
+    verbatim: "Movie-night favorite now - crunchy texture with proper schezwan kick, not bland at all.",
+    source: "Zepto",
+    rating: "4.3/5",
+  },
+  {
+    flavor: "Mango Pickle",
+    product: "50-50 Mango Pickle Cracker Bites",
+    verbatim: "Gives that achar-style tangy-spicy taste and goes perfectly in my tiffin box.",
+    source: "BigBasket",
+    rating: "4.2/5",
+  },
+  {
+    flavor: "Chettinad Pepper",
+    product: "Marie Gold Chettinad Pepper Biscuits",
+    verbatim: "Pepper warmth builds slowly and feels premium - I keep this for my late-night tea break.",
+    source: "Amazon",
+    rating: "4.1/5",
+  },
+  {
+    flavor: "Coffee",
+    product: "Good Day Coffee Cookies",
+    verbatim: "Strong coffee aroma and crisp bite make it my default 4 pm desk snack.",
+    source: "Blinkit",
+    rating: "4.6/5",
+  },
+  {
+    flavor: "Jhalmuri",
+    product: "50-50 Jhalmuri Spice Crackers",
+    verbatim: "Tastes exactly like Kolkata street jhalmuri masala and feels super nostalgic.",
+    source: "Instamart",
+    rating: "4.3/5",
+  },
+  {
+    flavor: "Kasundi Mustard",
+    product: "50-50 Kasundi Mustard Sticks",
+    verbatim: "Sharp mustard punch is the hero here - perfect for rainy-day snacking with tea.",
+    source: "BigBasket",
+    rating: "4.2/5",
+  },
+];
+
+export const DocVerbatimsCard = () => (
+  <div className="card">
+    <div className="card-h">
+      <h3>Customer voices</h3>
+      <span className="tag">blinkit · amazon · zepto</span>
+    </div>
+    <div className="card-body">
+      {FLAVOR_VERBATIMS.map((row) => (
+        <div
+          key={`${row.flavor}-${row.source}`}
+          className="quote clickable"
+          onClick={() =>
+            openDetail({
+              type: "Customer voice",
+              title: row.product,
+              body: row.verbatim,
+              facts: [
+                { k: "Flavor", v: row.flavor },
+                { k: "Rating", v: row.rating },
+              ],
+              source: `${row.source} · ${row.rating}`,
+            })
+          }
+        >
+          <p>&quot;{row.verbatim}&quot;</p>
+          <div className="att">{row.product} · {row.source} · {row.rating} · click to expand</div>
+        </div>
+      ))}
+    </div>
+  </div>
 );
 
 /* ── Doc output cards (`.card` + existing patterns) ── */
