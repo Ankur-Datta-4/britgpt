@@ -248,12 +248,19 @@ const PrioritizationDot = ({ cx, cy, payload, onSelect }) => {
   );
 };
 
-const MatrixTooltip = ({ active, payload }) => {
+const MatrixTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
-  const p = payload[0]?.payload;
+  const first = payload[0] || {};
+  const p = first?.payload;
   if (!p) return null;
   const raw = p.raw || {};
-  const flavor = raw.name || p.name;
+  const flavor =
+    raw.name ||
+    p.name ||
+    p.flavor ||
+    first?.name ||
+    label ||
+    "Unknown flavor";
   const trendType = raw.trendType || p.trendType || "—";
   const states = raw.states ? String(raw.states) : "—";
   const brandFit = raw.brandFit ? String(raw.brandFit) : "—";
@@ -263,7 +270,10 @@ const MatrixTooltip = ({ active, payload }) => {
 
   return (
     <div className="brit-matrix-tooltip">
-      <div className="brit-matrix-tooltip__title" title={flavor}>{flavor}</div>
+      <div className="brit-matrix-tooltip__title" title={flavor}>
+        <span style={{ color: "var(--fg-dim)", fontWeight: 600, marginRight: 6 }}>Flavor:</span>
+        {flavor}
+      </div>
       <div className="brit-matrix-tooltip__metrics">
         <span>Conversation: {p.conv}%</span>
         <span>Engagement: {p.eng}%</span>
@@ -344,6 +354,8 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
               />
               <Tooltip
                 content={<MatrixTooltip />}
+                allowEscapeViewBox={{ x: true, y: true }}
+                wrapperStyle={{ zIndex: 30 }}
                 cursor={false}
               />
               <Scatter
