@@ -28,7 +28,7 @@ const BOOT_LINES = [
   { t: "0.20s", text: "Starting your research…",                   marker: null,  done: false },
   { t: "0.60s", text: "Consumer discovery started",              marker: "✓",   done: true  },
   { t: "1.10s", text: "Gathering market signals…",               marker: null,  done: false },
-  { t: "1.80s", text: "9 channels identified · 1.53L conversations", marker: "✓", done: true },
+  { t: "1.80s", text: "8 channels identified · 1.53L conversations", marker: "✓", done: true },
   { t: "2.40s", text: "Analyzing flavor patterns…",              marker: null,  done: false },
   { t: "3.10s", text: "Generating follow-up questions",          marker: "✓",   done: true  },
 ];

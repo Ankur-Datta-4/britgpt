@@ -14,7 +14,6 @@ export const DEMO_SOURCES = [
   "Flipkart Reviews",
   "Zomato",
   "Swiggy",
-  "Blinkit",
   "Instagram",
   "YouTube",
   "X",
@@ -49,7 +48,7 @@ export const FIXED_RUN_STATS = {
 
 export const RRP_TIMELINE_STAGES = [
   { id: "context", title: "Reading your brief", desc: "Understanding your question and Britannia portfolio scope", dur: 600 },
-  { id: "aggregate", title: "Reviewing sources", desc: "Instagram · Reddit · X · YouTube · Amazon · Flipkart · Zomato · Swiggy · Blinkit · LinkedIn", dur: 700 },
+  { id: "aggregate", title: "Reviewing sources", desc: "Instagram · Reddit · X · YouTube · Amazon · Flipkart · Zomato · Swiggy · LinkedIn", dur: 700 },
   { id: "collect", title: "Gathering conversations", desc: "Pulling 1.53L+ conversations across India", dur: 800 },
   { id: "clean", title: "Filtering signals", desc: "Removing noise · checking language · keeping real consumer voices", dur: 700 },
   { id: "analyse", title: "Finding patterns", desc: "State flavors · growth · engagement · extension ideas", dur: 900 },
@@ -62,16 +61,16 @@ export const BRITANNIA_CONSUMER_QUOTES = [
     att: "Mumbai · Amazon + Flipkart · Good Day",
   },
   {
-    text: "Ordered the new 50-50 on Swiggy Instamart for evening chai. Delivery was quick but the crunch could be better. ⭐★★★☆ (Rated by 430 folks)",
-    att: "Bangalore · Swiggy Instamart · 50-50",
+    text: "Ordered the new 50-50 on Amazon for evening chai. Delivery was quick but the crunch could be better. ⭐★★★☆ (Rated by 430 folks)",
+    att: "Bangalore · Amazon · 50-50",
   },
   {
     text: "Treat Jim Jam vs Oreo in school tiffin — parents switch to Britannia when the ₹10 promo hits; taste parity is there but brand trust tips it.",
     att: "Delhi NCR · social · Treat",
   },
   {
-    text: "Got the NutriChoice digestives on Blinkit in 8 minutes. Always my go-to healthy snack! ⭐⭐⭐⭐⭐ (Rated by 1,240 folks)",
-    att: "Mumbai · Blinkit · NutriChoice",
+    text: "Got the NutriChoice digestives from Flipkart. Always my go-to healthy snack! ⭐⭐⭐⭐⭐ (Rated by 1,240 folks)",
+    att: "Mumbai · Flipkart · NutriChoice",
   },
   {
     text: "Marie Gold + chai is non-negotiable in Bengal; low-sugar Marie threads are growing — Britannia should lead the health cue before local players.",

@@ -383,7 +383,8 @@ const FLAVOR_VERBATIMS = [
     flavor: "Honey Chilli",
     product: "Treat Honey Chilli Crackers",
     verbatim: "Bought this for evening chai with my family - sweet on first bite, then the chilli comes in nicely.",
-    source: "Blinkit",
+    source: "Flipkart",
+    social: ["Instagram"],
     rating: "4.5/5",
   },
   {
@@ -391,20 +392,23 @@ const FLAVOR_VERBATIMS = [
     product: "NutriChoice Gunpowder Podi Khakhra",
     verbatim: "This actually tastes like real podi from home and works great as a quick office snack.",
     source: "Amazon",
+    social: ["Reddit"],
     rating: "4.4/5",
   },
   {
     flavor: "Schezwan",
     product: "50-50 Schezwan Crackers",
     verbatim: "Movie-night favorite now - crunchy texture with proper schezwan kick, not bland at all.",
-    source: "Zepto",
+    source: "Amazon",
+    social: ["YouTube"],
     rating: "4.3/5",
   },
   {
     flavor: "Mango Pickle",
     product: "50-50 Mango Pickle Cracker Bites",
     verbatim: "Gives that achar-style tangy-spicy taste and goes perfectly in my tiffin box.",
-    source: "BigBasket",
+    source: "Flipkart",
+    social: ["Instagram"],
     rating: "4.2/5",
   },
   {
@@ -412,59 +416,69 @@ const FLAVOR_VERBATIMS = [
     product: "Marie Gold Chettinad Pepper Biscuits",
     verbatim: "Pepper warmth builds slowly and feels premium - I keep this for my late-night tea break.",
     source: "Amazon",
+    social: ["Reddit"],
     rating: "4.1/5",
   },
   {
     flavor: "Coffee",
     product: "Good Day Coffee Cookies",
     verbatim: "Strong coffee aroma and crisp bite make it my default 4 pm desk snack.",
-    source: "Blinkit",
+    source: "Amazon",
+    social: ["X"],
     rating: "4.6/5",
   },
   {
     flavor: "Jhalmuri",
     product: "50-50 Jhalmuri Spice Crackers",
     verbatim: "Tastes exactly like Kolkata street jhalmuri masala and feels super nostalgic.",
-    source: "Instamart",
+    source: "Flipkart",
+    social: ["Instagram"],
     rating: "4.3/5",
   },
   {
     flavor: "Kasundi Mustard",
     product: "50-50 Kasundi Mustard Sticks",
     verbatim: "Sharp mustard punch is the hero here - perfect for rainy-day snacking with tea.",
-    source: "BigBasket",
+    source: "Amazon",
+    social: ["Reddit"],
     rating: "4.2/5",
   },
 ];
+
+const getVoiceChannels = (row) => [row.source, ...(row.social || [])].join(" · ");
 
 export const DocVerbatimsCard = () => (
   <div className="card">
     <div className="card-h">
       <h3>Customer voices</h3>
-      <span className="tag">blinkit · amazon · zepto</span>
+      <span className="tag">Amazon · Flipkart · Instagram · Reddit · X · YouTube</span>
     </div>
     <div className="card-body">
-      {FLAVOR_VERBATIMS.map((row) => (
+      {FLAVOR_VERBATIMS.map((row) => {
+        const channels = getVoiceChannels(row);
+        return (
         <div
-          key={`${row.flavor}-${row.source}`}
+          key={`${row.flavor}-${channels}`}
           className="quote clickable"
           onClick={() =>
             openDetail({
               type: "Customer voice",
-              title: row.product,
+              title: row.flavor,
               body: row.verbatim,
               facts: [
                 { k: "Flavor", v: row.flavor },
+                { k: "Channels", v: channels },
                 { k: "Rating", v: row.rating },
               ],
-              source: `${row.source} · ${row.rating}`,
+              source: `${channels} · ${row.rating}`,
             })
           }
         >
           <p>&quot;{row.verbatim}&quot;</p>
-          <div className="att">{row.product} · {row.source} · {row.rating} · click to expand</div>
+          <div className="att">{row.flavor} · {channels} · {row.rating} · click to expand</div>
         </div>
-      ))}
+        );
+      })}
     </div>
   </div>
 );

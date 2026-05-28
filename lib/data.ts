@@ -20,7 +20,6 @@ export const BRIT_DATA = {
       "Flipkart Reviews",
       "Zomato",
       "Swiggy",
-      "Blinkit",
     ],
   },
 
@@ -132,9 +131,9 @@ export const BRIT_DATA = {
 
   breakdown: {
     overview:
-      "Sweet & Savory Flavor Insights analyzes 1,53,496 consumer conversations across 9 digital channels in India over the last year. Honey Chilli and Gunpowder Podi lead national growth. Twenty-nine states have distinct sweet and savory top-5 profiles with regional extension ideas for Britannia's portfolio.",
+      "Sweet & Savory Flavor Insights analyzes 1,53,496 consumer conversations across 8 digital channels in India over the last year. Honey Chilli and Gunpowder Podi lead national growth. Twenty-nine states have distinct sweet and savory top-5 profiles with regional extension ideas for Britannia's portfolio.",
     sections: [
-      { id: "methodology", title: "Methodology", bullets: ["1,53,496 total conversations", "Channels: Instagram, Reddit, X, YouTube, Amazon Reviews, Flipkart Reviews, Zomato, Swiggy, Blinkit", "India · last 12 months", "Consuma AI · generated in under 30 minutes"] },
+      { id: "methodology", title: "Methodology", bullets: ["1,53,496 total conversations", "Channels: Instagram, Reddit, X, YouTube, Amazon Reviews, Flipkart Reviews, Zomato, Swiggy", "India · last 12 months", "Consuma AI · generated in under 30 minutes"] },
       { id: "honeyChilli", title: "Honey Chilli", bullets: ["48.7% conversation growth", "63.4% engagement growth", "Established nationally", "Strong in Maharashtra, UP, Delhi NCR, Karnataka, Telangana"] },
       { id: "gunpowderPodi", title: "Gunpowder Podi", bullets: ["46.2% conversation growth", "61.8% engagement growth", "Emerging in South", "TN, Karnataka, AP, Telangana podi lock"] },
       { id: "states", title: "29 states", bullets: ["Top 5 sweet + top 5 savory per state", "Expandable conv. volume per flavor", "Regional clusters for South, North, East"] },
@@ -168,13 +167,13 @@ export const BRIT_DATA = {
   ],
 
   reportSections: [
-    { id: "exec", title: "Executive summary", content: "Honey Chilli (48.7% conversation growth) and Gunpowder Podi (46.2% conversation growth) lead India's trending snack flavors. Sweet-heat works nationally; podi authenticity wins the South. Analysis: 1,53,496 conversations, 9 channels, India, last 12 months." },
+    { id: "exec", title: "Executive summary", content: "Honey Chilli (48.7% conversation growth) and Gunpowder Podi (46.2% conversation growth) lead India's trending snack flavors. Sweet-heat works nationally; podi authenticity wins the South. Analysis: 1,53,496 conversations, 8 channels, India, last 12 months." },
     { id: "honeyChilli", title: "Honey Chilli", content: "Established nationally with 48.7% conversation growth and 63.4% engagement growth. Strongest in Maharashtra, UP, Delhi NCR, Karnataka, and Telangana. Extensions: coated crackers, baked chips, snack mix, cream biscuits, namkeen sticks." },
     { id: "gunpowderPodi", title: "Gunpowder Podi", content: "Emerging South anchor with 46.2% conversation growth. Holds #1 savory position in Tamil Nadu, Karnataka, Andhra Pradesh, and Telangana. Extensions: podi crackers, khakhra, savory biscuits, podi snack mix." },
     { id: "regional", title: "Regional sweets", content: "East leads on heritage sweets — Mishti Doi Caramel and Nolen Gur Toffee outperform novelty. West Bengal and Assam set the tone for dessert-snack extensions." },
     { id: "states", title: "States — top flavors", content: "Twenty-nine states with top 5 sweet and top 5 savory flavors each — expandable metrics with conversation volume and engagement per flavor." },
     { id: "sweet", title: "Sweet opportunities", content: "Mishti Doi Caramel, Nolen Gur Toffee, Tamarind Candy, Tilkut Sesame Jaggery, Qubani Ka Meetha Toffee — regional anchors with proof points and extension ideas." },
     { id: "savory", title: "Savory opportunities", content: "Gunpowder Podi, Honey Chilli, Schezwan Masala, Chaat Masala Blast, Sattu Masala — spice depth, sweet-heat, and regional masala platforms." },
-    { id: "method", title: "Methodology", content: "Consuma AI · Flavor Insights India. Instagram, Reddit, X, YouTube, Amazon Reviews, Flipkart Reviews, Zomato, Swiggy, Blinkit. 1,53,496 conversations. Generated in under 30 minutes." },
+    { id: "method", title: "Methodology", content: "Consuma AI · Flavor Insights India. Instagram, Reddit, X, YouTube, Amazon Reviews, Flipkart Reviews, Zomato, Swiggy. 1,53,496 conversations. Generated in under 30 minutes." },
   ],
 };
