@@ -3974,7 +3974,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .brit-matrix-tooltip {
   min-width: 260px;
-  max-width: 340px;
+  max-width: min(340px, calc(100vw - 48px));
   padding: 10px 12px;
   background: #fff;
   border: 1px solid var(--line);

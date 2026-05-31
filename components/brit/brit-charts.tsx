@@ -356,7 +356,7 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
               />
               <Tooltip
                 content={<MatrixTooltip />}
-                allowEscapeViewBox={{ x: true, y: true }}
+                allowEscapeViewBox={{ x: false, y: false }}
                 wrapperStyle={{ zIndex: 30 }}
                 cursor={false}
               />
