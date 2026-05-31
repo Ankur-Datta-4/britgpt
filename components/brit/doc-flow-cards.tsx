@@ -495,6 +495,7 @@ const StateVolumeTable = ({
     <div className="state-volume-table-head">
       <h3>{title}</h3>
     </div>
+    {/*
     <div className="state-volume-table-wrap">
       <table className="state-volume-table">
         <thead>
@@ -519,6 +520,7 @@ const StateVolumeTable = ({
         </tbody>
       </table>
     </div>
+    */}
   </section>
 );
 

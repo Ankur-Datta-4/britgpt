@@ -17,8 +17,6 @@ import {
   DocBrandsCard,
   DocCrossStateCard,
   DocNationalCard,
-  DocConversationByStateCard,
-  DocEngagementByStateCard,
   DocVerbatimsCard,
   DocActionablesCard,
 } from '@/components/brit/doc-flow-cards';
@@ -63,8 +61,21 @@ const restoreScript = (stored) => {
   return null;
 };
 
+const DISABLED_REPORT_MESSAGE_KINDS = new Set(["doc_conv_state", "doc_eng_state"]);
+
+const isDisabledReportMessage = (message) =>
+  DISABLED_REPORT_MESSAGE_KINDS.has(message?.kind);
+
+const cleanMessages = (messages = []) =>
+  messages.filter((message) => !isDisabledReportMessage(message));
+
+const shouldRenderThreadMessage = (message) =>
+  !isDisabledReportMessage(message) &&
+  message.kind !== "summary" &&
+  message.kind !== "research_reco";
+
 const hydrateMessages = (messages = []) =>
-  messages.map((m) => ({
+  cleanMessages(messages).map((m) => ({
     ...m,
     script: m.script ? restoreScript(m.script) : m.script,
   }));
@@ -321,6 +332,8 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composer
    Message renderer
 ============================================================ */
 function MessageView({ m, ctx }) {
+  if (isDisabledReportMessage(m)) return null;
+
   if (m.role === "user") {
     return (
       <div className="msg msg-user">
@@ -362,8 +375,6 @@ function MessageView({ m, ctx }) {
         {m.kind === "sentiment" && <SentimentCard script={m.script} />}
         {m.kind === "trend" && <TrendCard script={m.script} />}
         {m.kind === "doc_national" && <DocNationalCard />}
-        {m.kind === "doc_conv_state" && <DocConversationByStateCard />}
-        {m.kind === "doc_eng_state" && <DocEngagementByStateCard />}
         {m.kind === "doc_verbatims" && <DocVerbatimsCard />}
         {m.kind === "flavour" && <FlavourCard script={m.script} />}
         {m.kind === "quotes" && <QuotesCard script={m.script} />}
@@ -460,7 +471,7 @@ export default function BritApp() {
   }, [showToast]);
 
   useEffect(() => {
-    messagesRef.current = messages;
+    messagesRef.current = cleanMessages(messages);
   }, [messages]);
 
   useEffect(() => {
@@ -469,16 +480,17 @@ export default function BritApp() {
   }, []);
 
   const flushSessionSave = useCallback(() => {
-    if (messages.length === 0) return;
+    const sessionMessages = cleanMessages(messages);
+    if (sessionMessages.length === 0) return;
     const script = scriptRef.current || activeScript;
-    const title = getSessionTitle(messages, script);
+    const title = getSessionTitle(sessionMessages, script);
     const snapshot = {
       id: sessionId,
       title,
       updatedAt: Date.now(),
       createdAt: Date.now(),
       phase,
-      messages: serializeMessages(messages),
+      messages: serializeMessages(sessionMessages),
       params,
       runConfig,
       scriptId: script?.id || null,
@@ -502,16 +514,17 @@ export default function BritApp() {
   }, [sessionId, messages, phase, params, runConfig, activeScript]);
 
   const persistCurrentSession = useCallback(() => {
-    if (persistSkipRef.current || messages.length === 0) return;
+    const sessionMessages = cleanMessages(messages);
+    if (persistSkipRef.current || sessionMessages.length === 0) return;
     const script = scriptRef.current || activeScript;
-    const title = getSessionTitle(messages, script);
+    const title = getSessionTitle(sessionMessages, script);
     const snapshot = {
       id: sessionId,
       title,
       updatedAt: Date.now(),
       createdAt: Date.now(),
       phase,
-      messages: serializeMessages(messages),
+      messages: serializeMessages(sessionMessages),
       params,
       runConfig,
       scriptId: script?.id || null,
@@ -626,8 +639,10 @@ export default function BritApp() {
     });
   }, [messages.length, actionBusy]);
 
-  const push = (m) =>
+  const push = (m) => {
+    if (isDisabledReportMessage(m)) return;
     setMessages((ms) => [...ms, { ...m, id: m.id || nextMsgId() }]);
+  };
   const pushDelayed = (m, ms) => setTimeout(() => push(m), ms);
 
   const actionContext = (overrides = {}) => ({
@@ -904,8 +919,6 @@ export default function BritApp() {
       "doc_verbatims",
       "doc_cross",
       "doc_national",
-      "doc_conv_state",
-      "doc_eng_state",
       "doc_actionables",
     ];
     docSequence.forEach((kind) => {
@@ -1051,7 +1064,8 @@ export default function BritApp() {
     actionBusy,
   };
 
-  const canPickQuestion = (phase === "idle" && messages.length === 0) || phase === "done";
+  const visibleMessages = messages.filter(shouldRenderThreadMessage);
+  const canPickQuestion = (phase === "idle" && visibleMessages.length === 0) || phase === "done";
   const composerLocked = phase === "running" || actionBusy || filmBusy;
 
   return (
@@ -1063,12 +1077,12 @@ export default function BritApp() {
         onSelectSession={loadSession}
         onDeleteSession={deleteSession}
         onPickQuestion={canPickQuestion ? handleUserSubmit : undefined}
-        canPickQuestion={canPickQuestion && messages.length === 0}
+        canPickQuestion={canPickQuestion && visibleMessages.length === 0}
       />
       <div className="main">
         <div className="topbar">
           <div className="title">
-            <span>{messages.length === 0 ? "New research" : (activeScript?.title || "South snacking pulse")}</span>
+            <span>{visibleMessages.length === 0 ? "New research" : (activeScript?.title || "South snacking pulse")}</span>
             <span className="pill">Run #4821</span>
           </div>
           <div className="topbar-right">
@@ -1080,13 +1094,11 @@ export default function BritApp() {
         </div>
 
         <div className="thread" ref={threadRef}>
-          {messages.length === 0 ? (
+          {visibleMessages.length === 0 ? (
             <WelcomeView />
           ) : (
             <div className="thread-inner">
-              {messages
-                .filter((m) => m.kind !== "summary" && m.kind !== "research_reco")
-                .map((m, i) => (
+              {visibleMessages.map((m, i) => (
                   <MessageView key={m.id ?? `msg-fallback-${i}`} m={m} ctx={ctx} />
                 ))}
             </div>
