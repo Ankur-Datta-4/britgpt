@@ -12,13 +12,13 @@ export const DEFAULT_RESEARCH_PROMPT =
 export const DEMO_SOURCES = [
   "Amazon Reviews",
   "Flipkart Reviews",
-  "Zomato",
-  "Swiggy",
   "Instagram",
   "YouTube",
   "X",
   "Reddit",
   "LinkedIn",
+  "Zomato",
+  "Swiggy",
 ] as const;
 
 export const DEMO_TIMEFRAMES = [
@@ -44,12 +44,14 @@ export const FIXED_RUN_STATS = {
   credits: 2,
   tat: "45 Minutes",
   confidence: "92%",
+  signalsProcessed: 15395991,
+  flavorsIndexed: 239,
 };
 
 export const RRP_TIMELINE_STAGES = [
   { id: "context", title: "Reading your brief", desc: "Understanding your question and Britannia portfolio scope", dur: 600 },
-  { id: "aggregate", title: "Reviewing sources", desc: "Instagram · Reddit · X · YouTube · Amazon · Flipkart · Zomato · Swiggy · LinkedIn", dur: 700 },
-  { id: "collect", title: "Gathering conversations", desc: "Pulling 1.53L+ conversations across India", dur: 800 },
+  { id: "aggregate", title: "Reviewing sources", desc: "Amazon Reviews · Flipkart Reviews · Instagram · YouTube · X · Reddit · LinkedIn · Zomato · Swiggy", dur: 700 },
+  { id: "collect", title: "Gathering conversations", desc: "Pulling 15M+ conversations across India", dur: 800 },
   { id: "clean", title: "Filtering signals", desc: "Removing noise · checking language · keeping real consumer voices", dur: 700 },
   { id: "analyse", title: "Finding patterns", desc: "State flavors · growth · engagement · extension ideas", dur: 900 },
   { id: "report", title: "Building your report", desc: "Pulling together findings, charts, and next steps", dur: 1000 },
@@ -83,9 +85,9 @@ export const BRITANNIA_CONSUMER_QUOTES = [
 ];
 
 export const HERO_THESIS = {
-  title: "Honey Chilli & Gunpowder Podi Are Redefining Indian Snacking",
-  headline: "Honey Chilli and Gunpowder Podi lead India's trending snack flavors",
-  body: "Sweet-heat and regional spice profiles are gaining rapid traction across states, pointing to growing consumer appetite for layered, bold flavors.",
+  title: "Kaju Katli & Gunpowder Podi Are Redefining Indian Snacking",
+  headline: "Kaju Katli and Gunpowder Podi lead India's trending snack flavors",
+  body: "Premium-sweet and regional spice profiles are gaining rapid traction across states, pointing to growing consumer appetite for layered, bold flavors.",
 };
 
 export const FLAVOR_MACHINE = flavorMachineJson as Array<{
@@ -114,11 +116,17 @@ export const STATE_DETAILS = stateDetailsJson as Record<
   {
     insight: string;
     takeaway: string;
+    trends?: {
+      sweet?: string;
+      savory?: string;
+    };
     metrics: Array<{
       flavor: string;
       type: "Sweet" | "Savory";
       convVolume: string;
+      convGrowth?: string;
       totalEngagement: string;
+      engagementGrowth?: string;
     }>;
   }
 >;
@@ -130,14 +138,19 @@ export const STATE_WINNING_FLAVORS = winningFlavorsJson as Array<{
   trendType: string;
   extensions: string;
   brandFit: string;
+  alignment: string;
 }>;
 
 export const NATIONAL_FLAVORS = nationalJson as Array<{
   name: string;
+  convVolume?: string;
+  engVolume?: string;
   convGrowth: string;
   engGrowth: string;
+  whyPopular?: string;
   trendType: string;
   states: string;
+  whenTrends?: string;
   extensions: string;
   brandFit: string;
 }>;
@@ -149,21 +162,38 @@ const CROSS_LABELS: Record<string, Record<string, string>> = {
     west: "West India",
     east: "East India",
     northeast: "Northeast India",
+    central: "Central India",
   },
   weather: {
     summer: "Summer (Mar–Jun)",
     monsoon: "Monsoon (Jul–Sep)",
-    winter: "Winter (Nov–Feb)",
+    winter: "Winter (Oct–Feb)",
+    festive: "Festive (Sep–Nov)",
+    savory_stability: "Year-round savory",
   },
   age: {
-    genz: "Gen Z (18–24)",
-    millennials: "Millennials (25–38)",
-    families: "Parents & families (30–45)",
-    "45plus": "45 and above",
+    genz: "Gen Z discovery",
+    millennials: "Millennial crossover",
+    mass35: "Mass consumers (35+)",
+    health: "Health-conscious",
+    urban_youth: "Urban youth heat",
+    premium_gifting: "Premium gifting",
   },
 };
 
-const withLabels = (dim: "zone" | "weather" | "age", items: typeof crossStateJson.zone) =>
+type CrossStateItem = {
+  id: string;
+  label?: string;
+  insight: string;
+  keyFlavors?: string;
+  peakFlavors?: string;
+  topFlavors?: string;
+  signal?: string;
+  implication?: string;
+  trial?: string;
+};
+
+const withLabels = (dim: "zone" | "weather" | "age", items: CrossStateItem[]) =>
   items.map((item) => ({
     ...item,
     label: CROSS_LABELS[dim][item.id] || item.label || item.id,
@@ -230,6 +260,8 @@ export const getStateTakeaway = (state: string) =>
   STATE_DETAILS[state]?.takeaway ||
   `What this means: Lead with the top sweet and savory flavors in ${state} before scaling nationally.`;
 
+export const getStateTrends = (state: string) => STATE_DETAILS[state]?.trends || {};
+
 export const getStateMetrics = (state: string) => STATE_DETAILS[state]?.metrics || [];
 
 export const getWinningByState = (state: string) =>
@@ -251,10 +283,12 @@ const STATE_ABBR: Record<string, string> = {
   Bihar: "BR",
   Chhattisgarh: "CG",
   "Delhi NCR": "DL",
+  Delhi: "DL",
   Goa: "GA",
   Gujarat: "GJ",
   Haryana: "HR",
   "Himachal Pradesh": "HP",
+  Arunachal: "AR",
   Jharkhand: "JH",
   Karnataka: "KA",
   Kerala: "KL",

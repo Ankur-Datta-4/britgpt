@@ -14,6 +14,7 @@ import {
   AudienceConfigForm,
   DocStateTableCard,
   DocWinningClustersCard,
+  DocBrandsCard,
   DocCrossStateCard,
   DocNationalCard,
   DocConversationByStateCard,
@@ -355,6 +356,7 @@ function MessageView({ m, ctx }) {
         {m.kind === "insight" && <InsightBlock params={m.params} script={m.script} />}
         {m.kind === "doc_states" && <DocStateTableCard />}
         {m.kind === "doc_winning" && <DocWinningClustersCard />}
+        {m.kind === "doc_brands" && <DocBrandsCard />}
         {m.kind === "region" && <RegionCard script={m.script} />}
         {m.kind === "doc_cross" && <DocCrossStateCard />}
         {m.kind === "sentiment" && <SentimentCard script={m.script} />}
@@ -898,6 +900,7 @@ export default function BritApp() {
     const docSequence = [
       "doc_states",
       "doc_winning",
+      "doc_brands",
       "doc_verbatims",
       "doc_cross",
       "doc_national",
@@ -1152,4 +1155,3 @@ const WelcomeView = () => (
     </p>
   </div>
 );
-

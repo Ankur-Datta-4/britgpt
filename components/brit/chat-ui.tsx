@@ -3,7 +3,14 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { BRIT_DATA } from '@/lib/data';
-import { DEMO_STATES, HERO_THESIS, RRP_TIMELINE_STAGES, BRITANNIA_CONSUMER_QUOTES } from '@/lib/demo-flow-data';
+import {
+  DEMO_SOURCES,
+  DEMO_STATES,
+  FIXED_RUN_STATS,
+  HERO_THESIS,
+  RRP_TIMELINE_STAGES,
+  BRITANNIA_CONSUMER_QUOTES,
+} from '@/lib/demo-flow-data';
 import { ACTIONS, runAction } from '@/lib/actions';
 import { getApiKey, setApiKey, hasApiKey } from '@/lib/config-client';
 import {
@@ -28,7 +35,7 @@ const BOOT_LINES = [
   { t: "0.20s", text: "Starting your research…",                   marker: null,  done: false },
   { t: "0.60s", text: "Consumer discovery started",              marker: "✓",   done: true  },
   { t: "1.10s", text: "Gathering market signals…",               marker: null,  done: false },
-  { t: "1.80s", text: "8 channels identified · 1.53L conversations", marker: "✓", done: true },
+  { t: "1.80s", text: "9 channels identified · 15M conversations", marker: "✓", done: true },
   { t: "2.40s", text: "Analyzing flavor patterns…",              marker: null,  done: false },
   { t: "3.10s", text: "Generating follow-up questions",          marker: "✓",   done: true  },
 ];
@@ -38,7 +45,7 @@ const TIMEFRAMES = ["90 days", "6 months", "12 months", "24 months"];
 const OBJECTIVES = ["Product extension", "Regional launch", "Pricing strategy", "Channel mix", "Brand refresh"];
 const FILTERS = ["Urban", "Rural", "Premium tier", "Mass tier", "Gen-Z", "Millennials", "Families"];
 
-const SOURCE_NAMES = D().meta?.channels || [];
+const SOURCE_NAMES = [...DEMO_SOURCES];
 
 const REGIONS_DATA = (D().favoriteSavoryShares || []).slice(0, 6).map((f) => ({
   lbl: f.flavor,
@@ -60,12 +67,13 @@ const SENT_DATA = [
   { lbl: "Negative", v: 12.4, color: "oklch(0.54 0.205 25)" },
 ];
 
-const TOTAL_CONVERSATIONS = D().meta?.totalSample || 153496;
+const TOTAL_CONVERSATIONS = FIXED_RUN_STATS.signalsProcessed || D().meta?.totalSample || 153496;
+const KAJU_KATLI_GROWTH = 48.7;
 const HONEY_CHILLI_GROWTH = D().honeyChilli?.convGrowthPct || 48.7;
 const GUNPOWDER_GROWTH = D().gunpowderPodi?.convGrowthPct || 46.2;
 const heroFlavorStats = () => [
-  { k: "Honey Chilli conv. growth", v: String(HONEY_CHILLI_GROWTH), suffix: "%" },
-  { k: "Gunpowder Podi conv. growth", v: String(GUNPOWDER_GROWTH), suffix: "%" },
+  { k: "Kaju Katli Conv. Growth", v: String(KAJU_KATLI_GROWTH), suffix: "%" },
+  { k: "Gunpowder Podi Conv. Growth", v: String(GUNPOWDER_GROWTH), suffix: "%" },
 ];
 const REGIONAL_SWEET_POSITIVE = D().regionalSweetSentiment?.positivePct || 68.4;
 
@@ -102,14 +110,14 @@ const RESEARCH_SCRIPTS = {
     title: "Top flavours by state",
     scopeDefaults: { region: "Pan-India", obj: "Product extension" },
     muted: "State-level sweet & savory top-5 lists, flavor opportunity scores, and regional snack share.",
-    cards: ["states", "flavour", "region", "quotes", "summary", "doc_states", "doc_winning", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
+    cards: ["states", "flavour", "region", "quotes", "summary", "doc_states", "doc_winning", "doc_brands", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
     insight: {
-      highlight: "Honey Chilli & Gunpowder Podi",
+      highlight: HERO_THESIS.headline,
       body: HERO_THESIS.body,
       stats: [
-        { k: "States covered", v: "29" },
         ...heroFlavorStats(),
-        { k: "Sample", v: "1.5", suffix: "L" },
+        { k: "Flavors Indexed", v: String(FIXED_RUN_STATS.flavorsIndexed) },
+        { k: "Sample", v: "15M", suffix: "conversations" },
       ],
     },
     regionsData: [
@@ -137,7 +145,7 @@ const RESEARCH_SCRIPTS = {
     title: "Regional sweet sentiment",
     scopeDefaults: { region: "East", obj: "Product extension" },
     muted: "Heritage sweets sentiment — Mishti Doi, Nolen Gur, and regional dessert trust across East India.",
-    cards: ["sentiment", "trend", "quotes", "summary", "doc_states", "doc_winning", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
+    cards: ["sentiment", "trend", "quotes", "summary", "doc_states", "doc_winning", "doc_brands", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
     insight: {
       highlight: "Mishti Doi & Nolen Gur",
       body: "lead regional sweet conversations — heritage formats outperform novelty in West Bengal and Assam. Consumers reward authentic provenance over imported dessert cues.",
@@ -174,7 +182,7 @@ const RESEARCH_SCRIPTS = {
     title: "Extension opportunities",
     scopeDefaults: { region: "Pan-India", obj: "Product extension" },
     muted: "Indian sweet and savory extension ideas — Honey Chilli, Gunpowder Podi, and regional flavor platforms.",
-    cards: ["extensions", "flavour", "region", "summary", "doc_states", "doc_winning", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
+    cards: ["extensions", "flavour", "region", "summary", "doc_states", "doc_winning", "doc_brands", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_conv_state", "doc_eng_state", "doc_actionables"],
     insight: {
       highlight: "Honey Chilli & Gunpowder Podi",
       body: "drive the clearest extension opportunities — national sweet-heat formats and South podi-led savory biscuits, backed by 48.7% and 46.2% conversation growth.",
@@ -287,14 +295,14 @@ const RESEARCH_SCRIPTS = {
     title: "Sweet & savory insights",
     scopeDefaults: { region: "South", obj: "Product extension" },
     muted: "State deep dives, winning flavors, cross-state synthesis, national matrix, and actionables.",
-    cards: ["summary", "quotes", "doc_states", "doc_winning", "doc_verbatims", "doc_cross", "doc_national", "doc_conv_state", "doc_eng_state", "doc_actionables"],
+    cards: ["summary", "quotes", "doc_states", "doc_winning", "doc_brands", "doc_verbatims", "doc_cross", "doc_national", "doc_conv_state", "doc_eng_state", "doc_actionables"],
     insight: {
       highlight: HERO_THESIS.headline,
       body: HERO_THESIS.body,
       stats: [
         ...heroFlavorStats(),
-        { k: "Flavors indexed", v: "39" },
-        { k: "Sample", v: "1.53", suffix: "L" },
+        { k: "Flavors Indexed", v: String(FIXED_RUN_STATS.flavorsIndexed) },
+        { k: "Sample", v: "15M", suffix: "conversations" },
       ],
     },
     regionsData: REGIONS_DATA,
@@ -594,6 +602,8 @@ function TimelineBlock({ onDone }) {
   }, [idx, prog, allDone, stages]);
 
   const sourcePills = SOURCE_NAMES.slice(0, srcCount);
+  const filteringStageIndex = stages.findIndex((s) => s.id === "clean");
+  const confidenceReady = allDone || (filteringStageIndex >= 0 && idx > filteringStageIndex);
 
   return (
     <div className="tl-block">
@@ -630,8 +640,19 @@ function TimelineBlock({ onDone }) {
           </div>
         </div>
         <div className="col">
+          <div className="lbl">Data confidence</div>
+          {confidenceReady ? (
+            <div className="v">{FIXED_RUN_STATS.confidence}</div>
+          ) : (
+            <div className="v tl-confidence-loading">
+              <span className="tl-mini-spinner" aria-hidden />
+              Calculating
+            </div>
+          )}
+        </div>
+        <div className="col">
           <div className="lbl">Signals processed</div>
-          <div className="v">{signalsProcessed.toLocaleString("en-IN")} / {TOTAL_CONVERSATIONS.toLocaleString("en-IN")}</div>
+          <div className="v">{signalsProcessed.toLocaleString("en-US")} / {TOTAL_CONVERSATIONS.toLocaleString("en-US")}</div>
         </div>
       </div>
     </div>
@@ -645,10 +666,24 @@ function InsightBlock({ params, script }) {
   const s = getScript(script);
   const ins = s.insight;
   const reg = params?.region === "Pan-India" ? "India" : (params?.region || "India") + (params?.region === "Pan-India" ? "" : " India");
+  const statSuffix = (suffix) => {
+    if (!suffix) return "";
+    if (suffix === "L") return "L convos";
+    if (suffix === "K") return "K";
+    if (suffix === "conversations") return " conversations";
+    return suffix;
+  };
+  const statValue = (st) => {
+    const suffix = statSuffix(st.suffix);
+    if (!suffix) return st.v;
+    if (suffix.startsWith(" ")) return `${st.v}${suffix}`;
+    const joiner = suffix === "%" || suffix === "K" || suffix.startsWith("L") ? "" : " ";
+    return `${st.v}${joiner}${suffix}`;
+  };
   const onStat = (st) => openDetail({
     type: "Key metric",
     title: st.k,
-    body: `Report value: ${st.v}${st.suffix || ""}. Research scope: ${reg}. From Flavor Insights India — ${D().meta?.totalSample?.toLocaleString("en-IN")} conversations.`,
+    body: `Report value: ${statValue(st)}. Research scope: ${reg}. From Flavor Insights India — ${TOTAL_CONVERSATIONS.toLocaleString("en-US")} conversations.`,
     source: "Consuma AI · 20 May 2026",
   });
   return (
@@ -659,7 +694,7 @@ function InsightBlock({ params, script }) {
       <div className="insight-stats">
         {ins.stats.map((st, i) => (
           <ClickableStat key={i} label={st.k} value={st.v}
-            suffix={st.suffix === "L" ? "L convos" : st.suffix === "K" ? "K" : st.suffix ? "%" : ""}
+            suffix={statSuffix(st.suffix)}
             onClick={() => onStat(st)} />
         ))}
       </div>

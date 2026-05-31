@@ -1,6 +1,6 @@
 import { CROSS_STATE_INSIGHTS } from "@/lib/demo-flow-data";
 
-export type AudienceCohortId = "genz" | "millennials" | "families" | "45plus";
+export type AudienceCohortId = string;
 
 export type AudienceCohort = {
   id: AudienceCohortId;
@@ -10,6 +10,8 @@ export type AudienceCohort = {
   flavors: string[];
   generations: string[];
   ages: string[];
+  lifestyles: string[];
+  tiers: string[];
 };
 
 const flavorList = (topFlavors?: string) =>
@@ -27,44 +29,75 @@ const shortenInsight = (text: string, max = 220) => {
 
 const crossById = Object.fromEntries(CROSS_STATE_INSIGHTS.age.map((a) => [a.id, a]));
 
-export const AUDIENCE_COHORTS: AudienceCohort[] = [
-  {
-    id: "genz",
-    label: "Gen Z (18–24)",
+const COHORT_META: Record<
+  string,
+  Pick<AudienceCohort, "icon" | "generations" | "ages" | "lifestyles" | "tiers">
+> = {
+  genz: {
     icon: "✦",
-    insight: shortenInsight(crossById.genz?.insight || ""),
-    flavors: flavorList(crossById.genz?.topFlavors),
     generations: ["Gen Z"],
     ages: ["18-24"],
+    lifestyles: ["Urban"],
+    tiers: ["Tier 1", "Tier 2"],
   },
-  {
-    id: "millennials",
-    label: "Millennials (25–38)",
+  millennials: {
     icon: "↗",
-    insight: shortenInsight(crossById.millennials?.insight || ""),
-    flavors: flavorList(crossById.millennials?.topFlavors),
     generations: ["Millennials", "Gen Y"],
     ages: ["25-34", "35-44"],
+    lifestyles: ["Urban", "Semi-Urban"],
+    tiers: ["Tier 1", "Tier 2"],
   },
-  {
-    id: "families",
-    label: "Parents & families (30–45)",
+  mass35: {
     icon: "⌂",
-    insight: shortenInsight(crossById.families?.insight || ""),
-    flavors: flavorList(crossById.families?.topFlavors),
-    generations: ["Millennials"],
+    generations: ["Gen Y"],
     ages: ["35-44", "45+"],
+    lifestyles: ["Semi-Urban", "Rural"],
+    tiers: ["Tier 2", "Tier 3+"],
   },
-  {
-    id: "45plus",
-    label: "45 and above",
-    icon: "❧",
-    insight: shortenInsight(crossById["45plus"]?.insight || ""),
-    flavors: flavorList(crossById["45plus"]?.topFlavors),
+  health: {
+    icon: "◌",
+    generations: ["Millennials", "Gen Y"],
+    ages: ["25-34", "35-44"],
+    lifestyles: ["Urban"],
+    tiers: ["Tier 1", "Tier 2"],
+  },
+  urban_youth: {
+    icon: "↯",
+    generations: ["Gen Z", "Millennials"],
+    ages: ["18-24", "25-34"],
+    lifestyles: ["Urban"],
+    tiers: ["Tier 1"],
+  },
+  premium_gifting: {
+    icon: "◇",
+    generations: ["Millennials", "Gen Y"],
+    ages: ["25-34", "35-44", "45+"],
+    lifestyles: ["Urban"],
+    tiers: ["Tier 1"],
+  },
+};
+
+export const AUDIENCE_COHORTS: AudienceCohort[] = CROSS_STATE_INSIGHTS.age.map((cohort) => {
+  const meta = COHORT_META[cohort.id] || {
+    icon: "•",
     generations: [],
-    ages: ["45+"],
-  },
-];
+    ages: [],
+    lifestyles: [],
+    tiers: [],
+  };
+
+  return {
+    id: cohort.id,
+    label: cohort.label || cohort.id,
+    icon: meta.icon,
+    insight: shortenInsight(crossById[cohort.id]?.insight || cohort.insight || ""),
+    flavors: flavorList(crossById[cohort.id]?.topFlavors || cohort.topFlavors),
+    generations: meta.generations,
+    ages: meta.ages,
+    lifestyles: meta.lifestyles,
+    tiers: meta.tiers,
+  };
+});
 
 export const getCohortById = (id: string | null | undefined) =>
   AUDIENCE_COHORTS.find((c) => c.id === id);
@@ -76,7 +109,7 @@ export const getAudienceDefaultsFromCohort = (cohortId: string | null | undefine
     cohortId: cohort.id,
     generations: [...cohort.generations],
     ages: [...cohort.ages],
-    lifestyles: [] as string[],
-    tiers: [] as string[],
+    lifestyles: [...cohort.lifestyles],
+    tiers: [...cohort.tiers],
   };
 };

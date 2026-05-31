@@ -262,6 +262,7 @@ const MatrixTooltip = ({ active, payload, label }) => {
     label ||
     "Unknown flavor";
   const trendType = raw.trendType || p.trendType || "—";
+  const convVolume = raw.convVolume ? String(raw.convVolume) : "—";
   const states = raw.states ? String(raw.states) : "—";
   const brandFit = raw.brandFit ? String(raw.brandFit) : "—";
   const extensionPreview = raw.extensions
@@ -275,8 +276,9 @@ const MatrixTooltip = ({ active, payload, label }) => {
         {flavor}
       </div>
       <div className="brit-matrix-tooltip__metrics">
-        <span>Conversation: {p.conv}%</span>
-        <span>Engagement: {p.eng}%</span>
+        <span>Conversation growth: {p.conv}%</span>
+        <span>Conversation volume: {convVolume}</span>
+        <span>Engagement growth: {p.eng}%</span>
       </div>
       <div className="brit-matrix-tooltip__grid">
         <div>

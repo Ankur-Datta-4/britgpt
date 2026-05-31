@@ -34,3 +34,4 @@ next-env.d.ts
 
 # legacy static app (optional)
 /legacy/
+.vercel

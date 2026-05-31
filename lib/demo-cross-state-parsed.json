@@ -1,92 +1,127 @@
 {
   "zone": [
     {
-      "id": "north",
-      "label": "",
-      "insight": "The North is India's flavor-maximalist zone — bold, layered, and indulgent profiles consistently outperform single-note flavors. Honey Chilli is the undisputed sweet leader across all northern states. Schezwan Masala and Chaat Masala Blast dominate the savory side, with Tandoori BBQ holding strong in Punjab and Haryana. Indo-Chinese hybrids gained traction here fastest. Delhi NCR acts as the trend-setter, and flavors that succeed here typically spread to Haryana, UP, and Punjab within 2–3 months.",
-      "keyFlavors": "Honey Chilli, Schezwan Masala, Chaat Masala Blast, Tandoori BBQ, Rose Paan Candy, Dark Choc Sea Salt",
-      "signal": "High — fastest adoption of new flavors, highest willingness to trial limited-edition SKUs."
+      "id": "south",
+      "label": "South India",
+      "insight": "South India is now the clearest savory cluster: Gunpowder Podi leads across Andhra Pradesh, Karnataka, Tamil Nadu, and Telangana, with Nippattu Spice and Curry Leaf reinforcing the roasted-spice profile in Karnataka and Tamil Nadu. Sweet reads are strong but more state-specific, led by Kaju Katli, Mysore Pak, Kesar Milk, and Qubani Apricot.",
+      "keyFlavors": "Gunpowder Podi, Nippattu Spice, Curry Leaf, Kaju Katli, Mysore Pak, Kesar Milk, Qubani Apricot",
+      "signal": "High — lead with savory regional spice platforms, then layer market-specific premium sweet variants."
     },
     {
-      "id": "south",
-      "label": "",
-      "insight": "The South is a podi-first, authenticity-led market. Gunpowder Podi holds the #1 savory position in Karnataka, Tamil Nadu, Andhra Pradesh, and Telangana — an unprecedented regional lock. Sweet flavors gain entry only through tangy or acidic bridges like tamarind and raw mango; pure sweetness without a sour anchor is rejected. Kerala is the outlier — pepper and coconut-based profiles dominate over podi. Goa leans toward Portuguese-influenced spice blends like Recheado and Xacuti. Generic \"South Indian\" labeling is actively penalised by consumers across this zone.",
-      "keyFlavors": "Gunpowder Podi, Tamarind Candy, Chettinad Pepper, Milagu Vadai Spice, Kerala Pepper Fry, Filter Coffee Caramel",
-      "signal": "High but conditional — requires regional specificity in naming, sourcing, and packaging. One \"South India\" SKU will not work."
+      "id": "north",
+      "label": "North India",
+      "insight": "Delhi NCR, Uttar Pradesh, Punjab, and Haryana remain the strongest mithai-to-snack conversion markets. Ras Malai, Rabri, Phirni, Gulab Jamun, Kaju Katli, and Kesar Milk shape the sweet opportunity, while Chaat Masala anchors Delhi NCR, Haryana, and Uttar Pradesh and Tandoori/Achari cues support Punjab and broader North savory demand.",
+      "keyFlavors": "Ras Malai, Rabri, Phirni, Gulab Jamun, Kesar Milk, Chaat Masala, Tandoori Spice, Achari Spice",
+      "signal": "High — fusion snack formats can borrow directly from mithai and chaat occasions."
     },
     {
       "id": "west",
-      "label": "",
-      "insight": "Maharashtra leads the West as the most fusion-open market in the country. Indo-Chinese crossovers entered fastest here, and Schezwan Masala is entrenched as a daily snack flavour. Gujarat adds a distinct sweet-savory duality — Sev Masala and Dhokla Chutney Spice co-exist alongside Mohanthal and Basundi Caramel. MP and Chhattisgarh lean toward traditional formats (jaggery, sesame, chana dal masala) but are beginning to adopt Honey Chilli through metro spillover from Bhopal and Indore. Premium sweet adoption (dark chocolate, caramel) is highest per-capita in this zone after Delhi NCR.",
-      "keyFlavors": "Honey Chilli, Schezwan Masala, Vada Pav Masala, Caramel Corn, Sev Masala, Poha Masala",
-      "signal": "High — strong test-and-learn market, especially Maharashtra and urban Gujarat."
+      "label": "West India",
+      "insight": "West India has shifted to a state-specific texture, dairy-sweet, coastal sour, and heat read. Gujarat brings Shrikhand, Methi Masala, Sev Masala, and Green Chilli Lime; Maharashtra adds Kaju Katli, Modak Coconut, Garlic Chilli, Schezwan, and Kokum; Goa contributes Coconut Jaggery, Bebinca Caramel, Recheado Spice, and Kokum; Rajasthan adds Ghevar and Red Chilli.",
+      "keyFlavors": "Shrikhand, Kaju Katli, Modak Coconut, Coconut Jaggery, Bebinca Caramel, Ghevar, Methi Masala, Recheado Spice, Kokum, Red Chilli",
+      "signal": "High — use market-specific flavor architecture rather than a single West India proposition."
     },
     {
       "id": "east",
-      "label": "",
-      "insight": "The East is the most heritage-anchored zone in the country. West Bengal sets the tone — Mishti Doi Caramel and Nolen Gur Toffee outperform Honey Chilli by a significant margin, something that doesn't happen anywhere else. Odisha follows a similar pattern with Chhena Poda Caramel and Rasagola Toffee leading sweet conversations. Bihar and Jharkhand are tilkut and sattu strongholds where new flavor adoption is the slowest nationally. However, the premium for authenticity is the highest here — consumers pay more for products that demonstrate genuine regional provenance. Nostalgia-led positioning outperforms novelty-led positioning consistently.",
-      "keyFlavors": "Mishti Doi Caramel, Nolen Gur Toffee, Chhena Poda Caramel, Tilkut Sesame Jaggery, Kasundi Mustard, Sattu Masala",
-      "signal": "Moderate — high loyalty and repeat purchase once trust is earned, but slow to trial. Requires regional-language packaging and heritage-first storytelling."
+      "label": "East India",
+      "insight": "East India continues to index toward layered regional sweets and heritage savories rather than blunt heat. West Bengal centers on Nolen Gur, Mishti Doi, Kasundi, Jhalmuri Masala, and Panch Phoron; Odisha adds Rasgulla, Chhena Poda, Ras Malai, and Panch Phoron; Bihar and Jharkhand bring Soan Papdi, Til Jaggery, Sattu Masala, Mustard, and Garlic Chilli.",
+      "keyFlavors": "Nolen Gur, Mishti Doi, Rasgulla, Chhena Poda, Soan Papdi, Til Jaggery, Kasundi, Jhalmuri Masala, Panch Phoron, Sattu Masala",
+      "signal": "Moderate to high — quality, provenance, and regional authenticity matter more than novelty."
     },
     {
       "id": "northeast",
-      "label": "",
-      "insight": "The Northeast is India's most under-indexed snacking zone but has the most distinctive palate in the country. Fermented, smoked, and chilli-forward profiles dominate savory — Bhut Jolokia, Raja Mircha, Axone, and smoked meat rubs have no parallel elsewhere in India. Sweet flavors skew toward tropical and foraged profiles: wild honey, passion fruit, kiwi, and black rice. Honey Chilli has moderate traction here, but it doesn't dominate the way it does nationally. This zone is not a volume play — it's a credibility play. Brands that show up authentically here earn outsized cultural capital that travels nationally through social content.",
-      "keyFlavors": "Bhut Jolokia Spice, Raja Mircha, Wild Honey Crunch, Dalle Khursani Chilli, Bamboo Shoot Masala, Passion Fruit Candy",
-      "signal": "Low volume, high brand-equity potential. Best approached through collaborations with local producers and limited-edition drops rather than mainstream distribution."
+      "label": "Northeast India",
+      "insight": "The Northeast remains the strongest discovery zone, built around forest, fruit, ferment, and fire cues. Wild Honey, Passion Fruit, Pineapple, Black Rice Sweet, and Black Sesame lead sweet discovery, while Bhut Jolokia, Smoked Chilli, Bamboo Shoot, Axone, Gundruk, Lakadong Turmeric, Bird's Eye Chilli, Sesame Chilli, and Mosdeng Chilli create a savory territory with little overlap elsewhere in India.",
+      "keyFlavors": "Wild Honey, Passion Fruit, Pineapple, Black Rice Sweet, Bhut Jolokia, Smoked Chilli, Bamboo Shoot, Axone, Gundruk, Lakadong Turmeric, Mosdeng Chilli",
+      "signal": "Low volume but high distinctiveness — best suited to limited drops, creator-led discovery, and local collaborations."
+    },
+    {
+      "id": "central",
+      "label": "Central India",
+      "insight": "Madhya Pradesh and Chhattisgarh show a practical bridge between comfort sweets and street-snack spice. Jalebi, Rabri, Gajar Halwa, Coconut Jaggery, and Til Jaggery support sweet familiarity, while Indori Namkeen Masala, Chana Jor Masala, Garlic Chilli, Chaat Masala, Hing Jeera, Tamarind, and Red Chilli point to strong regional-snack white space.",
+      "keyFlavors": "Jalebi, Rabri, Gajar Halwa, Coconut Jaggery, Til Jaggery, Indori Namkeen Masala, Chana Jor Masala, Garlic Chilli, Hing Jeera",
+      "signal": "High white space — translate regional street-snack cues into accessible crackers, puffs, and spiced biscuits."
     }
   ],
   "weather": [
     {
+      "id": "winter",
+      "label": "Winter (Oct–Feb)",
+      "insight": "Winter drives sweet indulgence nationally. Gajar Halwa, Rabri, Nolen Gur, Til Jaggery, Coconut Jaggery, and Kesar Milk spike as warm, rich, comfort-led profiles and carry strong celebration associations.",
+      "peakFlavors": "Gajar Halwa, Rabri, Nolen Gur, Til Jaggery, Coconut Jaggery, Kesar Milk",
+      "implication": "Sweet snack innovation should be ready before October, with the strongest window running through February."
+    },
+    {
       "id": "summer",
-      "label": "/ seasonal trends",
-      "insight": "Tangy, acidic, and cooling flavor profiles spike sharply. Raw Mango Salt, Tamarind Candy, Kokum Chaat, and Gondhoraj Lemon see their peak conversation and engagement windows during this period. Sweet-sour is the dominant palate signal. Consumers show low tolerance for heavy, heat-forward savory flavors in this season — Gunpowder Podi and Schezwan Masala conversations dip by roughly 15–20%. This is the strongest seasonal window for launching tangy or fruit-forward sweet SKUs.",
-      "peakFlavors": "Raw Mango Salt, Tamarind Candy, Kokum Chaat, Gondhoraj Lemon Candy, Mango Aamchur Twist, Mango Pickle Candy",
-      "implication": "Time-limited summer SKUs in tangy-sweet formats (cream wafers, fruit rolls, hard candy) can capture outsized share during this window without cannibalising core lines."
+      "label": "Summer (Mar–Jun)",
+      "insight": "Summer lifts cooling, tangy, and lighter flavor systems. Pudina Masala, Kokum, Green Chilli Lime, Tamarind, Gondhoraj Lime, Shrikhand, and fruit-led cues such as Passion Fruit and Pineapple become more relevant as consumers look for refreshing snack profiles.",
+      "peakFlavors": "Pudina Masala, Kokum, Green Chilli Lime, Tamarind, Gondhoraj Lime, Shrikhand, Passion Fruit, Pineapple",
+      "implication": "Credible cooling or tangy notes give packaged snacks a clearer seasonal role in March-June."
     },
     {
       "id": "monsoon",
-      "label": "",
-      "insight": "Fried snack occasions and \"chai companion\" moments drive engagement to its annual peak. Schezwan Masala, Gunpowder Podi, Vada Pav Masala, and Mumbai Cutting Chai see conversation spikes of 30–40% over baseline. Masala-dusted and podi-coated formats dominate platform conversation. This is the highest-volume window for savory snacking nationally. Sweet engagement stays flat except for jaggery-based warm profiles which see a modest uptick.",
-      "peakFlavors": "Schezwan Masala, Gunpowder Podi, Vada Pav Masala, Mumbai Cutting Chai, Kara Boondi Mix, Bajra Masala",
-      "implication": "Monsoon is the best window for pushing savoury launches, especially \"rain day\" or \"chai-time\" positioning. Bundle promotions with tea brands can amplify reach. This is also the ideal season for sampling and trial packs."
+      "label": "Monsoon (Jul–Sep)",
+      "insight": "Monsoon lifts fried, hot, crispy, and street-adjacent snack formats. Jalebi, Ghevar, Chaat Masala, Sev Masala, Indori Namkeen Masala, Garlic Chilli, and Tandoori Spice map naturally to the chai-snack ritual.",
+      "peakFlavors": "Jalebi, Ghevar, Chaat Masala, Sev Masala, Indori Namkeen Masala, Garlic Chilli, Tandoori Spice",
+      "implication": "Savory launches and chai-time bundles have the clearest monsoon fit, especially for crackers and puffed snacks."
     },
     {
-      "id": "winter",
-      "label": "",
-      "insight": "Warm, rich, and sweet profiles reach peak salience. Jaggery, caramel, nolen gur, and warm-spice formats see the highest conversion and repeat purchase rates of the year. This is when premium sweet SKUs — Filter Coffee Caramel, Dark Choc Sea Salt, Nolen Gur Toffee — have their strongest lifetime-value window. Festive gifting (Diwali, Christmas, Pongal, Makar Sankranti) creates a secondary demand spike for packaged sweet assortments. Savory profiles remain steady but don't spike.",
-      "peakFlavors": "Nolen Gur Toffee, Jaggery Sesame, Filter Coffee Caramel, Churma Jaggery, Dark Choc Sea Salt, Coconut Jaggery, Tilkut Sesame",
-      "implication": "Winter is the premium window. Higher price points are accepted. Festive gift packs, regional assortment boxes, and limited-edition \"winter warmers\" perform best here. This is also the best season to push Britannia's dairy-adjacent brands (Winkin' Cow, Milk Bikis) into seasonal sweet formats."
+      "id": "festive",
+      "label": "Festive (Sep–Nov)",
+      "insight": "Festive season compresses a large share of sweet growth into the Navratri-Diwali window. Kaju Katli, Motichoor, Mysore Pak, Soan Papdi, Gulab Jamun, Rabri, Phirni, and Ghevar all benefit from gifting and celebration occasions.",
+      "peakFlavors": "Kaju Katli, Motichoor, Mysore Pak, Soan Papdi, Gulab Jamun, Rabri, Phirni, Ghevar",
+      "implication": "Any sweet-led launch should be on shelf before September to capture the peak festive demand window."
+    },
+    {
+      "id": "savory_stability",
+      "label": "Year-round savory",
+      "insight": "Core savory flavors are less seasonally constrained than sweets. Chaat Masala, Gunpowder Podi, Garlic Chilli, Tamarind, Curry Leaf, Black Pepper, and Red Chilli remain useful planning anchors across months.",
+      "peakFlavors": "Chaat Masala, Gunpowder Podi, Garlic Chilli, Tamarind, Curry Leaf, Black Pepper, Red Chilli",
+      "implication": "Savory launches carry lower timing risk and make better first-entry SKUs in new state markets."
     }
   ],
   "age": [
     {
       "id": "genz",
-      "label": "/ demographic trends",
-      "insight": "Honey Chilli is Gen Z's signature flavor nationally. This cohort is discovery-driven, has the lowest brand loyalty of any segment, and is heavily influenced by short-form content (reels, YouTube Shorts). They share snack experiences publicly — flavor novelty and packaging aesthetics drive trial more than taste familiarity. Schezwan Masala and Chaat Masala Blast are the top savory picks. Dark Choc Sea Salt and Rose Paan Candy index disproportionately high with this group. Repeat purchase requires consistent creator seeding and drop-style launches. This cohort also drives the fastest cross-state flavor migration — a trending flavor in Delhi NCR reaches Pune and Bangalore Gen Z within weeks via social platforms.",
-      "topFlavors": "Honey Chilli, Schezwan Masala, Dark Choc Sea Salt, Rose Paan Candy, Chaat Masala Blast",
-      "trial": "Very high. Retention requires ongoing cultural relevance."
+      "label": "Gen Z discovery",
+      "insight": "Gen Z is driving the Northeast flavor discovery wave. Wild Honey, Passion Fruit, Smoked Chilli, Black Rice Sweet, Bamboo Shoot, Axone, and Bhut Jolokia are disproportionately suited to younger discovery behavior because they travel through food creators and short-form content before mass retail.",
+      "topFlavors": "Wild Honey, Passion Fruit, Smoked Chilli, Black Rice Sweet, Bamboo Shoot, Axone, Bhut Jolokia",
+      "trial": "Very high — seed through creator-led digital before scaling into broader retail."
     },
     {
       "id": "millennials",
-      "label": "",
-      "insight": "Highest spend-per-occasion of any cohort. Millennials balance nostalgia with novelty — they trial Honey Chilli but return to Jaggery Sesame and Filter Coffee Caramel. The crossover SKU opportunity is strongest here: regional comfort wrapped in modern formats. This group is also the most responsive to \"better-for-you\" positioning — NutriChoice-style products with familiar regional flavors (Gunpowder Podi digestives, jaggery oat cookies) convert well. They discover products through a mix of food bloggers, workplace word-of-mouth, and grocery delivery platforms. Brand-switching is moderate — once they find a product that fits their weekly rotation, they stick.",
-      "topFlavors": "Honey Chilli, Filter Coffee Caramel, Jaggery Sesame, Gunpowder Podi, Caramel Corn",
-      "trial": "High. Retention is strong if the product earns a place in the weekly or monthly rotation."
+      "label": "Millennial crossover",
+      "insight": "Millennials own the mithai-snack crossover. Nolen Gur, Ras Malai, Rabri, Phirni, Qubani Apricot, Kaju Katli, and Gondhoraj Lime carry nostalgia but fit into portion-controlled biscuit, wafer, bar, and cake formats for daily consumption.",
+      "topFlavors": "Nolen Gur, Ras Malai, Rabri, Phirni, Qubani Apricot, Kaju Katli, Gondhoraj Lime",
+      "trial": "High — strongest when familiar regional flavors are modernized into repeatable snack occasions."
     },
     {
-      "id": "families",
-      "label": "",
-      "insight": "The highest repeat-purchase segment in Indian snacking. Mothers are the primary buyer in this cohort. Milk-based, jaggery, and regionally familiar flavors win loyalty. Products positioned as \"better-for-kids\" alternatives to chocolate show the fastest category growth — Elachi Milk Toffee, Coconut Jaggery, and Narkel Naru Bite index highest here. This group rejects extreme heat and unfamiliar fusion profiles for family consumption but will trial them personally. Purchase decisions are driven by ingredient familiarity, perceived health benefit, and portion-pack availability. Regional-language packaging increases trust significantly.",
-      "topFlavors": "Elachi Milk Toffee, Coconut Jaggery, Nolen Gur Toffee, Mishti Doi Caramel, Narkel Naru Bite, Jaggery Sesame",
-      "trial": "Moderate for new flavors. Repeat purchase and lifetime value are the highest of any cohort."
+      "id": "mass35",
+      "label": "Mass consumers (35+)",
+      "insight": "Mass consumers 35 and above anchor established flavors. Chaat Masala, Gulab Jamun, Kaju Katli, Coconut Jaggery, Jalebi, Kesar Milk, and Rabri are lower-risk, high-familiarity bets whose growth is driven more by category expansion than novelty seeking.",
+      "topFlavors": "Chaat Masala, Gulab Jamun, Kaju Katli, Coconut Jaggery, Jalebi, Kesar Milk, Rabri",
+      "trial": "Moderate — stronger for familiar extensions and family-safe formats than experimental drops."
     },
     {
-      "id": "45plus",
-      "label": "",
-      "insight": "Low adoption of new flavors — not a primary growth target group for experimental launches. Tamarind, regional classics (Tilkut, Chhena Poda, Ghevar), and familiar spice profiles hold firmly. However, this cohort drives disproportionate spend during gifting occasions — Diwali, Pongal, Durga Puja, and regional harvest festivals. They are the core buyer for premium assortment boxes and traditional sweet packs. Gunpowder Podi and Kasundi Mustard retain strong loyalty within this group in their respective regions. Honey Chilli has minimal penetration here.",
-      "topFlavors": "Tamarind Candy, Kasundi Mustard, Gunpowder Podi, Tilkut Sesame Jaggery, Chhena Poda Caramel",
-      "trial": "Low for new formats. High-value for festive gifting and regional heritage SKUs."
+      "id": "health",
+      "label": "Health-conscious",
+      "insight": "Health-conscious urban consumers cluster around functional regional flavors. Sattu Masala, Til Jaggery, Lakadong Turmeric, Bhang Jeera, Methi Masala, Black Pepper, and Wild Honey work because they feel familiar first and functional second.",
+      "topFlavors": "Sattu Masala, Til Jaggery, Lakadong Turmeric, Bhang Jeera, Methi Masala, Black Pepper, Wild Honey",
+      "trial": "High — NutriChoice-style products can own this space without making the proposition feel medicinal."
+    },
+    {
+      "id": "urban_youth",
+      "label": "Urban youth heat",
+      "insight": "Urban youth continue to drive Indo-fusion heat. Schezwan, Gunpowder Podi, Gongura, Garlic Chilli, Red Chilli, Bird's Eye Chilli, and Mosdeng Chilli are chosen for boldness and perceived edge, and they respond better to limited editions, collaborations, and social-first launches than to retail-led distribution alone.",
+      "topFlavors": "Schezwan, Gunpowder Podi, Gongura, Garlic Chilli, Red Chilli, Bird's Eye Chilli, Mosdeng Chilli",
+      "trial": "Very high — use limited editions, collabs, and social launches to keep the cue fresh."
+    },
+    {
+      "id": "premium_gifting",
+      "label": "Premium gifting",
+      "insight": "Premium gifting consumers elevate regional sweets. Mysore Pak, Nolen Gur, Bebinca Caramel, Bal Mithai, Kaju Katli, Ghevar, and Qubani Apricot are gaining as SEC A consumers shift gifting spend from generic national mithai to artisan regional formats.",
+      "topFlavors": "Mysore Pak, Nolen Gur, Bebinca Caramel, Bal Mithai, Kaju Katli, Ghevar, Qubani Apricot",
+      "trial": "High-value niche — a strong entry point for premium biscuit formats and gift packaging."
     }
   ]
 }

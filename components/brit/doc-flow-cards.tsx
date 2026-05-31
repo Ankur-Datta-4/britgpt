@@ -2,6 +2,15 @@
 "use client";
 
 import { useState, useEffect, useMemo, Fragment } from "react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { NationalPrioritizationMatrix } from "@/components/brit/brit-charts";
 import { AgeCohortGrid } from "@/components/brit/age-cohort-grid";
 import { getAudienceDefaultsFromCohort } from "@/lib/audience-cohorts";
@@ -17,10 +26,8 @@ import {
   DEMO_STATES,
   STATE_WINNING_FLAVORS,
   FLAVOR_MACHINE,
-  flavorMachineAsNational,
   NATIONAL_FLAVORS,
   getStateInsight,
-  getStateTakeaway,
   getStateMetrics,
   CROSS_STATE_INSIGHTS,
   DELIVERABLE_TYPES,
@@ -39,7 +46,7 @@ export const DataConfigForm = ({ locked, defaults, onConfirm }) => {
   const [sources, setSources] = useState(defaults?.sources || [...DEMO_SOURCES]);
   const [timeframe, setTimeframe] = useState(defaults?.timeframe || "Last 1 Year");
   const [geography, setGeography] = useState(defaults?.geography || "India");
-  const [context, setContext] = useState(defaults?.context || "");
+  const [additionalQuestions, setAdditionalQuestions] = useState(defaults?.additionalQuestions || defaults?.context || "");
 
   const toggleSource = (s) =>
     setSources((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]));
@@ -60,7 +67,7 @@ export const DataConfigForm = ({ locked, defaults, onConfirm }) => {
             <div className="scope-chips-meta">
               <span className="chip"><b>Time:</b> {timeframe}</span>
               <span className="chip"><b>Geography:</b> {geography}</span>
-              {context && <span className="chip"><b>Context:</b> {context}</span>}
+              {additionalQuestions && <span className="chip"><b>Additional questions:</b> {additionalQuestions}</span>}
             </div>
           </div>
         </div>
@@ -97,14 +104,20 @@ export const DataConfigForm = ({ locked, defaults, onConfirm }) => {
             <input className="scope-input" value={geography} onChange={(e) => setGeography(e.target.value)} placeholder="Country" />
           </div>
           <div className="scope-field">
-            <div className="scope-label">Provide context <span className="hint">optional</span></div>
-            <input className="scope-input" value={context} onChange={(e) => setContext(e.target.value)} placeholder="e.g. focus on biscuit extensions…" />
+            <div className="scope-label">Additional questions <span className="hint">optional</span></div>
+            <textarea
+              className="scope-input scope-textarea"
+              rows={3}
+              value={additionalQuestions}
+              onChange={(e) => setAdditionalQuestions(e.target.value)}
+              placeholder="Add any extra questions or constraints for this research run."
+            />
           </div>
         </div>
       </div>
       <div className="card-foot">
         <div className="note">{sources.length} sources · {timeframe} · {geography}</div>
-        <button type="button" className="btn-primary" disabled={sources.length < 1} onClick={() => onConfirm({ sources, timeframe, geography, context })}>
+        <button type="button" className="btn-primary" disabled={sources.length < 1} onClick={() => onConfirm({ sources, timeframe, geography, additionalQuestions })}>
           Continue to audience
         </button>
       </div>
@@ -133,16 +146,17 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
     return (
       <div className="card">
         <div className="card-h">
-          <h3>Target audience</h3>
+          <h3>Target audience configuration</h3>
           <span className="tag">confirmed</span>
         </div>
         <div className="card-body">
           <div className="scope-meta">
-            <div><span className="k">Generation</span><span className="v">{generations.join(", ") || "—"}</span></div>
-            <div><span className="k">Age</span><span className="v">{ages.join(", ") || "—"}</span></div>
+            <div><span className="k">Age generation</span><span className="v">{generations.join(", ") || "—"}</span></div>
+            <div><span className="k">Age category</span><span className="v">{ages.join(", ") || "—"}</span></div>
+            <div><span className="k">Lifestyle</span><span className="v">{lifestyles.join(", ") || "—"}</span></div>
+            <div><span className="k">City tier</span><span className="v">{tiers.join(", ") || "—"}</span></div>
             <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
             <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
-            <div><span className="k">Data confidence</span><span className="v">{FIXED_RUN_STATS.confidence}</span></div>
           </div>
         </div>
       </div>
@@ -152,13 +166,13 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
   return (
     <div className="card">
       <div className="card-h">
-        <h3>Target audience</h3>
-        <span className="tag">step 2 of 2</span>
+        <h3>Target audience configuration</h3>
+        <span className="tag">step 2 of 2 · optional</span>
       </div>
       <div className="card-body">
         <div className="scope-form">
           <div className="scope-field">
-            <div className="scope-label">Generation</div>
+            <div className="scope-label">Age generation <span className="hint">optional / multi-select</span></div>
             <div className="opt-row">
               {DEMO_GENERATIONS.map((g) => (
                 <span key={g} className={"opt " + (generations.includes(g) ? "sel" : "")} onClick={() => toggle(generations, setGenerations, g)}>{g}</span>
@@ -166,7 +180,7 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
             </div>
           </div>
           <div className="scope-field">
-            <div className="scope-label">Age band</div>
+            <div className="scope-label">Age category <span className="hint">optional / multi-select</span></div>
             <div className="opt-row">
               {DEMO_AGE_CATEGORIES.map((a) => (
                 <span key={a} className={"opt " + (ages.includes(a) ? "sel" : "")} onClick={() => toggle(ages, setAges, a)}>{a}</span>
@@ -196,8 +210,8 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
         </div>
       </div>
       <div className="card-foot">
-        <div className="note">Uses {FIXED_RUN_STATS.credits} credits · ~{FIXED_RUN_STATS.tat}</div>
-        <button type="button" className="btn-primary" disabled={generations.length < 1 || ages.length < 1} onClick={() => onConfirm(buildPayload())}>
+        <div className="note">Audience filters optional · uses {FIXED_RUN_STATS.credits} credits · ~{FIXED_RUN_STATS.tat}</div>
+        <button type="button" className="btn-primary" onClick={() => onConfirm(buildPayload())}>
           Run research
         </button>
       </div>
@@ -205,38 +219,182 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
   );
 };
 
-const StateMetricsByType = ({ metrics }) => {
+const STATE_TREND_MONTHS = ["Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May"];
+const STATE_CHART_COLORS = {
+  Sweet: ["#f05a32", "#d58a18", "#6654d8", "#1aa986", "#8d8a82"],
+  Savory: ["#18a879", "#3b8eea", "#dd5a91", "#f06432", "#6654d8"],
+};
+
+const parseMetricVolume = (value) => {
+  const match = String(value).replace(/,/g, "").trim().match(/^(-?\d+(?:\.\d+)?)([KkMm])?$/);
+  if (!match) return Number(String(value).replace(/[^0-9.-]/g, "")) || 0;
+  const n = Number(match[1]);
+  const unit = (match[2] || "").toUpperCase();
+  if (unit === "M") return n * 1_000_000;
+  if (unit === "K") return n * 1_000;
+  return n;
+};
+
+const formatTrendVolume = (value) => {
+  const n = Number(value) || 0;
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1).replace(/\.0$/, "")}M`;
+  return `${(n / 1000).toFixed(0)}K`;
+};
+
+const buildTrendData = (rows) =>
+  STATE_TREND_MONTHS.map((month, monthIdx) => {
+    const progress = monthIdx / (STATE_TREND_MONTHS.length - 1);
+    const eased = progress * progress * (3 - 2 * progress);
+    const point = { month };
+
+    rows.forEach((metric, metricIdx) => {
+      const end = parseMetricVolume(metric.convVolume);
+      const growth = parsePct(metric.convGrowth);
+      const start = growth <= -99 ? end : end / (1 + growth / 100);
+      const delta = end - start;
+      const wave = Math.sin((progress + metricIdx * 0.13) * Math.PI) * delta * 0.045;
+      point[metric.flavor] = Math.max(0, Math.round(start + delta * eased + wave));
+    });
+
+    return point;
+  });
+
+const StateTrendTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="state-trend-tooltip">
+      <p>{label}</p>
+      {payload.map((item) => (
+        <div key={item.dataKey} className="state-trend-tooltip-row">
+          <span style={{ background: item.color }} />
+          <b>{item.dataKey}</b>
+          <em>{formatTrendVolume(item.value)}</em>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const StateFlavorTable = ({ title, rows }) => (
+  <section className="state-deep-section">
+    <div className="state-deep-section-title">
+      <span className={`state-flavor-badge state-flavor-badge--${title.toLowerCase()}`}>{title}</span>
+      <span>Top {rows.length} flavors</span>
+    </div>
+    <table className="state-metrics-table state-metrics-table--deep">
+      <thead>
+        <tr>
+          <th>Flavor</th>
+          <th>Conv. volume</th>
+          <th>Conv. vol growth (L1Y)</th>
+          <th>Engagement vol</th>
+          <th>Engagement growth (L1Y)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((m) => (
+          <tr key={`${title}-${m.flavor}`}>
+            <td>{m.flavor}</td>
+            <td>{m.convVolume}</td>
+            <td>{m.convGrowth || "—"}</td>
+            <td>{m.totalEngagement}</td>
+            <td>{m.engagementGrowth || "—"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+);
+
+const StateFlavorTrendChart = ({ title, rows }) => {
+  const data = useMemo(() => buildTrendData(rows), [rows]);
+  const colors = STATE_CHART_COLORS[title] || STATE_CHART_COLORS.Sweet;
+
+  return (
+    <div className={`state-trend-card state-trend-card--${title.toLowerCase()}`}>
+      <div className="state-trend-card-head">
+        <h4>{title} flavors</h4>
+      </div>
+      <div className="state-trend-chart">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 8, right: 10, bottom: 0, left: -6 }}>
+            <CartesianGrid stroke="#eadfce" strokeWidth={1} />
+            <XAxis
+              dataKey="month"
+              interval={1}
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: "#8f8174", fontSize: 11, fontWeight: 700 }}
+            />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              domain={[0, "dataMax"]}
+              tickFormatter={formatTrendVolume}
+              tick={{ fill: "#8f8174", fontSize: 11, fontWeight: 700 }}
+              width={38}
+            />
+            <Tooltip content={<StateTrendTooltip />} cursor={{ stroke: "#d6c8b6", strokeWidth: 1 }} />
+            {rows.map((m, idx) => (
+              <Line
+                key={m.flavor}
+                type="monotone"
+                dataKey={m.flavor}
+                stroke={colors[idx % colors.length]}
+                strokeWidth={2.4}
+                strokeDasharray={idx === 0 ? undefined : "4 4"}
+                dot={false}
+                activeDot={{ r: 4, strokeWidth: 0 }}
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="state-trend-legend">
+        {rows.map((m, idx) => (
+          <span key={m.flavor}>
+            <i style={{ background: colors[idx % colors.length] }} />
+            {m.flavor}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const LightbulbIcon = () => (
+  <svg className="state-callout-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M9 18h6" />
+    <path d="M10 22h4" />
+    <path d="M8.6 14.4A5.7 5.7 0 0 1 6.5 10a5.5 5.5 0 0 1 11 0c0 1.7-.8 3.3-2.1 4.4-.7.6-.9 1.1-.9 2.1V17h-5v-.5c0-1-.2-1.5-.9-2.1Z" />
+    <path d="M12 2v1.5" />
+    <path d="m4.9 4.9 1.1 1.1" />
+    <path d="m19.1 4.9-1.1 1.1" />
+  </svg>
+);
+
+const StateMetricsByType = ({ state, metrics }) => {
   const sweet = metrics.filter((m) => m.type === "Sweet");
   const savory = metrics.filter((m) => m.type === "Savory");
 
-  const renderBlock = (title, rows) => (
-    <div className="state-metrics-split">
-      <p className="state-metrics-split-label">{title}</p>
-      <table className="state-metrics-table compact">
-        <thead>
-          <tr>
-            <th>Flavor</th>
-            <th>Conv. volume</th>
-            <th>Total engagement</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((m) => (
-            <tr key={m.flavor}>
-              <td>{m.flavor}</td>
-              <td>{m.convVolume}</td>
-              <td>{m.totalEngagement}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-
   return (
-    <div className="state-metrics-split-grid">
-      {renderBlock("Sweet", sweet)}
-      {renderBlock("Savory", savory)}
+    <div className="state-deep-dive">
+      <div className="state-deep-callout">
+        <LightbulbIcon />
+        <p><b>{state}:</b> {getStateInsight(state)}</p>
+      </div>
+
+      <div className="state-deep-tables">
+        <StateFlavorTable title="Sweet" rows={sweet} />
+        <StateFlavorTable title="Savory" rows={savory} />
+      </div>
+
+      <div className="state-trend-label">Conversation volume trend</div>
+      <div className="state-trend-grid">
+        <StateFlavorTrendChart title="Sweet" rows={sweet} />
+        <StateFlavorTrendChart title="Savory" rows={savory} />
+      </div>
     </div>
   );
 };
@@ -515,11 +673,7 @@ export const DocStateTableCard = () => {
                     <tr className="state-table-detail-row">
                       <td colSpan={4}>
                         <div className="state-expand-panel">
-                          <p className="muted" style={{ margin: "0 0 10px" }}>{getStateInsight(row.state)}</p>
-                          <p className="muted" style={{ margin: "0 0 12px" }}>
-                            <b>What this means:</b> {getStateTakeaway(row.state).replace(/^What this means:\s*/i, "")}
-                          </p>
-                          <StateMetricsByType metrics={metrics} />
+                          <StateMetricsByType state={row.state} metrics={metrics} />
                         </div>
                       </td>
                     </tr>
@@ -551,6 +705,7 @@ export const DocWinningClustersCard = () => {
               <th>Trend Type</th>
               <th>Product Extension Ideas</th>
               <th>Brand Fit</th>
+              <th>Alignment</th>
             </tr>
           </thead>
           <tbody>
@@ -562,6 +717,7 @@ export const DocWinningClustersCard = () => {
                 <td>{row.trendType}</td>
                 <td>{row.extensions}</td>
                 <td>{row.brandFit}</td>
+                <td>{row.alignment}</td>
               </tr>
             ))}
           </tbody>
@@ -570,6 +726,90 @@ export const DocWinningClustersCard = () => {
     </div>
   );
 };
+
+const FLAVOR_BRAND_ROWS = [
+  { flavor: "Kaju Katli", brands: "Bikaji, Chitale Bandhu, Haldiram's, Singla Sweets, Lal Sweets, Govind Sweets, House of Indya, Dessert Drama" },
+  { flavor: "Coconut Jaggery", brands: "Wonderland Foods, Urban Platter, Vaagmee, DGardeen" },
+  { flavor: "Jalebi", brands: "Naturals Ice Cream, Chowpatty" },
+  { flavor: "Badam Pista", brands: "Haldiram's, Karachi Bakery, Dadu's" },
+  { flavor: "Bellam (Jaggery)", brands: "Indira Foods, Kalaguragampa" },
+  { flavor: "Gunpowder Podi", brands: "Yours Freshly, PODI Life" },
+  { flavor: "Gongura", brands: "Aachi Foods, Ramadevi Foods" },
+  { flavor: "Tamarind", brands: "Doritos" },
+  { flavor: "Garlic Chilli", brands: "Deep, Shri Nath Ji, Kathiyawadi" },
+  { flavor: "Wild Honey", brands: "Gone Farmers, Oorla, bb Royal" },
+  { flavor: "Black Sesame", brands: "Kisan, Ovenfresh, Rajaram's, Lakshme's Peanut Candy" },
+  { flavor: "Smoked Chilli", brands: "Brown Bag Crisps, Bigg Beans" },
+  { flavor: "Bamboo Shoot", brands: "Tripura Govt, Canz" },
+  { flavor: "Fermented Soybean (Axone)", brands: "Axone Brand, NE Origins" },
+  { flavor: "Sichuan Pepper", brands: "50Hertz Foods, Paul And Mike" },
+  { flavor: "Nolen Gur", brands: "JOLKHABAR, Mahashay India, Silkrute" },
+  { flavor: "Bhut Jolokia", brands: "Too Yumm!" },
+  { flavor: "Panch Phoron", brands: "MANPASAND, JK Spices" },
+  { flavor: "Lakadong Turmeric", brands: "Daily Farmer, Organic India, Just Jaivik, NAKI, Zizira" },
+  { flavor: "Sattu Masala", brands: "Smaart Foodsz, Mindy Munchs" },
+  { flavor: "Chaat Masala", brands: "Bharat Masala, Good Time, Vatika, Richday, Maruti" },
+  { flavor: "Pudina Masala", brands: "PODI Life" },
+  { flavor: "Methi Masala", brands: "Baba Ramdev, Golvi" },
+  { flavor: "Sev Masala", brands: "Shree Mithai, Chandra Snacks" },
+  { flavor: "Indori Namkeen Masala", brands: "Rajshri" },
+  { flavor: "Jhalmuri Masala", brands: "Okhli Musal Brand, L.V. Spices" },
+  { flavor: "Achari Spice", brands: "CURRENT, Mallko Store" },
+  { flavor: "Tandoori Spice", brands: "Super Healthyfox, Makksquad" },
+  { flavor: "Schezwan", brands: "Snack Nation" },
+  { flavor: "Orange Blossom", brands: "Rashmi Sweets" },
+  { flavor: "Kiwi", brands: "Radhe Mart" },
+  { flavor: "Himalayan Berry", brands: "JR Herbal, Vanraag Healthcare (Nola)" },
+  { flavor: "Curry Leaf", brands: "PODI Life" },
+  { flavor: "Walnut Spice", brands: "Wonderland Foods" },
+  { flavor: "Red Chilli", brands: "Too Yumm!" },
+  { flavor: "Mustard/Kasundi", brands: "Kasundi" },
+  { flavor: "Gundruk (Fermented Bamboo)", brands: "Gundruk Brand" },
+  { flavor: "Axone", brands: "Axone Brand, NE Origins" },
+  { flavor: "Mint", brands: "PODI Life" },
+];
+
+export const DocBrandsCard = () => (
+  <div className="card">
+    <div className="card-h">
+      <h3>Brands</h3>
+      <span className="tag">{FLAVOR_BRAND_ROWS.length} flavor rows</span>
+    </div>
+    <div className="card-body state-table-wrap">
+      <table className="national-table brand-table">
+        <thead>
+          <tr>
+            <th>Flavor</th>
+            <th>Brands</th>
+          </tr>
+        </thead>
+        <tbody>
+          {FLAVOR_BRAND_ROWS.map((row) => (
+            <tr
+              key={row.flavor}
+              className="clickable-row"
+              onClick={() =>
+                openDetail({
+                  type: "Brands",
+                  title: row.flavor,
+                  body: row.brands,
+                  facts: [
+                    { k: "Flavor", v: row.flavor },
+                    { k: "Brands", v: row.brands },
+                  ],
+                  source: "Section 4 · Brands",
+                })
+              }
+            >
+              <td><b>{row.flavor}</b></td>
+              <td>{row.brands}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+);
 
 export const DocCrossStateCard = () => {
   const [dim, setDim] = useState("zone");
@@ -657,6 +897,15 @@ const formatGrowth = (value) => {
   return `+${n}%`;
 };
 
+const parseNationalVolume = (value) => {
+  const text = String(value || "").trim();
+  const n = parseFloat(text.replace(/,/g, ""));
+  if (Number.isNaN(n)) return 0;
+  if (/m$/i.test(text)) return n * 1000000;
+  if (/k$/i.test(text)) return n * 1000;
+  return n;
+};
+
 const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => {
   const sortIndicator = (key) => {
     if (sortKey !== key) return "";
@@ -678,10 +927,14 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
         <thead>
           <tr>
             {th("name", "Flavor")}
+            {th("convVolume", "Conversation volume")}
+            {th("engVolume", "Engagement volume")}
             {th("conv", "Conversation growth")}
             {th("eng", "Engagement growth")}
+            <th>Why popular</th>
             {th("trend", "Trend Type")}
             <th>States Popular in</th>
+            <th>When trends</th>
             <th>Product Extension Recommendations</th>
             <th>Britannia portfolio fit</th>
           </tr>
@@ -689,7 +942,7 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={8} className="national-table-empty">
+              <td colSpan={11} className="national-table-empty">
                 No flavors match this trend filter.
               </td>
             </tr>
@@ -711,8 +964,11 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
                   }}
                 >
                   <td><b>{f.name}</b></td>
+                  <td><span className="national-volume">{f.convVolume || "-"}</span></td>
+                  <td><span className="national-volume">{f.engVolume || "-"}</span></td>
                   <td><span className="national-growth">{formatGrowth(f.convGrowth)}</span></td>
                   <td><span className="national-growth">{formatGrowth(f.engGrowth)}</span></td>
+                  <td className="national-why-cell">{f.whyPopular}</td>
                   <td>
                     <span className={"trend-pill trend-" + f.trendType.toLowerCase()}>{f.trendType}</span>
                   </td>
@@ -729,6 +985,7 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
                       ))}
                     </div>
                   </td>
+                  <td className="national-when-cell">{f.whenTrends}</td>
                   <td className="national-ext-cell">
                     {ext.primary ? <b>{ext.primary}</b> : null}
                     {ext.rest.length > 0 ? (
@@ -758,15 +1015,18 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
 };
 
 export const DocNationalCard = () => {
-  const [sortKey, setSortKey] = useState("conv");
-  const [sortDir, setSortDir] = useState("desc");
-  const matrixPoints = useMemo(() => flavorMachineAsNational(), []);
+  const [sortKey, setSortKey] = useState("source");
+  const [sortDir, setSortDir] = useState("asc");
+  const matrixPoints = useMemo(() => NATIONAL_FLAVORS, []);
 
   const sortedRows = useMemo(() => {
     const rows = [...NATIONAL_FLAVORS];
+    if (sortKey === "source") return rows;
     const dir = sortDir === "asc" ? 1 : -1;
     rows.sort((a, b) => {
       if (sortKey === "name") return a.name.localeCompare(b.name) * dir;
+      if (sortKey === "convVolume") return (parseNationalVolume(a.convVolume) - parseNationalVolume(b.convVolume)) * dir;
+      if (sortKey === "engVolume") return (parseNationalVolume(a.engVolume) - parseNationalVolume(b.engVolume)) * dir;
       if (sortKey === "conv") return (parsePct(a.convGrowth) - parsePct(b.convGrowth)) * dir;
       if (sortKey === "eng") return (parsePct(a.engGrowth) - parsePct(b.engGrowth)) * dir;
       if (sortKey === "trend") return a.trendType.localeCompare(b.trendType) * dir;
@@ -780,12 +1040,18 @@ export const DocNationalCard = () => {
     openDetail({
       type: "National flavor",
       title: row.name,
-      body: row.extensions,
+      body: row.whyPopular || row.extensions,
       facts: [
+        { k: "Conversation volume", v: row.convVolume },
+        { k: "Engagement volume", v: row.engVolume },
         { k: "Conv. growth", v: row.convGrowth || f.convGrowth },
         { k: "Eng. growth", v: row.engGrowth || f.engGrowth },
+        { k: "Trend", v: row.trendType || f.trendType },
+        { k: "Where popular", v: row.states || f.states },
+        { k: "When trends", v: row.whenTrends },
+        { k: "Extensions", v: row.extensions || f.extensions },
         { k: "Brand fit", v: row.brandFit || f.brandFit },
-      ],
+      ].filter((fact) => fact.v),
       source: "National Flavor Performance View",
     });
   };
@@ -914,7 +1180,7 @@ export const DocActionablesCard = ({ onRunDeliverable, busy }) => {
           </div>
           <div className="configure-field">
             <label className="configure-label" htmlFor="gi-instructions">
-              Specific instructions <span className="hint">optional</span>
+              {selectedType === "creative_brief" ? "Additional questions for the brief" : "Brief on Instructions"} <span className="hint">optional</span>
             </label>
             <textarea
               id="gi-instructions"
@@ -922,7 +1188,10 @@ export const DocActionablesCard = ({ onRunDeliverable, busy }) => {
               rows={3}
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
-              placeholder="e.g. Focus on Instagram Reels for 18–24 age group, use regional language hooks, include a festive angle…"
+              placeholder={selectedType === "creative_brief"
+                ? "Add any extra questions the creative brief should answer."
+                : "e.g. Focus on Instagram Reels for 18-24 age group, use regional language hooks, include a festive angle..."
+              }
             />
           </div>
           <div className="configure-actions">

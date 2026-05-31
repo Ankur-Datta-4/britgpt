@@ -122,8 +122,9 @@ for (let j = 0; j < s3.length; j++) {
     trendType: s3[j + 3],
     extensions: s3[j + 4],
     brandFit: s3[j + 5],
+    alignment: s3[j + 6],
   });
-  j += 5;
+  j += 6;
 }
 
 writeFileSync(

@@ -2,494 +2,494 @@
   {
     "state": "Andhra Pradesh",
     "sweet": [
-      "Honey Chilli",
-      "Tamarind Candy",
-      "Bellam Coconut",
-      "Pootharekulu Crunch",
-      "Mango Pickle Candy"
+      "Kaju Katli",
+      "Coconut Jaggery",
+      "Jalebi",
+      "Badam Pista",
+      "Bellam (Jaggery)"
     ],
     "savory": [
       "Gunpowder Podi",
-      "Gongura Masala",
-      "Mirchi Bajji Spice",
-      "Chicken 65 Masala",
-      "Pesarattu Chutney"
+      "Gongura",
+      "Tamarind",
+      "Curry Leaf",
+      "Garlic Chilli"
     ]
   },
   {
     "state": "Arunachal Pradesh",
     "sweet": [
-      "Honey Chilli",
-      "Kiwi Candy",
+      "Wild Honey",
       "Orange Blossom",
-      "Bamboo Shoot Honey",
-      "Wild Berry Candy"
+      "Kiwi",
+      "Himalayan Berry",
+      "Black Sesame"
     ],
     "savory": [
-      "Smoked Chilli (Raja Mircha)",
-      "Bamboo Shoot Masala",
-      "Thukpa Spice",
+      "Smoked Chilli",
+      "Bamboo Shoot",
       "Fermented Soybean",
+      "Sichuan Pepper",
       "Black Sesame Salt"
     ]
   },
   {
     "state": "Assam",
     "sweet": [
-      "Nolen Gur Toffee",
-      "Pitha Rice Cake",
-      "Honey Chilli",
-      "Assam Tea Caramel",
-      "Coconut Laru Bite"
+      "Nolen Gur",
+      "Coconut Jaggery",
+      "Honey",
+      "Black Rice Sweet",
+      "Assam Tea"
     ],
     "savory": [
-      "Bhut Jolokia Spice",
-      "Khar Masala",
-      "Fish Curry Masala",
-      "Bamboo Shoot Pickle",
-      "Mustard Seed Mix"
+      "Bhut Jolokia",
+      "Mustard",
+      "Bamboo Shoot",
+      "Fermented Bamboo",
+      "Panch Phoron"
     ]
   },
   {
     "state": "Bihar",
     "sweet": [
-      "Tilkut Sesame Jaggery",
-      "Honey Chilli",
-      "Khaja Caramel",
-      "Anarsa Coconut",
-      "Thekua Crunch"
+      "Soan Papdi",
+      "Til Jaggery",
+      "Khaja",
+      "Motichoor",
+      "Rabri"
     ],
     "savory": [
       "Sattu Masala",
-      "Litti Chokha Spice",
-      "Mustard Pickle",
-      "Chaat Masala Blast",
-      "Gunpowder Podi"
+      "Mustard",
+      "Ajwain",
+      "Chaat Masala",
+      "Garlic Chilli"
     ]
   },
   {
     "state": "Chhattisgarh",
     "sweet": [
-      "Tilgur Sesame Jaggery",
-      "Honey Chilli",
-      "Mahua Flower Candy",
-      "Coconut Barfi Bite",
-      "Mango Aamchur Toffee"
+      "Coconut Jaggery",
+      "Til Jaggery",
+      "Mahua Honey",
+      "Jalebi",
+      "Badam Pista"
     ],
     "savory": [
-      "Chana Dal Masala",
-      "Red Chilli Chutney",
-      "Bafauri Spice",
-      "Farra Masala",
-      "Garlic Podi"
+      "Garlic Chilli",
+      "Chana Jor Masala",
+      "Tamarind",
+      "Red Chilli",
+      "Curry Leaf"
     ]
   },
   {
     "state": "Delhi NCR",
     "sweet": [
-      "Honey Chilli",
-      "Dark Choc Sea Salt",
-      "Churma & Jaggery",
-      "Rose Paan Candy",
-      "Mango Aamchur Twist"
+      "Ras Malai",
+      "Gulab Jamun",
+      "Kaju Katli",
+      "Jalebi",
+      "Rabri"
     ],
     "savory": [
-      "Schezwan Masala",
-      "Chaat Masala Blast",
-      "Dahi Papri Spice",
-      "Tandoori BBQ",
-      "Gunpowder Podi"
+      "Chaat Masala",
+      "Achari Spice",
+      "Tandoori Spice",
+      "Pudina Masala",
+      "Schezwan"
     ]
   },
   {
     "state": "Goa",
     "sweet": [
-      "Bebinca Caramel",
-      "Honey Chilli",
       "Coconut Jaggery",
-      "Cashew Feni Candy",
-      "Dodol Toffee"
+      "Bebinca Caramel",
+      "Cashew",
+      "Kesar Milk",
+      "Badam Pista"
     ],
     "savory": [
-      "Recheado Masala",
-      "Vindaloo Spice",
-      "Cafreal Marinade",
-      "Xacuti Masala",
-      "Prawn Balchão"
+      "Recheado Spice",
+      "Black Pepper",
+      "Kokum",
+      "Garlic Chilli",
+      "Xacuti Spice"
     ]
   },
   {
     "state": "Gujarat",
     "sweet": [
-      "Honey Chilli",
-      "Mohanthal Crunch",
-      "Basundi Caramel",
-      "Ghari Toffee",
-      "Mango Pickle Candy"
+      "Shrikhand",
+      "Basundi",
+      "Kaju Katli",
+      "Soan Papdi",
+      "Jalebi"
     ],
     "savory": [
+      "Methi Masala",
       "Sev Masala",
-      "Dhokla Chutney Spice",
-      "Thepla Methi",
-      "Khakhra Masala",
-      "Jamnagari Chilli"
+      "Ajwain",
+      "Green Chilli Lime",
+      "Garlic Chilli"
     ]
   },
   {
     "state": "Haryana",
     "sweet": [
-      "Honey Chilli",
-      "Churma Jaggery",
-      "Singri Candy",
-      "Rabri Caramel",
-      "Rose Paan Candy"
+      "Rabri",
+      "Jalebi",
+      "Gulab Jamun",
+      "Kesar Milk",
+      "Motichoor"
     ],
     "savory": [
-      "Bajra Masala",
-      "Chaat Masala Blast",
-      "Methi Masala",
-      "Tandoori BBQ",
-      "Besan Spice Mix"
+      "Chaat Masala",
+      "Pudina Masala",
+      "Ajwain",
+      "Methi",
+      "Mustard"
     ]
   },
   {
     "state": "Himachal Pradesh",
     "sweet": [
-      "Honey Chilli",
       "Apple Cinnamon",
-      "Babru Toffee",
-      "Walnut Honey",
-      "Mittha Sweet Rice"
+      "Wild Honey",
+      "Rabri",
+      "Kesar Milk",
+      "Badam Pista"
     ],
     "savory": [
-      "Chana Madra Spice",
-      "Siddu Masala",
       "Pahadi Chilli",
-      "Kullu Trout Masala",
-      "Dham Spice"
+      "Garlic Herb",
+      "Black Pepper",
+      "Mint",
+      "Walnut Spice"
     ]
   },
   {
     "state": "Jharkhand",
     "sweet": [
-      "Tilkut Sesame",
-      "Honey Chilli",
-      "Arsa Jaggery",
-      "Malpua Caramel",
-      "Dhuska Coconut"
+      "Til Jaggery",
+      "Jalebi",
+      "Rabri",
+      "Coconut Jaggery",
+      "Soan Papdi"
     ],
     "savory": [
-      "Rugda Masala",
-      "Litti Spice",
-      "Sattu Mix",
-      "Bamboo Shoot Pickle",
-      "Red Chilli Chutney"
+      "Sattu Masala",
+      "Bamboo Shoot",
+      "Mustard",
+      "Red Chilli",
+      "Garlic Chilli"
     ]
   },
   {
     "state": "Karnataka",
     "sweet": [
-      "Honey Chilli",
-      "Jaggery Sesame",
-      "Tamarind Candy",
+      "Mysore Pak",
       "Coconut Jaggery",
-      "Filter Coffee Caramel"
+      "Badam Pista",
+      "Kesar Milk",
+      "Jalebi"
     ],
     "savory": [
       "Gunpowder Podi",
-      "Bisi Bele Masala",
-      "Akki Roti Spice",
-      "Urad Dal Chutney",
-      "Mysore Rasam"
+      "Nippattu Spice",
+      "Tamarind",
+      "Curry Leaf",
+      "Black Pepper"
     ]
   },
   {
     "state": "Kerala",
     "sweet": [
-      "Banana Chips Jaggery",
-      "Honey Chilli",
-      "Coconut Barfi",
-      "Unniyappam Cardamom",
-      "Jackfruit Candy"
+      "Coconut Jaggery",
+      "Banana Jaggery",
+      "Ada Pradhaman",
+      "Badam Pista",
+      "Kesar Milk"
     ],
     "savory": [
-      "Kerala Pepper Fry",
-      "Malabar Curry Masala",
-      "Banana Chips Masala",
-      "Coconut Chutney",
-      "Fish Moilee Spice"
+      "Black Pepper",
+      "Curry Leaf",
+      "Coconut Pepper",
+      "Malabar Spice",
+      "Ginger Chilli"
     ]
   },
   {
     "state": "Madhya Pradesh",
     "sweet": [
-      "Honey Chilli",
-      "Mawa Bati Toffee",
-      "Jalebi Saffron",
-      "Gajak Sesame",
-      "Lavang Latika"
+      "Jalebi",
+      "Rabri",
+      "Gajar Halwa",
+      "Gulab Jamun",
+      "Motichoor"
     ],
     "savory": [
-      "Bhutte Ka Kees Masala",
-      "Poha Masala",
-      "Dal Bafla Spice",
-      "Indori Namkeen",
-      "Garlic Chutney"
+      "Indori Namkeen Masala",
+      "Garlic Chilli",
+      "Chaat Masala",
+      "Hing Jeera",
+      "Black Pepper"
     ]
   },
   {
     "state": "Maharashtra",
     "sweet": [
-      "Honey Chilli",
-      "Caramel Corn",
-      "Mango Pickle Candy",
-      "Rose & Saffron",
-      "Dark Choc Chilli"
+      "Modak Coconut",
+      "Kaju Katli",
+      "Jalebi",
+      "Badam Pista",
+      "Gulab Jamun"
     ],
     "savory": [
-      "Schezwan Masala",
-      "Mumbai Cutting Chai",
-      "Vada Pav Masala",
-      "Garlic Podi",
-      "Kokum Chaat"
+      "Garlic Chilli",
+      "Schezwan",
+      "Kokum",
+      "Curry Leaf",
+      "Black Pepper"
     ]
   },
   {
     "state": "Manipur",
     "sweet": [
-      "Chak-Hao Black Rice Candy",
-      "Honey Chilli",
-      "Pineapple Candy",
-      "Wild Honey Crunch",
-      "Passion Fruit Toffee"
+      "Black Rice Sweet",
+      "Pineapple",
+      "Wild Honey",
+      "Passion Fruit",
+      "Coconut Jaggery"
     ],
     "savory": [
-      "Naga King Chilli",
-      "Eromba Spice",
-      "Singju Masala",
-      "Fermented Fish Masala",
-      "Kangshoi Herb Mix"
+      "Sesame Chilli",
+      "Smoked Chilli",
+      "Herb Mix",
+      "Fermented Soybean",
+      "Bamboo Shoot"
     ]
   },
   {
     "state": "Meghalaya",
     "sweet": [
-      "Honey Chilli",
-      "Wild Honey Crunch",
+      "Wild Honey",
       "Orange Blossom",
-      "Pineapple Candy",
-      "Black Sesame Toffee"
+      "Pineapple",
+      "Black Sesame",
+      "Coconut Jaggery"
     ],
     "savory": [
-      "Jadoh Spice",
-      "Doh Khleh Masala",
-      "Tungrymbai Fermented Soy",
-      "Smoked Meat Rub",
-      "Lakadong Turmeric Mix"
+      "Lakadong Turmeric",
+      "Smoked Chilli",
+      "Fermented Soybean",
+      "Black Pepper",
+      "Ginger"
     ]
   },
   {
     "state": "Mizoram",
     "sweet": [
-      "Honey Chilli",
-      "Passion Fruit Candy",
+      "Passion Fruit",
+      "Wild Honey",
+      "Citrus",
       "Banana Blossom Honey",
-      "Vawksa Rep Toffee",
-      "Citrus Candy"
+      "Coconut Jaggery"
     ],
     "savory": [
-      "Bai Masala",
-      "Sawhchiar Spice",
-      "Smoked Pork Rub",
-      "Bamboo Shoot Pickle",
-      "Bird's Eye Chilli"
+      "Bird's Eye Chilli",
+      "Bamboo Shoot",
+      "Smoked Chilli",
+      "Fermented Soybean",
+      "Ginger"
     ]
   },
   {
     "state": "Nagaland",
     "sweet": [
-      "Wild Honey Crunch",
-      "Honey Chilli",
-      "Anishi Candy",
-      "Passion Fruit Toffee",
-      "Rice Beer Caramel"
+      "Wild Honey",
+      "Black Sesame",
+      "Passion Fruit",
+      "Coconut Jaggery",
+      "Rice Malt Caramel"
     ],
     "savory": [
-      "Raja Mircha (Bhut Jolokia)",
-      "Smoked Pork Masala",
-      "Axone Fermented Soy",
-      "Bamboo Shoot Pickle",
-      "Naga Garlic Chutney"
+      "Bhut Jolokia",
+      "Axone",
+      "Bamboo Shoot",
+      "Smoked Chilli",
+      "Naga Garlic"
     ]
   },
   {
     "state": "Odisha",
     "sweet": [
-      "Chhena Poda Caramel",
-      "Honey Chilli",
-      "Rasagola Toffee",
-      "Mango Candy",
-      "Coconut Laddoo Bite"
+      "Rasgulla",
+      "Chhena Poda",
+      "Ras Malai",
+      "Coconut Jaggery",
+      "Kesar Milk"
     ],
     "savory": [
-      "Dalma Spice",
-      "Pakhala Masala",
-      "Crab Masala",
-      "Santula Spice Mix",
-      "Mustard Panch Phoron"
+      "Panch Phoron",
+      "Mustard",
+      "Curry Leaf",
+      "Ginger Chilli",
+      "Garlic"
     ]
   },
   {
     "state": "Punjab",
     "sweet": [
-      "Honey Chilli",
-      "Pinni Jaggery",
-      "Phirni Saffron",
-      "Churma Toffee",
-      "Rabri Caramel"
+      "Phirni",
+      "Rabri",
+      "Gulab Jamun",
+      "Kesar Milk",
+      "Motichoor"
     ],
     "savory": [
-      "Tandoori BBQ",
-      "Amritsari Masala",
-      "Sarson Mustard",
-      "Chaat Masala Blast",
-      "Achari Spice"
+      "Tandoori Spice",
+      "Achari Spice",
+      "Pudina Masala",
+      "Mustard",
+      "Chaat Masala"
     ]
   },
   {
     "state": "Rajasthan",
     "sweet": [
-      "Honey Chilli",
-      "Ghevar Saffron",
-      "Churma Jaggery",
-      "Mawa Kachori Bite",
-      "Moong Dal Barfi"
+      "Ghevar",
+      "Kesar Milk",
+      "Soan Papdi",
+      "Motichoor",
+      "Gajar Halwa"
     ],
     "savory": [
-      "Dal Baati Masala",
-      "Ker Sangri Pickle",
-      "Laal Maas Spice",
-      "Mirchi Vada Masala",
-      "Pyaaz Kachori Spice"
+      "Red Chilli",
+      "Garlic Chilli",
+      "Achari Spice",
+      "Ajwain",
+      "Ker Sangri Spice"
     ]
   },
   {
     "state": "Sikkim",
     "sweet": [
-      "Honey Chilli",
-      "Cardamom Tea Toffee",
-      "Wild Berry Candy",
-      "Mandarin Orange Candy",
-      "Buckwheat Honey"
+      "Wild Honey",
+      "Cardamom Milk",
+      "Mandarin Orange",
+      "Berry",
+      "Coconut Jaggery"
     ],
     "savory": [
-      "Gundruk Pickle",
-      "Kinema Fermented Soy",
-      "Dalle Khursani Chilli",
-      "Phagshapa Spice",
-      "Thukpa Masala"
+      "Gundruk",
+      "Fermented Soybean",
+      "Garlic Herb",
+      "Black Pepper",
+      "Smoked Chilli"
     ]
   },
   {
     "state": "Tamil Nadu",
     "sweet": [
-      "Tamarind Candy",
-      "Honey Chilli",
-      "Raw Mango Salt",
-      "Coconut Sugar Bites",
-      "Elachi Milk Toffee"
+      "Kesar Milk",
+      "Mysore Pak",
+      "Coconut Jaggery",
+      "Badam Pista",
+      "Jalebi"
     ],
     "savory": [
       "Gunpowder Podi",
-      "Milagu Vadai Spice",
-      "Chettinad Pepper",
-      "Kottu Masala",
-      "Kara Boondi Mix"
+      "Curry Leaf",
+      "Black Pepper",
+      "Tamarind",
+      "Nippattu Spice"
     ]
   },
   {
     "state": "Telangana",
     "sweet": [
-      "Honey Chilli",
-      "Qubani Ka Meetha Toffee",
-      "Double Ka Meetha Caramel",
-      "Mango Pickle Candy",
-      "Tamarind Candy"
+      "Qubani Apricot",
+      "Kaju Katli",
+      "Ras Malai",
+      "Jalebi",
+      "Gulab Jamun"
     ],
     "savory": [
       "Gunpowder Podi",
-      "Hyderabadi Biryani Masala",
-      "Mirchi Ka Salan",
-      "Gongura Masala",
-      "Pesarattu Chutney"
+      "Gongura",
+      "Tamarind",
+      "Curry Leaf",
+      "Garlic Chilli"
     ]
   },
   {
     "state": "Tripura",
     "sweet": [
-      "Honey Chilli",
-      "Pineapple Candy",
-      "Rice Cake Jaggery",
-      "Wild Honey Crunch",
-      "Banana Candy"
+      "Pineapple",
+      "Wild Honey",
+      "Coconut Jaggery",
+      "Banana",
+      "Kesar Milk"
     ],
     "savory": [
-      "Berma Fermented Fish",
-      "Mosdeng Masala",
-      "Chakhwi Spice",
-      "Bamboo Shoot Pickle",
-      "Mui Borok Chilli"
+      "Mosdeng Chilli",
+      "Bamboo Shoot",
+      "Smoked Chilli",
+      "Ginger Chilli",
+      "Bird's Eye Chilli"
     ]
   },
   {
     "state": "Uttar Pradesh",
     "sweet": [
-      "Honey Chilli",
-      "Petha Saffron",
-      "Rabri Toffee",
-      "Balushahi Caramel",
-      "Mango Aamchur Twist"
+      "Rabri",
+      "Jalebi",
+      "Gulab Jamun",
+      "Ras Malai",
+      "Kesar Milk"
     ],
     "savory": [
-      "Chaat Masala Blast",
-      "Lucknowi Kebab Spice",
-      "Galawati Masala",
-      "Tunday Spice",
-      "Schezwan Masala"
+      "Chaat Masala",
+      "Pudina Masala",
+      "Achari Spice",
+      "Black Pepper",
+      "Garlic Chilli"
     ]
   },
   {
     "state": "Uttarakhand",
     "sweet": [
-      "Honey Chilli",
       "Bal Mithai",
+      "Wild Honey",
       "Singori Coconut",
-      "Jhangora Millet Honey",
-      "Apple Cinnamon"
+      "Apple Cinnamon",
+      "Kesar Milk"
     ],
     "savory": [
-      "Bhang Chutney",
-      "Kafuli Spice",
+      "Bhang Jeera",
       "Pahadi Chilli",
-      "Chainsoo Masala",
-      "Kumaoni Raita Spice"
+      "Garlic Herb",
+      "Mint",
+      "Black Pepper"
     ]
   },
   {
     "state": "West Bengal",
     "sweet": [
-      "Mishti Doi Caramel",
-      "Nolen Gur Toffee",
-      "Honey Chilli",
-      "Gondhoraj Lemon Candy",
-      "Narkel Naru Bite"
+      "Nolen Gur",
+      "Mishti Doi",
+      "Ras Malai",
+      "Coconut Jaggery",
+      "Kaju Katli"
     ],
     "savory": [
-      "Kasundi Mustard",
-      "Panch Phoron Mix",
-      "Jhalmuri Spice",
-      "Hilsa Fry Masala",
-      "Gunpowder Podi"
+      "Kasundi",
+      "Jhalmuri Masala",
+      "Panch Phoron",
+      "Gondhoraj Lime",
+      "Chanachur"
     ]
   }
 ]

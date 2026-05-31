@@ -663,7 +663,7 @@ export const StateActionablesCard = ({ onRunDeliverable, busy }) => {
               </select>
             </div>
             <div className="scope-field">
-              <div className="scope-label">Specific instructions <span className="hint">optional</span></div>
+              <div className="scope-label">Brief on Instructions <span className="hint">optional</span></div>
               <input
                 className="scope-input"
                 value={instructions}
