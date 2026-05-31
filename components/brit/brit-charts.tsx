@@ -305,8 +305,8 @@ const MatrixTooltip = ({ active, payload, label }) => {
 export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
   const data = points.map((p) => ({
     name: p.name,
-    conv: parseFloat(String(p.convGrowth).replace("%", "")) || 0,
-    eng: parseFloat(String(p.engGrowth).replace("%", "")) || 0,
+    conv: parseFloat(String(p.convVolume).replace("K", "")) || 0,
+    eng: parseFloat(String(p.engVolume).replace("K", "")) || 0,
     trendType: p.trendType,
     raw: p,
   }));
@@ -340,7 +340,7 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
                 dataKey="eng"
                 domain={[0, maxEng]}
                 tick={{ fill: "#6F695E", fontSize: 11 }}
-                tickFormatter={(v) => `${v}%`}
+                tickFormatter={(v) => `${v}K`}
                 axisLine={{ stroke: "#D2CCC0", strokeWidth: 1 }}
                 tickLine={false}
               />
@@ -349,7 +349,7 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
                 dataKey="conv"
                 domain={[0, maxConv]}
                 tick={{ fill: "#6F695E", fontSize: 11 }}
-                tickFormatter={(v) => `${v}%`}
+                tickFormatter={(v) => `${v}K`}
                 axisLine={{ stroke: "#D2CCC0", strokeWidth: 1 }}
                 tickLine={false}
                 width={44}
@@ -366,7 +366,7 @@ export const NationalPrioritizationMatrix = ({ points, onSelect }) => {
               />
             </ScatterChart>
           </ResponsiveContainer>
-          <div className="brit-priority-matrix__x-label">Engagement growth</div>
+          <div className="brit-priority-matrix__x-label">Engagement volume</div>
         </div>
       </div>
       <div className="brit-priority-matrix__legend">

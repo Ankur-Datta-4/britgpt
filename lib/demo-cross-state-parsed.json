@@ -31,15 +31,15 @@
     {
       "id": "northeast",
       "label": "Northeast India",
-      "insight": "The Northeast remains the strongest discovery zone, built around forest, fruit, ferment, and fire cues. Wild Honey, Passion Fruit, Pineapple, Black Rice Sweet, and Black Sesame lead sweet discovery, while Bhut Jolokia, Smoked Chilli, Bamboo Shoot, Axone, Gundruk, Lakadong Turmeric, Bird's Eye Chilli, Sesame Chilli, and Mosdeng Chilli create a savory territory with little overlap elsewhere in India.",
-      "keyFlavors": "Wild Honey, Passion Fruit, Pineapple, Black Rice Sweet, Bhut Jolokia, Smoked Chilli, Bamboo Shoot, Axone, Gundruk, Lakadong Turmeric, Mosdeng Chilli",
+      "insight": "The Northeast remains the strongest discovery zone, built around forest, fruit, ferment, and fire cues. Wild Honey, Passion Fruit, Pineapple, Black Rice Sweet, and Black Sesame lead sweet discovery, while Bhut Jolokia, Smoked Chilli, Bamboo Shoot, Turmeric, Bird's Eye Chilli, Sesame Chilli, and Mosdeng Chilli create a savory territory with little overlap elsewhere in India.",
+      "keyFlavors": "Wild Honey, Passion Fruit, Pineapple, Black Rice Sweet, Bhut Jolokia, Smoked Chilli, Bamboo Shoot, Turmeric, Mosdeng Chilli",
       "signal": "Low volume but high distinctiveness — best suited to limited drops, creator-led discovery, and local collaborations."
     },
     {
       "id": "central",
       "label": "Central India",
-      "insight": "Madhya Pradesh and Chhattisgarh show a practical bridge between comfort sweets and street-snack spice. Jalebi, Rabri, Gajar Halwa, Coconut Jaggery, and Til Jaggery support sweet familiarity, while Indori Namkeen Masala, Chana Jor Masala, Garlic Chilli, Chaat Masala, Hing Jeera, Tamarind, and Red Chilli point to strong regional-snack white space.",
-      "keyFlavors": "Jalebi, Rabri, Gajar Halwa, Coconut Jaggery, Til Jaggery, Indori Namkeen Masala, Chana Jor Masala, Garlic Chilli, Hing Jeera",
+      "insight": "Madhya Pradesh and Chhattisgarh show a practical bridge between comfort sweets and street-snack spice. Jalebi, Rabri, Gajar Halwa, Coconut Jaggery, and Til Jaggery support sweet familiarity, while Namkeen Masala, Chana Jor Masala, Garlic Chilli, Chaat Masala, Hing Jeera, Tamarind, and Red Chilli point to strong regional-snack white space.",
+      "keyFlavors": "Jalebi, Rabri, Gajar Halwa, Coconut Jaggery, Til Jaggery, Namkeen Masala, Chana Jor Masala, Garlic Chilli, Hing Jeera",
       "signal": "High white space — translate regional street-snack cues into accessible crackers, puffs, and spiced biscuits."
     }
   ],
@@ -61,8 +61,8 @@
     {
       "id": "monsoon",
       "label": "Monsoon (Jul–Sep)",
-      "insight": "Monsoon lifts fried, hot, crispy, and street-adjacent snack formats. Jalebi, Ghevar, Chaat Masala, Sev Masala, Indori Namkeen Masala, Garlic Chilli, and Tandoori Spice map naturally to the chai-snack ritual.",
-      "peakFlavors": "Jalebi, Ghevar, Chaat Masala, Sev Masala, Indori Namkeen Masala, Garlic Chilli, Tandoori Spice",
+      "insight": "Monsoon lifts fried, hot, crispy, and street-adjacent snack formats. Jalebi, Ghevar, Chaat Masala, Sev Masala, Namkeen Masala, Garlic Chilli, and Tandoori Spice map naturally to the chai-snack ritual.",
+      "peakFlavors": "Jalebi, Ghevar, Chaat Masala, Sev Masala, Namkeen Masala, Garlic Chilli, Tandoori Spice",
       "implication": "Savory launches and chai-time bundles have the clearest monsoon fit, especially for crackers and puffed snacks."
     },
     {
@@ -84,8 +84,8 @@
     {
       "id": "genz",
       "label": "Gen Z discovery",
-      "insight": "Gen Z is driving the Northeast flavor discovery wave. Wild Honey, Passion Fruit, Smoked Chilli, Black Rice Sweet, Bamboo Shoot, Axone, and Bhut Jolokia are disproportionately suited to younger discovery behavior because they travel through food creators and short-form content before mass retail.",
-      "topFlavors": "Wild Honey, Passion Fruit, Smoked Chilli, Black Rice Sweet, Bamboo Shoot, Axone, Bhut Jolokia",
+      "insight": "Gen Z is driving the Northeast flavor discovery wave. Wild Honey, Passion Fruit, Smoked Chilli, Black Rice Sweet, Bamboo Shoot and Bhut Jolokia are disproportionately suited to younger discovery behavior because they travel through food creators and short-form content before mass retail.",
+      "topFlavors": "Wild Honey, Passion Fruit, Smoked Chilli, Black Rice Sweet, Bamboo Shoot, Bhut Jolokia",
       "trial": "Very high — seed through creator-led digital before scaling into broader retail."
     },
     {
@@ -105,8 +105,8 @@
     {
       "id": "health",
       "label": "Health-conscious",
-      "insight": "Health-conscious urban consumers cluster around functional regional flavors. Sattu Masala, Til Jaggery, Lakadong Turmeric, Bhang Jeera, Methi Masala, Black Pepper, and Wild Honey work because they feel familiar first and functional second.",
-      "topFlavors": "Sattu Masala, Til Jaggery, Lakadong Turmeric, Bhang Jeera, Methi Masala, Black Pepper, Wild Honey",
+      "insight": "Health-conscious urban consumers cluster around functional regional flavors. Sattu Masala, Til Jaggery, Turmeric, Bhang Jeera, Methi Masala, Black Pepper, and Wild Honey work because they feel familiar first and functional second.",
+      "topFlavors": "Sattu Masala, Til Jaggery, Turmeric, Bhang Jeera, Methi Masala, Black Pepper, Wild Honey",
       "trial": "High — NutriChoice-style products can own this space without making the proposition feel medicinal."
     },
     {

@@ -116,7 +116,7 @@ const fallback: Record<
         title: "Hero shelf",
         shot: "Slow push-in on pack at eye level in a bright kirana shelf",
         vo: "When the craving hits…",
-        onScreen: "Honey Chilli",
+        onScreen: "Kaju Katli",
         frameStyle: "retail",
       },
       {

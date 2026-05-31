@@ -165,10 +165,10 @@ const CROSS_LABELS: Record<string, Record<string, string>> = {
     central: "Central India",
   },
   weather: {
-    summer: "Summer (Mar–Jun)",
-    monsoon: "Monsoon (Jul–Sep)",
-    winter: "Winter (Oct–Feb)",
-    festive: "Festive (Sep–Nov)",
+    summer: "Summer (Mar-Jun)",
+    monsoon: "Monsoon (Jul-Sep)",
+    winter: "Winter (Oct-Feb)",
+    festive: "Festive (Sep-Nov)",
     savory_stability: "Year-round savory",
   },
   age: {

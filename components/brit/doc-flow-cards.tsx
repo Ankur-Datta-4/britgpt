@@ -241,23 +241,38 @@ const formatTrendVolume = (value) => {
   return `${(n / 1000).toFixed(0)}K`;
 };
 
-const buildTrendData = (rows) =>
-  STATE_TREND_MONTHS.map((month, monthIdx) => {
-    const progress = monthIdx / (STATE_TREND_MONTHS.length - 1);
-    const eased = progress * progress * (3 - 2 * progress);
-    const point = { month };
+const hashStr = (str) =>
+  Array.from(str).reduce((h, c) => (Math.imul(31, h) + c.charCodeAt(0)) | 0, 0);
 
-    rows.forEach((metric, metricIdx) => {
+const seededRand = (seed) => {
+  let s = (Math.abs(seed) || 1) >>> 0;
+  return () => {
+    s = (Math.imul(1664525, s) + 1013904223) >>> 0;
+    return s / 0x100000000;
+  };
+};
+
+const buildTrendData = (rows) => {
+  const noiseMap: Record<string, number[]> = {};
+  rows.forEach((metric, metricIdx) => {
+    const rand = seededRand(hashStr(metric.flavor) ^ (metricIdx * 2654435761));
+    noiseMap[metric.flavor] = STATE_TREND_MONTHS.map(() => rand() - 0.5);
+  });
+
+  return STATE_TREND_MONTHS.map((month, monthIdx) => {
+    const point: Record<string, any> = { month };
+    rows.forEach((metric) => {
       const end = parseMetricVolume(metric.convVolume);
       const growth = parsePct(metric.convGrowth);
       const start = growth <= -99 ? end : end / (1 + growth / 100);
       const delta = end - start;
-      const wave = Math.sin((progress + metricIdx * 0.13) * Math.PI) * delta * 0.045;
-      point[metric.flavor] = Math.max(0, Math.round(start + delta * eased + wave));
+      const progress = monthIdx / (STATE_TREND_MONTHS.length - 1);
+      const noise = noiseMap[metric.flavor][monthIdx] * Math.abs(delta) * 0.22;
+      point[metric.flavor] = Math.max(0, Math.round(start + delta * progress + noise));
     });
-
     return point;
   });
+};
 
 const StateTrendTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
@@ -730,45 +745,104 @@ export const DocWinningClustersCard = () => {
 };
 
 const FLAVOR_BRAND_ROWS = [
-  { flavor: "Kaju Katli", brands: "Bikaji, Chitale Bandhu, Haldiram's, Singla Sweets, Lal Sweets, Govind Sweets, House of Indya, Dessert Drama" },
-  { flavor: "Coconut Jaggery", brands: "Wonderland Foods, Urban Platter, Vaagmee, DGardeen" },
-  { flavor: "Jalebi", brands: "Naturals Ice Cream, Chowpatty" },
-  { flavor: "Badam Pista", brands: "Haldiram's, Karachi Bakery, Dadu's" },
-  { flavor: "Bellam (Jaggery)", brands: "Indira Foods, Kalaguragampa" },
-  { flavor: "Gunpowder Podi", brands: "Yours Freshly, PODI Life" },
-  { flavor: "Gongura", brands: "Aachi Foods, Ramadevi Foods" },
-  { flavor: "Tamarind", brands: "Doritos" },
-  { flavor: "Garlic Chilli", brands: "Deep, Shri Nath Ji, Kathiyawadi" },
-  { flavor: "Wild Honey", brands: "Gone Farmers, Oorla, bb Royal" },
-  { flavor: "Black Sesame", brands: "Kisan, Ovenfresh, Rajaram's, Lakshme's Peanut Candy" },
-  { flavor: "Smoked Chilli", brands: "Brown Bag Crisps, Bigg Beans" },
-  { flavor: "Bamboo Shoot", brands: "Tripura Govt, Canz" },
-  { flavor: "Fermented Soybean (Axone)", brands: "Axone Brand, NE Origins" },
-  { flavor: "Sichuan Pepper", brands: "50Hertz Foods, Paul And Mike" },
-  { flavor: "Nolen Gur", brands: "JOLKHABAR, Mahashay India, Silkrute" },
-  { flavor: "Bhut Jolokia", brands: "Too Yumm!" },
-  { flavor: "Panch Phoron", brands: "MANPASAND, JK Spices" },
-  { flavor: "Lakadong Turmeric", brands: "Daily Farmer, Organic India, Just Jaivik, NAKI, Zizira" },
-  { flavor: "Sattu Masala", brands: "Smaart Foodsz, Mindy Munchs" },
-  { flavor: "Chaat Masala", brands: "Bharat Masala, Good Time, Vatika, Richday, Maruti" },
-  { flavor: "Pudina Masala", brands: "PODI Life" },
-  { flavor: "Methi Masala", brands: "Baba Ramdev, Golvi" },
-  { flavor: "Sev Masala", brands: "Shree Mithai, Chandra Snacks" },
-  { flavor: "Indori Namkeen Masala", brands: "Rajshri" },
-  { flavor: "Jhalmuri Masala", brands: "Okhli Musal Brand, L.V. Spices" },
-  { flavor: "Achari Spice", brands: "CURRENT, Mallko Store" },
-  { flavor: "Tandoori Spice", brands: "Super Healthyfox, Makksquad" },
-  { flavor: "Schezwan", brands: "Snack Nation" },
-  { flavor: "Orange Blossom", brands: "Rashmi Sweets" },
-  { flavor: "Kiwi", brands: "Radhe Mart" },
-  { flavor: "Himalayan Berry", brands: "JR Herbal, Vanraag Healthcare (Nola)" },
-  { flavor: "Curry Leaf", brands: "PODI Life" },
-  { flavor: "Walnut Spice", brands: "Wonderland Foods" },
-  { flavor: "Red Chilli", brands: "Too Yumm!" },
-  { flavor: "Mustard/Kasundi", brands: "Kasundi" },
-  { flavor: "Gundruk (Fermented Bamboo)", brands: "Gundruk Brand" },
-  { flavor: "Axone", brands: "Axone Brand, NE Origins" },
-  { flavor: "Mint", brands: "PODI Life" },
+  { flavor: "Kaju Katli", brands: "Haldiram's, Bikanervala, Bikaji, G. Pulla Reddy Sweets" },
+  { flavor: "Coconut Jaggery", brands: "Pedro Pao, Navruchi" },
+  { flavor: "Jalebi", brands: "Haldiram's, Bikanervala, Bikano, Naturals, Vadilal" },
+  { flavor: "Badam Pista", brands: "Vadilal, Amul, Havmor, NIC" },
+  { flavor: "Bellam / Jaggery", brands: "G. Pulla Reddy Sweets, 24 Mantra Organic, Two Brothers Organic Farms" },
+  { flavor: "Gunpowder Podi", brands: "777, MTR, Adukale, Yours Freshly" },
+  { flavor: "Gongura", brands: "Priya, Vellanki Foods, A1 Chips, NOICE" },
+  { flavor: "Tamarind", brands: "GO DESi, SWAD, Paper Boat, Mapro" },
+  { flavor: "Curry Leaf", brands: "Sweet Karam Coffee, Adukale, The Whole Truth" },
+  { flavor: "Garlic Chilli", brands: "Jabsons, South Side Habits, Ching's, Wingreens" },
+  { flavor: "Wild Honey", brands: "Akshayakalpa Organic, Safa Honey Co., Indigenous Honey" },
+  { flavor: "Orange Blossom", brands: "Maksika Honey, Honey and Spice" },
+  { flavor: "Kiwi", brands: "Naturals, Paper Boat, Mapro, Mala's" },
+  { flavor: "Himalayan Berry", brands: "Himalayan Berry, IMC" },
+  { flavor: "Black Sesame", brands: "Nomou, Mochico, Smoor" },
+  { flavor: "Smoked Chilli", brands: "Saucy Joe's, SmallBatch, Naagin" },
+  { flavor: "Bamboo Shoot", brands: "Graminway, Coorg Basket, Y Not" },
+  { flavor: "Black Sesame Salt", brands: "S&B, Bakefat India" },
+  { flavor: "Sichuan Pepper", brands: "Moi Soi, Ching's, HUNAN AT HOME" },
+  { flavor: "Nolen Gur", brands: "NIC, Pabrai's, Keventer Metro, Rollick" },
+  { flavor: "Pudina Masala", brands: "Haldiram's, Evolve Snacks" },
+  { flavor: "Schezwan", brands: "Kurkure, Ching's, Jadhav's, GO HUNGRY, Moi Soi" },
+  { flavor: "Bebinca Caramel", brands: "Pedro Pao" },
+  { flavor: "Cashew", brands: "Haldiram's, Bikaji, Krishival, The Snack Company, Trader Joe's" },
+  { flavor: "Recheado Spice", brands: "Karma Foods, SARANZ" },
+  { flavor: "Kokum", brands: "Paper Boat, Mapro, Khuvi Organics" },
+  { flavor: "Xacuti Spice", brands: "Karma Foods, Best Foods Goa" },
+  { flavor: "Shrikhand", brands: "Amul, Govardhan, Madhav Sweets, Naturals, Rangoli" },
+  { flavor: "Basundi", brands: "Mother Dairy, Gokul, Manoj Ice Cream" },
+  { flavor: "Methi Masala", brands: "Hira Sweets, Chandra Snacks" },
+  { flavor: "Sev Masala", brands: "Haldiram's, Bikaji, Balaji, Aakash Namkeen" },
+  { flavor: "Green Chilli Lime", brands: "Mr. Makhana, NoHo, FabBox" },
+  { flavor: "Apple Cinnamon", brands: "Nourish Organics, Pure Project, Hostess" },
+  { flavor: "Pahadi Chilli", brands: "N/A" },
+  { flavor: "Garlic Herb", brands: "Wingreens, Cornitos, Sorrentina" },
+  { flavor: "Mint", brands: "Pulse, Alpenliebe, Orbit, Tic Tac, Haldiram's" },
+  { flavor: "Walnut Spice", brands: "Vibrant Living" },
+  { flavor: "Nippattu Spice", brands: "Anand Sweets, Sweet Karam Coffee, Tasty World, Modern Kitchens" },
+  { flavor: "Mysore Pak", brands: "Sri Krishna Sweets, Anand Sweets, India Sweet House, Haldiram's, A2B" },
+  { flavor: "Black Pepper", brands: "Snack Factory, Sri Radhaa's, Grab N Eat" },
+  { flavor: "Honey", brands: "Dabur, Saffola, Kellogg's, Yoga Bar, The Whole Truth" },
+  { flavor: "Black Rice Sweet", brands: "For8, Chakhao, Manipur Organic Mission Agency" },
+  { flavor: "Assam Tea", brands: "Tata Tea, Halmari, Vahdam, Octavius, Jayshree Tea" },
+  { flavor: "Bhut Jolokia", brands: "Naagin, Wingreens, Rasaveda, SM Freshy" },
+  { flavor: "Mustard", brands: "Kasundi, Wingreens, The Gourmet Jar, Veeba, Del Monte" },
+  { flavor: "Panch Phoron", brands: "Sunrise, Bharat Masala, JMC, KDA" },
+  { flavor: "Soan Papdi", brands: "Haldiram's, Bikaji, Bikano, Bikanervala" },
+  { flavor: "Til Jaggery", brands: "Haldiram's, Chitale Bandhu, Garden, Laxmi Narayan Chiwda" },
+  { flavor: "Khaja", brands: "Sha Motiram, Suruchi Foods, Parsi Dairy Farm" },
+  { flavor: "Motichoor", brands: "Haldiram's, Bikanervala, Bikaji, Bikano" },
+  { flavor: "Rabri", brands: "Haldiram's, Bikanervala, Havmor, NIC, Vadilal" },
+  { flavor: "Sattu Masala", brands: "BIHARI SATTU, Ganesh, Natureship, Baaghi Ballia" },
+  { flavor: "Ajwain", brands: "Haldiram's, Bikano, Aakash Namkeen, 4700BC, Cornitos" },
+  { flavor: "Chaat Masala", brands: "MDH, Everest, Catch, Tata Sampann, Haldiram's" },
+  { flavor: "Mahua Honey", brands: "Cottage Wellness, Dr. Bee's" },
+  { flavor: "Chana Jor Masala", brands: "Haldiram's, Bikaji, Svasthyaa, Medhyata" },
+  { flavor: "Red Chilli", brands: "Lay's, Kurkure, Bingo!, Haldiram's, 90's MILL" },
+  { flavor: "Ras Malai", brands: "Haldiram's, Bikanervala, Bikaji, NIC, Vadilal" },
+  { flavor: "Achari Spice", brands: "Bingo!, Too Yumm!, Ching's, Haldiram's, Lay's" },
+  { flavor: "Tandoori Spice", brands: "Too Yumm!, Open Secret, Haldiram's, A1 Chips, ONE HEALTH NUTRI" },
+  { flavor: "Banana Jaggery", brands: "A1 Chips, Flavors of Kerala, Mylapore Ganapathy's, Amma's Kitchen" },
+  { flavor: "Ada Pradhaman", brands: "Tasty Nibbles, Kanchana, Double Horse" },
+  { flavor: "Coconut Pepper", brands: "N/A" },
+  { flavor: "Malabar Spice", brands: "Beyond Snack, A1 Chips" },
+  { flavor: "Ginger Chilli", brands: "Blue Dragon" },
+  { flavor: "Gajar Halwa", brands: "Haldiram's, Bikanervala, Naturals, Arun Icecreams, Bikano" },
+  { flavor: "Gulab Jamun", brands: "Haldiram's, Bikanervala, Bikaji, Gits, NIC" },
+  { flavor: "Namkeen Masala", brands: "Haldiram's, Bikaji, Yellow Diamond, Balaji, Aakash Namkeen" },
+  { flavor: "Modak Coconut", brands: "HOCCO, Chitale Bandhu, Bikanervala" },
+  { flavor: "Pineapple", brands: "Paper Boat, Mapro, Naturals, Mala's, Vadilal" },
+  { flavor: "Passion Fruit", brands: "Paper Boat, Mapro, Häagen-Dazs, Naturals" },
+  { flavor: "Sesame Chilli", brands: "Real Thai, Ghee Hiang, Moi Soi" },
+  { flavor: "Herb Mix", brands: "Wingreens, Cornitos, Sorrentina, Keya" },
+  { flavor: "Turmeric", brands: "The Snack Company, Stanes, Taali" },
+  { flavor: "Citrus", brands: "Tic Tac, Pulse, Shadani, Paper Boat, Mapro" },
+  { flavor: "Banana Blossom Honey", brands: "Galho Wild Foods, HoneyKart" },
+  { flavor: "Bird's Eye Chilli", brands: "Ong's, Hot Toddy" },
+  { flavor: "Rice Malt Caramel", brands: "SMOOR" },
+  { flavor: "Naga Garlic", brands: "Zonee, Saucy Joe's, Bengamese" },
+  { flavor: "Chhena Poda", brands: "OMFED, Crecta Foods, Chenapodo, Native Milk" },
+  { flavor: "Rasgulla", brands: "Haldiram's, Bikaji, Bikanervala, Bikano, Amul" },
+  { flavor: "Phirni", brands: "Haldiram's, Bikano" },
+  { flavor: "Ker Sangri Spice", brands: "Spice Platter, Indiana Organic, Delight Foods" },
+  { flavor: "Gundruk", brands: "The Northeast Store" },
+  { flavor: "Cardamom Milk", brands: "Amul, Mother Dairy, Keventers" },
+  { flavor: "Mandarin Orange", brands: "Ossoro, PRAN" },
+  { flavor: "Berry", brands: "Farmley, SnackAmor, The Gourmet Stories" },
+  { flavor: "Kesar Milk", brands: "Amul, Mother Dairy" },
+  { flavor: "Qubani Apricot", brands: "Sitara Foods, Naturogin, Charminar Hotel" },
+  { flavor: "Mosdeng Chilli", brands: "N/A" },
+  { flavor: "Bhang Jeera", brands: "The Pahari Life, House of Himalayas, KUDAAL, Anamaya" },
+  { flavor: "Bal Mithai", brands: "Kheem Singh Mohan Singh Rautela Sweets" },
+  { flavor: "Singori Coconut", brands: "Kheem Singh Mohan Singh Rautela Sweets" },
+  { flavor: "Mishti Doi", brands: "Mother Dairy, Amul, Epigamia, Milky Mist" },
+  { flavor: "Kasundi", brands: "Biswa Bangla, Cookme, Sunrise" },
+  { flavor: "Jhalmuri Masala", brands: "Bikaji, Balaji" },
+  { flavor: "Gondhoraj Lime", brands: "Pabrai's, FAB, Ossoro" },
+  { flavor: "Chanachur", brands: "Mukharochak, Haldiram's, Bikaji" },
 ];
 
 export const DocBrandsCard = () => (
@@ -933,6 +1007,11 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
             {th("engVolume", "Engagement volume")}
             {th("conv", "Conversation growth")}
             {th("eng", "Engagement growth")}
+            {th("diyIndex", "DIY Index")}
+            {th("shareabilityIndex", "Shareability Index")}
+            {th("cravingIndex", "Craving Index")}
+            {th("comfortIndex", "Comfort Index")}
+            {th("curiosityIndex", "Curiosity Index")}
             <th>Why popular</th>
             {th("trend", "Trend Type")}
             <th>States Popular in</th>
@@ -944,7 +1023,7 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={11} className="national-table-empty">
+              <td colSpan={16} className="national-table-empty">
                 No flavors match this trend filter.
               </td>
             </tr>
@@ -970,6 +1049,11 @@ const NationalFlavorTable = ({ rows, onRowClick, sortKey, sortDir, onSort }) => 
                   <td><span className="national-volume">{f.engVolume || "-"}</span></td>
                   <td><span className="national-growth">{formatGrowth(f.convGrowth)}</span></td>
                   <td><span className="national-growth">{formatGrowth(f.engGrowth)}</span></td>
+                  <td><span className="national-index">{f.diyIndex ?? "-"}</span></td>
+                  <td><span className="national-index">{f.shareabilityIndex ?? "-"}</span></td>
+                  <td><span className="national-index">{f.cravingIndex ?? "-"}</span></td>
+                  <td><span className="national-index">{f.comfortIndex ?? "-"}</span></td>
+                  <td><span className="national-index">{f.curiosityIndex ?? "-"}</span></td>
                   <td className="national-why-cell">{f.whyPopular}</td>
                   <td>
                     <span className={"trend-pill trend-" + f.trendType.toLowerCase()}>{f.trendType}</span>
@@ -1031,6 +1115,11 @@ export const DocNationalCard = () => {
       if (sortKey === "engVolume") return (parseNationalVolume(a.engVolume) - parseNationalVolume(b.engVolume)) * dir;
       if (sortKey === "conv") return (parsePct(a.convGrowth) - parsePct(b.convGrowth)) * dir;
       if (sortKey === "eng") return (parsePct(a.engGrowth) - parsePct(b.engGrowth)) * dir;
+      if (sortKey === "diyIndex") return ((a.diyIndex || 0) - (b.diyIndex || 0)) * dir;
+      if (sortKey === "shareabilityIndex") return ((a.shareabilityIndex || 0) - (b.shareabilityIndex || 0)) * dir;
+      if (sortKey === "cravingIndex") return ((a.cravingIndex || 0) - (b.cravingIndex || 0)) * dir;
+      if (sortKey === "comfortIndex") return ((a.comfortIndex || 0) - (b.comfortIndex || 0)) * dir;
+      if (sortKey === "curiosityIndex") return ((a.curiosityIndex || 0) - (b.curiosityIndex || 0)) * dir;
       if (sortKey === "trend") return a.trendType.localeCompare(b.trendType) * dir;
       return 0;
     });
@@ -1048,6 +1137,11 @@ export const DocNationalCard = () => {
         { k: "Engagement volume", v: row.engVolume },
         { k: "Conv. growth", v: row.convGrowth || f.convGrowth },
         { k: "Eng. growth", v: row.engGrowth || f.engGrowth },
+        { k: "DIY Index", v: row.diyIndex != null ? String(row.diyIndex) : undefined },
+        { k: "Shareability Index", v: row.shareabilityIndex != null ? String(row.shareabilityIndex) : undefined },
+        { k: "Craving Index", v: row.cravingIndex != null ? String(row.cravingIndex) : undefined },
+        { k: "Comfort Index", v: row.comfortIndex != null ? String(row.comfortIndex) : undefined },
+        { k: "Curiosity Index", v: row.curiosityIndex != null ? String(row.curiosityIndex) : undefined },
         { k: "Trend", v: row.trendType || f.trendType },
         { k: "Where popular", v: row.states || f.states },
         { k: "When trends", v: row.whenTrends },
@@ -1064,6 +1158,7 @@ export const DocNationalCard = () => {
     } else {
       setSortKey(key);
       setSortDir(key === "name" || key === "trend" || key === "category" ? "asc" : "desc");
+
     }
   };
 
@@ -1095,7 +1190,7 @@ export const DocNationalCard = () => {
 export const DocActionablesCard = ({ onRunDeliverable, busy }) => {
   const [selectedType, setSelectedType] = useState("content_cards");
   const [selectedState, setSelectedState] = useState("Maharashtra");
-  const [flavorName, setFlavorName] = useState("Honey Chilli");
+  const [flavorName, setFlavorName] = useState("Kaju Katli");
   const [instructions, setInstructions] = useState("");
   const active = DELIVERABLE_TYPES.find((d) => d.id === selectedType) || DELIVERABLE_TYPES[0];
   const flavorSuggestions = useMemo(() => FLAVOR_MACHINE.map((f) => f.name), []);

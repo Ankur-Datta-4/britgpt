@@ -148,7 +148,7 @@
         "engagementGrowth": "+23%"
       },
       {
-        "flavor": "Fermented Soybean",
+        "flavor": "Citrus Chilli",
         "type": "Savory",
         "convVolume": "5.1K",
         "convGrowth": "+22%",
@@ -244,14 +244,6 @@
         "convGrowth": "+17%",
         "totalEngagement": "197.8K",
         "engagementGrowth": "+22%"
-      },
-      {
-        "flavor": "Fermented Bamboo",
-        "type": "Savory",
-        "convVolume": "22.9K",
-        "convGrowth": "+15%",
-        "totalEngagement": "171.5K",
-        "engagementGrowth": "+19%"
       },
       {
         "flavor": "Panch Phoron",
@@ -1212,7 +1204,7 @@
         "engagementGrowth": "+10%"
       },
       {
-        "flavor": "Indori Namkeen Masala",
+        "flavor": "Namkeen Masala",
         "type": "Savory",
         "convVolume": "52.8K",
         "convGrowth": "+26%",
@@ -1416,7 +1408,7 @@
         "engagementGrowth": "+19%"
       },
       {
-        "flavor": "Fermented Soybean",
+        "flavor": "Citrus Chilli",
         "type": "Savory",
         "convVolume": "8.9K",
         "convGrowth": "+20%",
@@ -1482,7 +1474,7 @@
         "engagementGrowth": "+16%"
       },
       {
-        "flavor": "Lakadong Turmeric",
+        "flavor": "Turmeric",
         "type": "Savory",
         "convVolume": "18.6K",
         "convGrowth": "+32%",
@@ -1498,7 +1490,7 @@
         "engagementGrowth": "+33%"
       },
       {
-        "flavor": "Fermented Soybean",
+        "flavor": "Citrus Chilli",
         "type": "Savory",
         "convVolume": "11.9K",
         "convGrowth": "+18%",
@@ -1526,7 +1518,7 @@
     "takeaway": "What this means: Origin-linked ingredients increasingly command premium consumer attention.",
     "trends": {
       "sweet": "Slow but consistent growth around premium natural flavor ingredients.",
-      "savory": "Lakadong Turmeric drives sustained breakout growth across discussions."
+      "savory": "Turmeric drives sustained breakout growth across discussions."
     }
   },
   "Mizoram": {
@@ -1596,7 +1588,7 @@
         "engagementGrowth": "+31%"
       },
       {
-        "flavor": "Fermented Soybean",
+        "flavor": "Citrus Chilli",
         "type": "Savory",
         "convVolume": "8.8K",
         "convGrowth": "+18%",
@@ -1668,14 +1660,6 @@
         "convGrowth": "+34%",
         "totalEngagement": "271.8K",
         "engagementGrowth": "+44%"
-      },
-      {
-        "flavor": "Axone",
-        "type": "Savory",
-        "convVolume": "17.8K",
-        "convGrowth": "+26%",
-        "totalEngagement": "149.6K",
-        "engagementGrowth": "+34%"
       },
       {
         "flavor": "Bamboo Shoot",
@@ -2030,7 +2014,7 @@
         "engagementGrowth": "+36%"
       },
       {
-        "flavor": "Fermented Soybean",
+        "flavor": "Citrus Chilli",
         "type": "Savory",
         "convVolume": "10.6K",
         "convGrowth": "+21%",
