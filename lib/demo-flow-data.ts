@@ -153,6 +153,11 @@ export const NATIONAL_FLAVORS = nationalJson as Array<{
   whenTrends?: string;
   extensions: string;
   brandFit: string;
+  diyIndex?: number;
+  shareabilityIndex?: number;
+  cravingIndex?: number;
+  comfortIndex?: number;
+  curiosityIndex?: number;
 }>;
 
 const CROSS_LABELS: Record<string, Record<string, string>> = {
