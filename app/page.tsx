@@ -1,5 +1,5 @@
-import BritApp from "@/components/brit/brit-app";
+import BritAppV2 from "@/components/brit/brit-app-v2";
 
 export default function HomePage() {
-  return <BritApp />;
+  return <BritAppV2 />;
 }
