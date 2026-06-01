@@ -1451,9 +1451,9 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
             {/* Qual fields */}
             <div className="flavor-modal-qual">
               {[
-                ["Why Popular", flavor.whyPopular],
-                ["Where Popular", flavor.states],
-                ["When Trends", flavor.whenTrends],
+                ["Why the Flavor is Popular", flavor.whyPopular],
+                ["States Most Popular In", flavor.states],
+                ["When the Flavor Trends", flavor.whenTrends],
                 ["Product Extensions", flavor.extensions],
                 ["Britannia Fit", flavor.brandFit],
               ]
