@@ -1396,6 +1396,7 @@ const TREND_DOT_COLORS = {
 const trendDotColor = (t) => TREND_DOT_COLORS[t] || TREND_DOT_COLORS.Stable;
 
 const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
+  const [showPendingIntegrations, setShowPendingIntegrations] = useState(false);
   const trendData = useMemo(
     () => buildTrendData([{ flavor: flavor.name, convVolume: flavor.convVolume, convGrowth: flavor.convGrowth }]),
     [flavor]
@@ -1406,6 +1407,7 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
     { label: "Generate a Concept Card", actionId: "concept_cards" },
     { label: "Generate a Video Ad Storyboard", actionId: "storyboard" },
     { label: "Generate Message and Comms Recommendation", actionId: "creative_brief" },
+    { label: "Forecast Trend (+24mo)", actionId: "forecast_trend", pending: true },
   ];
 
   const indices = [
@@ -1513,9 +1515,14 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
           {deliverables.map((d) => (
             <button
               key={d.actionId}
+              type="button"
               className="flavor-modal-action-btn"
               disabled={busy}
               onClick={() => {
+                if (d.pending) {
+                  setShowPendingIntegrations(true);
+                  return;
+                }
                 onRunDeliverable?.({ actionId: d.actionId, flavor: flavor.name, brandFit: flavor.brandFit, state: "Maharashtra", instructions: "" });
                 onClose();
               }}
@@ -1524,6 +1531,28 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
             </button>
           ))}
         </div>
+        {showPendingIntegrations && (
+          <div className="flavor-pending-dialog-backdrop" onClick={() => setShowPendingIntegrations(false)}>
+            <div
+              className="flavor-pending-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="pending-integrations-title"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="flavor-pending-dialog__close"
+                aria-label="Close"
+                onClick={() => setShowPendingIntegrations(false)}
+              >
+                ✕
+              </button>
+              <h3 id="pending-integrations-title">Pending Integrations</h3>
+              <p>Please integrate your internal data to forecast this trend.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

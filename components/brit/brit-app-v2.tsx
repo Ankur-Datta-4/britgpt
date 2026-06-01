@@ -843,7 +843,7 @@ export default function BritAppV2() {
     push({ role: "user", text: `${labels[actionId] || actionId} · ${flavor} · ${state}` });
     setActionBusy(true);
     push({ role: "asst", kind: "typing", text: `Generating ${labels[actionId] || actionId}…` });
-    const ctx = actionContext({ state, flavor, instructions });
+    const ctx = actionContext({ state, flavor, brandFit, instructions });
     try {
       const payload = await executeAction(actionId, ctx, setTypingText);
       setMessages((ms) => {

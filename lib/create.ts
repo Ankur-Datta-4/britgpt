@@ -163,7 +163,14 @@ export const pickConceptSkus = (ctx: {
   const h = BRIT_DATA.honeyChilli?.extensions || [];
   const g = BRIT_DATA.gunpowderPodi?.extensions || [];
   const out: { name: string; lane: string }[] = [];
-  if (id === "honeyChilli" || id === "extension") {
+  const selectedFlavor = ctx.flavor?.trim();
+  if (selectedFlavor) {
+    const fit = ctx.brandFit?.split(",")[0]?.trim();
+    const formats = fit
+      ? [fit, `${fit} minis`, `${fit} bites`]
+      : ["Crackers", "Cream biscuits", "Snack bites"];
+    formats.forEach((format) => out.push({ name: `${selectedFlavor} ${format}`, lane: selectedFlavor }));
+  } else if (id === "honeyChilli" || id === "extension") {
     h.slice(0, 2).forEach((name) => out.push({ name, lane: "Honey Chilli" }));
     g.slice(0, 1).forEach((name) => out.push({ name, lane: "Gunpowder Podi" }));
   } else if (id === "sentiment") {

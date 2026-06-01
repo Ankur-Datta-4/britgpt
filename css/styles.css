@@ -4548,6 +4548,57 @@ button { font-family: inherit; cursor: pointer; }
   opacity: 0.4;
   cursor: not-allowed;
 }
+.flavor-pending-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: oklch(0.1 0.01 25 / 0.32);
+  backdrop-filter: blur(2px);
+}
+.flavor-pending-dialog {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 24px 28px 26px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--panel);
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+}
+.flavor-pending-dialog__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--panel);
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+.flavor-pending-dialog__close:hover {
+  border-color: var(--red);
+  color: var(--red);
+  background: var(--red-soft);
+}
+.flavor-pending-dialog h3 {
+  margin: 0 0 8px;
+  font-family: var(--f-display);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--fg);
+}
+.flavor-pending-dialog p {
+  margin: 0;
+  color: var(--fg-mid);
+  font-size: 15px;
+  line-height: 1.5;
+}
 
 /* ── Prioritize table (top-right quadrant) ── */
 .prioritize-table-wrap {

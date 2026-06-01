@@ -830,7 +830,7 @@ export default function BritApp() {
     })();
   }, [actionContext, updateFilmJob, showToast]);
 
-  const onRunDeliverable = async ({ actionId, state, flavor, instructions }) => {
+  const onRunDeliverable = async ({ actionId, state, flavor, brandFit, instructions }) => {
     if (actionId === "create_film") {
       if (filmBusy) return;
       runFilmAsync({ state, flavor, instructions });
@@ -847,7 +847,7 @@ export default function BritApp() {
     push({ role: "user", text: `${labels[actionId] || actionId} · ${flavor} · ${state}` });
     setActionBusy(true);
     push({ role: "asst", kind: "typing", text: `Generating ${labels[actionId] || actionId}…` });
-    const ctx = actionContext({ state, flavor, instructions });
+    const ctx = actionContext({ state, flavor, brandFit, instructions });
     try {
       const payload = await executeAction(actionId, ctx, setTypingText);
       setMessages((ms) => {
