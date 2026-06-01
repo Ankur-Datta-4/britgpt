@@ -906,7 +906,7 @@ export const DocCrossStateCard = () => {
         <div className="cross-state-tabs">
           {[
             { id: "zone", label: "Zone-wise" },
-            { id: "weather", label: "Weather" },
+            { id: "weather", label: "Seasonality" },
             { id: "age", label: "Age & demographic" },
           ].map((d) => (
             <button

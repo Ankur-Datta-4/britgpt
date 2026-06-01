@@ -4576,6 +4576,13 @@ button { font-family: inherit; cursor: pointer; }
   background: var(--red-soft);
   color: var(--red-deep);
 }
+.prioritize-trend-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-width: 130px;
+}
 
 /* ── v2 card: quadrant overlay offset to match new chart margins ── */
 .flavor-matrix-v2-card .brit-priority-matrix__quadrants {

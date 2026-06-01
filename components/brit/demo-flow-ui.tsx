@@ -445,7 +445,7 @@ export const CrossStateInsightsCard = () => {
         <div className="cross-dim-tabs">
           {[
             { id: "zone", label: "Zone-wise" },
-            { id: "weather", label: "Weather / seasonal" },
+            { id: "weather", label: "Seasonality" },
             { id: "age", label: "Age / demographic" },
           ].map((d) => (
             <button

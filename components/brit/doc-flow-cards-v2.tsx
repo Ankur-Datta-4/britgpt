@@ -909,7 +909,7 @@ export const DocCrossStateCard = () => {
         <div className="cross-state-tabs">
           {[
             { id: "zone", label: "Zone-wise" },
-            { id: "weather", label: "Weather" },
+            { id: "weather", label: "Seasonality" },
             { id: "age", label: "Age & demographic" },
           ].map((d) => (
             <button
@@ -1587,21 +1587,31 @@ const PrioritizeTable = ({ flavors }) => {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((f) => (
-              <tr key={f.name}>
-                <td><b>{f.name}</b></td>
-                <td>{f.convVolume}</td>
-                <td>{f.engVolume}</td>
-                <td>{f.convGrowth}</td>
-                <td>{f.engGrowth}</td>
-                <td><span className="national-index">{f.diyIndex ?? "—"}</span></td>
-                <td><span className="national-index">{f.shareabilityIndex ?? "—"}</span></td>
-                <td><span className="national-index">{f.cravingIndex ?? "—"}</span></td>
-                <td><span className="national-index">{f.comfortIndex ?? "—"}</span></td>
-                <td><span className="national-index">{f.curiosityIndex ?? "—"}</span></td>
-                <td>{f.trendType}</td>
-              </tr>
-            ))}
+            {sorted.map((f) => {
+              const isCrossCategory = CROSS_CATEGORY_FLAVORS.has(f.name);
+              const crossRegion = isCrossRegion(f.states || "");
+              return (
+                <tr key={f.name}>
+                  <td><b>{f.name}</b></td>
+                  <td>{f.convVolume}</td>
+                  <td>{f.engVolume}</td>
+                  <td>{f.convGrowth}</td>
+                  <td>{f.engGrowth}</td>
+                  <td><span className="national-index">{f.diyIndex ?? "—"}</span></td>
+                  <td><span className="national-index">{f.shareabilityIndex ?? "—"}</span></td>
+                  <td><span className="national-index">{f.cravingIndex ?? "—"}</span></td>
+                  <td><span className="national-index">{f.comfortIndex ?? "—"}</span></td>
+                  <td><span className="national-index">{f.curiosityIndex ?? "—"}</span></td>
+                  <td>
+                    <div className="prioritize-trend-tags">
+                      <span>{f.trendType}</span>
+                      {isCrossCategory && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
+                      {crossRegion && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -1646,6 +1656,7 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
   const [showCrossCategory, setShowCrossCategory] = useState(false);
   const [showCrossRegion, setShowCrossRegion] = useState(false);
   const hideTimerRef = useRef(null);
+  const chartWrapRef = useRef(null);
 
   // Build sweet/savory category map from state data
   const flavorCategories = useMemo(() => {
@@ -1704,7 +1715,20 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
 
   const showHover = useCallback((info) => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    setHovered(info);
+    const wrap = chartWrapRef.current;
+    const width = wrap?.getBoundingClientRect().width || 760;
+    const height = wrap?.getBoundingClientRect().height || 520;
+    const tipWidth = 230;
+    const tipHeight = 170;
+    const gap = 16;
+    const left = info.cx + gap + tipWidth > width
+      ? Math.max(8, info.cx - tipWidth - gap)
+      : info.cx + gap;
+    const top = info.cy - 20 + tipHeight > height
+      ? Math.max(8, info.cy - tipHeight - gap)
+      : Math.max(8, info.cy - 20);
+
+    setHovered({ ...info, left, top });
   }, []);
 
   const scheduleHide = useCallback(() => {
@@ -1773,7 +1797,7 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
           </div>
         </div>
 
-        <div style={{ position: "relative" }}>
+        <div ref={chartWrapRef} style={{ position: "relative" }}>
           <div className="brit-priority-matrix__quadrants" aria-hidden>
             <span className="brit-priority-matrix__q brit-priority-matrix__q--tl">Build momentum</span>
             <span className="brit-priority-matrix__q brit-priority-matrix__q--tr">Prioritize</span>
@@ -1834,7 +1858,7 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
           {hovered && (
             <div
               className="flavor-hover-tip"
-              style={{ position: "absolute", left: hovered.cx + 16, top: hovered.cy - 20, zIndex: 20 }}
+              style={{ position: "absolute", left: hovered.left, top: hovered.top, zIndex: 20 }}
               onMouseEnter={cancelHide}
               onMouseLeave={scheduleHide}
             >
