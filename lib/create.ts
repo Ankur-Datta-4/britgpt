@@ -65,35 +65,6 @@ const inferStateCues = (state: string) => {
   return cues[state] || "relatable Indian home or neighborhood snack-time context";
 };
 
-const inferLifeMoment = (lane: string) => {
-  const value = lane.toLowerCase();
-  if (value.includes("honey")) return "evening chai-time or school tiffin";
-  if (value.includes("podi") || value.includes("masala") || value.includes("spice")) {
-    return "rainy-evening chai break or road-trip snacking";
-  }
-  if (value.includes("coconut") || value.includes("jaggery")) return "after-school or weekend family sharing";
-  return "daily chai break or evening snack time";
-};
-
-const inferRtb = (lane: string) => {
-  const value = lane.toLowerCase();
-  if (value.includes("honey") && value.includes("chilli")) return "real honey with chilli finish";
-  if (value.includes("podi")) return "double-roasted podi spice blend";
-  if (value.includes("masala")) return "signature regional masala blend";
-  if (value.includes("coconut")) return "real coconut notes in every bite";
-  if (value.includes("coffee")) return "real coffee aroma profile";
-  return "ingredient-led flavor build true to regional taste";
-};
-
-const inferIngredientShots = (lane: string) => {
-  const value = lane.toLowerCase();
-  if (value.includes("honey") && value.includes("chilli")) return "honey drizzle + whole red chillies";
-  if (value.includes("podi")) return "small bowl of podi spice + curry leaves";
-  if (value.includes("tamarind")) return "tamarind pods + red chilli";
-  if (value.includes("coconut")) return "coconut half + jaggery chunks";
-  if (value.includes("coffee")) return "coffee beans + cocoa dust";
-  return "accurate ingredient shots matching the flavor profile";
-};
 
 const inferPromptVariant = (instructions?: string): ConceptPromptVariant => {
   const text = (instructions || "").toLowerCase();
@@ -110,18 +81,18 @@ const imagePromptFor = (
     region: string;
     state?: string;
     flavor?: string;
+    brandFit?: string;
     variant?: ConceptPromptVariant;
   }
 ) => {
   const state = opts.state || opts.region || "Pan-India";
   const flavor = opts.flavor || concept.lane;
+  const brandFit = opts.brandFit;
   const productName = concept.title || concept.sku;
   const language = inferPrimaryLanguage(state);
   const culturalCue = inferStateCues(state);
-  const lifeMoment = inferLifeMoment(flavor);
-  const rtb = inferRtb(flavor);
-  const ingredientShots = inferIngredientShots(flavor);
   const variant = opts.variant || "english";
+  const brandLine = brandFit ? `The pack must be designed for Britannia ${brandFit} — match the visual identity, tone, and format of the ${brandFit} product line.` : "";
   const hint = concept.imagePromptHint ? ` Extra creative direction: ${concept.imagePromptHint}.` : "";
 
   if (variant === "vernacular") {
@@ -130,15 +101,15 @@ const imagePromptFor = (
       "Generate one 16:9 product concept card for a new snack flavor launch.",
       `State context: ${state}. Primary language: ${language}${HINDI_BELT_STATES.has(state) ? " (Hindi fallback allowed)." : "."}`,
       `Product: ${productName}. Flavor: ${flavor}. Market: ${opts.region}.`,
-      "LEFT HALF (50%): real, relatable person (or natural pair) actively eating/holding the product in a natural moment.",
-      `Use state-authentic cues: ${culturalCue}. Warm, inviting, non-studio lighting.`,
-      `RIGHT HALF (50%): headline in ${language} (8-12 words), conversational and flavor+state specific.`,
-      `Body copy in ${language}, 3-4 sentences: taste+texture first, include life moment (${lifeMoment}), include one RTB (${rtb}), end with how snack time becomes better.`,
-      "Do not use health or nutrition claims. Avoid words like healthy, nutritious, immunity, protein-rich.",
-      `Bottom-right: Britannia pack shot for ${productName}, 2-3 loose product pieces, and 1-2 ingredient visuals (${ingredientShots}).`,
-      "Background: warm solid or soft gradient, clean brand canvas, no busy patterns.",
-      "Optional bottom strip tagline: 6-8 words, conversational.",
-      "Critical rules: ingredient visuals must match the exact flavor; copy must feel local, warm, non-clinical.",
+      "LEFT HALF (50%): real, relatable person actively eating or holding the product in a natural everyday moment.",
+      `Use state-authentic visual cues: ${culturalCue}. Warm, non-studio lighting.`,
+      `RIGHT HALF (50%): headline in ${language} (8-12 words) that captures the specific taste and feeling of ${flavor}.`,
+      `Body copy in ${language} (3-4 sentences): describe what ${flavor} tastes and feels like, the occasion it suits best, and a warm payoff.`,
+      "No health, nutritional, medicinal, or competitive claims.",
+      `Bottom-right: Britannia pack shot for ${productName}, 2-3 loose product pieces, and 1-2 ingredient visuals that authentically represent ${flavor} — show the actual defining ingredients or visual cues of this specific flavor, not generic food imagery.`,
+      "Background: warm solid or soft gradient, clean and uncluttered.",
+      `Critical rule: every visual element must be specific to ${flavor} — never generic.`,
+      brandLine,
       hint,
     ]
       .filter(Boolean)
@@ -148,17 +119,16 @@ const imagePromptFor = (
   return [
     "You are a concept card designer for Britannia India.",
     "Generate one 16:9 product concept card in English for a new snack flavor launch.",
-    `State context: ${state}.`,
-    `Product: ${productName}. Flavor: ${flavor}. Market: ${opts.region}.`,
-    "LEFT HALF (50%): real-looking person (or natural pair) actively holding/eating the product in an everyday moment.",
-    `State-authentic cues only: ${culturalCue}. Warm natural lighting. No celebrity/model look.`,
-    "RIGHT HALF (50%): headline in English (8-12 words), conversational, feeling-led, no ad jargon.",
-    `Body copy in English (3-4 sentences): (1) taste+texture first, (2) specific RTB (${rtb}), (3) life moment (${lifeMoment}), (4) close with product name and warm payoff.`,
+    `Product: ${productName}. Flavor: ${flavor}. State: ${state}.`,
+    brandLine,
+    "LEFT HALF (50%): real-looking person actively holding or eating the product in an everyday moment.",
+    `State-authentic visual cues: ${culturalCue}. Warm natural lighting. No celebrity or model look.`,
+    `RIGHT HALF (50%): English headline (8-12 words) that captures the specific taste and character of ${flavor} — conversational and feeling-led, no ad jargon.`,
+    `Body copy in English (3-4 sentences): (1) describe what ${flavor} tastes and feels like specifically, (2) the occasion it suits, (3) a warm close with the product name.`,
     "No health, nutritional, medicinal, competitive, or empty superlative claims.",
-    `Bottom-right: Britannia pack shot for ${productName}, 2-3 loose product pieces, and 1-2 ingredient visuals (${ingredientShots}).`,
-    "Background: warm solid/soft gradient brand canvas, clean and uncluttered.",
-    "Optional sign-off tagline: 6-8 words in English, conversational.",
-    "Ensure flavor-state specificity in both visuals and copy; never generic.",
+    `Bottom-right: Britannia ${brandFit || "brand"} pack shot for ${productName}, 2-3 loose product pieces, and ingredient visuals that are authentically and specifically tied to ${flavor} — use your knowledge of what defines this flavor visually (actual ingredients, spices, or components), not generic food imagery.`,
+    "Background: warm solid or soft gradient, clean and uncluttered.",
+    `Everything — visuals and copy — must feel made specifically for ${flavor} in ${state} on a Britannia ${brandFit || ""} pack. Never generic.`,
     hint,
   ]
     .filter(Boolean)
@@ -185,6 +155,7 @@ export const pickConceptSkus = (ctx: {
   params?: { region?: string };
   state?: string;
   flavor?: string;
+  brandFit?: string;
   instructions?: string;
 }) => {
   const script = ctx.script || {};
@@ -225,7 +196,7 @@ export const pickConceptSkus = (ctx: {
     tagline: `Bold ${c.lane.toLowerCase()} flavor. Try the new ${c.name.toLowerCase()}!`,
     imagePrompt: imagePromptFor(
       { sku: c.name, lane: c.lane },
-      { region, state, flavor, variant }
+      { region, state, flavor, brandFit: ctx.brandFit, variant }
     ),
     gradient: ["#c45c3e", "#8b2e1a", "#e8a87c", "#5c3d2e", "#d4a574", "#7a4a32"][
       i % 6
@@ -240,6 +211,7 @@ const mergeLlmConcepts = (
     region: string;
     state?: string;
     flavor?: string;
+    brandFit?: string;
     variant?: ConceptPromptVariant;
   }
 ) =>
@@ -444,6 +416,7 @@ export const generateConceptCards = async (
     params?: { region?: string };
     state?: string;
     flavor?: string;
+    brandFit?: string;
     instructions?: string;
   } = {},
   onProgress?: (t: string) => void
@@ -453,6 +426,7 @@ export const generateConceptCards = async (
     ctx.params?.region || script.scopeDefaults?.region || "Pan-India";
   const state = ctx.state || region;
   const flavor = ctx.flavor;
+  const brandFit = ctx.brandFit;
   const variant = inferPromptVariant(ctx.instructions);
   let concepts = pickConceptSkus(ctx);
   const bedrockKey = getBedrockKey();
@@ -462,7 +436,7 @@ export const generateConceptCards = async (
     onProgress?.("Writing concepts…");
     try {
       const llm = await runActionWithLLM("concept_cards", ctx);
-      concepts = mergeLlmConcepts(concepts, llm, { region, state, flavor, variant });
+      concepts = mergeLlmConcepts(concepts, llm, { region, state, flavor, brandFit, variant });
     } catch (e) {
       console.warn("Concept copy failed, using defaults:", e);
     }
@@ -478,7 +452,7 @@ export const generateConceptCards = async (
         onProgress?.(`Packshot ${i + 1} of 3…`);
         const imagePrompt =
           c.imagePrompt ||
-          imagePromptFor(c, { region, state, flavor, variant });
+          imagePromptFor(c, { region, state, flavor, brandFit, variant });
         
         let uri = "";
         let generated = false;

@@ -13,6 +13,7 @@ export type ActionContext = {
   params?: { region?: string; obj?: string; objective?: string };
   state?: string;
   flavor?: string;
+  brandFit?: string;
   instructions?: string;
   completedActions?: string[];
   priorResults?: Array<{

@@ -1512,7 +1512,7 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
               className="flavor-modal-action-btn"
               disabled={busy}
               onClick={() => {
-                onRunDeliverable?.({ actionId: d.actionId, flavor: flavor.name, state: "Maharashtra", instructions: "" });
+                onRunDeliverable?.({ actionId: d.actionId, flavor: flavor.name, brandFit: flavor.brandFit, state: "Maharashtra", instructions: "" });
                 onClose();
               }}
             >

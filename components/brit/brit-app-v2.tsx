@@ -826,7 +826,7 @@ export default function BritAppV2() {
     })();
   }, [actionContext, updateFilmJob, showToast]);
 
-  const onRunDeliverable = async ({ actionId, state, flavor, instructions }) => {
+  const onRunDeliverable = async ({ actionId, state, flavor, brandFit, instructions }) => {
     if (actionId === "create_film") {
       if (filmBusy) return;
       runFilmAsync({ state, flavor, instructions });

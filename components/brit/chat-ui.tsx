@@ -688,14 +688,14 @@ function InsightBlock({ params, script }) {
   });
   return (
     <div className="insight">
-      <div className="eyebrow">Opening Thesis / Macro Shift</div>
       <h2>{HERO_THESIS.title}</h2>
       <p className="insight-lead">{ins.highlight}. {ins.body.replace("{region}", reg)}</p>
       <div className="insight-stats">
         {ins.stats.map((st, i) => (
-          <ClickableStat key={i} label={st.k} value={st.v}
-            suffix={statSuffix(st.suffix)}
-            onClick={() => onStat(st)} />
+          <div key={i} className="click-stat">
+            <span className="k">{st.k}</span>
+            <span className="v">{st.v}{statSuffix(st.suffix) && <small>{statSuffix(st.suffix)}</small>}</span>
+          </div>
         ))}
       </div>
     </div>
