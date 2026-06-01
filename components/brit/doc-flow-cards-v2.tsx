@@ -1411,7 +1411,7 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
   const indices = [
     ["DIY Index", flavor.diyIndex],
     ["Shareability", flavor.shareabilityIndex],
-    ["Craving", flavor.cravingIndex],
+    ["Consumption Intent", flavor.cravingIndex],
     ["Comfort", flavor.comfortIndex],
     ["Curiosity", flavor.curiosityIndex],
   ];
