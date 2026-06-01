@@ -1423,9 +1423,13 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
 
         <div className="flavor-modal-header">
           <h2 className="flavor-modal-title">{flavor.name}</h2>
-          <span className="flavor-modal-trend-badge" style={{ background: trendDotColor(flavor.trendType) }}>
-            {flavor.trendType}
-          </span>
+          <div className="flavor-modal-header-badges">
+            <span className="flavor-modal-trend-badge" style={{ background: trendDotColor(flavor.trendType) }}>
+              {flavor.trendType}
+            </span>
+            {CROSS_CATEGORY_FLAVORS.has(flavor.name) && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
+            {isCrossRegion(flavor.states || "") && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
+          </div>
         </div>
 
         <div className="flavor-modal-body flavor-modal-body--split">
@@ -1605,11 +1609,42 @@ const PrioritizeTable = ({ flavors }) => {
   );
 };
 
+/* ── Cross-category / cross-region helpers ── */
+const CROSS_CATEGORY_FLAVORS = new Set([
+  "Honey", "Wild Honey", "Mahua Honey", "Kesar Milk", "Turmeric",
+  "Coconut Jaggery", "Tamarind", "Schezwan", "Garlic Chilli", "Kokum",
+  "Gondhoraj Lime", "Nolen Gur", "Sattu Masala", "Til Jaggery",
+  "Black Pepper", "Assam Tea", "Passion Fruit", "Pineapple",
+  "Mishti Doi", "Shrikhand", "Bhang Jeera", "Kasundi", "Gongura",
+  "Gajar Halwa", "Panch Phoron", "Garlic Chutney",
+]);
+
+const ZONE_MAP: Record<string, string> = {
+  ap: "south", ka: "south", kerala: "south", tn: "south", telangana: "south",
+  bihar: "east", jh: "east", odisha: "east", wb: "east", "west bengal": "east",
+  goa: "west", gujarat: "west", mh: "west", maharashtra: "west",
+  delhi: "north", "delhi ncr": "north", haryana: "north", hp: "north",
+  punjab: "north", rj: "north", up: "north", uttarakhand: "north",
+  arunachal: "northeast", assam: "northeast", manipur: "northeast",
+  meghalaya: "northeast", mizoram: "northeast", nagaland: "northeast",
+  sikkim: "northeast", tripura: "northeast",
+  cg: "central", mp: "central",
+};
+
+const isCrossRegion = (states: string): boolean => {
+  const parts = states.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+  if (parts.length >= 5) return true;
+  const zones = new Set(parts.map((s) => ZONE_MAP[s]).filter(Boolean));
+  return zones.size >= 3;
+};
+
 export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
   const [hovered, setHovered] = useState(null);
   const [selectedFlavor, setSelectedFlavor] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("both");
   const [stateFilter, setStateFilter] = useState("All States");
+  const [showCrossCategory, setShowCrossCategory] = useState(false);
+  const [showCrossRegion, setShowCrossRegion] = useState(false);
   const hideTimerRef = useRef(null);
 
   // Build sweet/savory category map from state data
@@ -1645,11 +1680,15 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
   const filteredPlotData = useMemo(() => {
     return plotData.filter((d) => {
       if (stateFlavorSet && !stateFlavorSet.has(d.name)) return false;
-      if (categoryFilter === "both") return true;
-      const cats = flavorCategories[d.name] || new Set();
-      return cats.has(categoryFilter);
+      if (categoryFilter !== "both") {
+        const cats = flavorCategories[d.name] || new Set();
+        if (!cats.has(categoryFilter)) return false;
+      }
+      if (showCrossCategory && !CROSS_CATEGORY_FLAVORS.has(d.name)) return false;
+      if (showCrossRegion && !isCrossRegion(d.raw.states || "")) return false;
+      return true;
     });
-  }, [plotData, stateFlavorSet, categoryFilter, flavorCategories]);
+  }, [plotData, stateFlavorSet, categoryFilter, flavorCategories, showCrossCategory, showCrossRegion]);
 
   const convVals = plotData.map((d) => d.conv);
   const engVals = plotData.map((d) => d.eng);
@@ -1715,6 +1754,23 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
               ))}
             </select>
           </div>
+          <div className="matrix-filter-group">
+            <span className="matrix-filter-label">Signals</span>
+            <div className="matrix-filter-toggle">
+              <button
+                className={"matrix-filter-btn " + (showCrossCategory ? "sel sel--gold" : "")}
+                onClick={() => setShowCrossCategory((v) => !v)}
+              >
+                ◈ Cross-Category
+              </button>
+              <button
+                className={"matrix-filter-btn " + (showCrossRegion ? "sel sel--blue" : "")}
+                onClick={() => setShowCrossRegion((v) => !v)}
+              >
+                ◎ Cross-Region
+              </button>
+            </div>
+          </div>
         </div>
 
         <div style={{ position: "relative" }}>
@@ -1757,12 +1813,16 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
                 shape={(props) => {
                   const { cx, cy, payload } = props;
                   if (cx == null || cy == null) return null;
+                  const isCat = CROSS_CATEGORY_FLAVORS.has(payload.name);
+                  const isReg = isCrossRegion(payload.raw?.states || "");
                   return (
                     <g
                       style={{ cursor: "pointer" }}
                       onMouseEnter={() => showHover({ cx, cy, data: payload })}
                       onMouseLeave={scheduleHide}
                     >
+                      {isReg && <circle cx={cx} cy={cy} r={13} fill="none" stroke="#5B8DEF" strokeWidth={1.5} strokeDasharray="3 2" opacity={0.85} />}
+                      {isCat && <circle cx={cx} cy={cy} r={isReg ? 18 : 13} fill="none" stroke="#C9A227" strokeWidth={1.5} strokeDasharray="3 2" opacity={0.85} />}
                       <circle cx={cx} cy={cy} r={8} fill={trendDotColor(payload.trendType)} stroke="#fff" strokeWidth={2.5} opacity={0.9} />
                     </g>
                   );
@@ -1783,6 +1843,12 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
                 <div><span>Conv. Volume</span> <b>{hovered.data.raw.convVolume}</b></div>
                 <div><span>Eng. Volume</span> <b>{hovered.data.raw.engVolume}</b></div>
               </div>
+              {(CROSS_CATEGORY_FLAVORS.has(hovered.data.name) || isCrossRegion(hovered.data.raw?.states || "")) && (
+                <div className="flavor-hover-tip__flags">
+                  {CROSS_CATEGORY_FLAVORS.has(hovered.data.name) && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
+                  {isCrossRegion(hovered.data.raw?.states || "") && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
+                </div>
+              )}
               <button
                 className="flavor-hover-tip__cta"
                 onClick={() => {
@@ -1803,6 +1869,14 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
               {label}
             </span>
           ))}
+          <span className="brit-priority-matrix__legend-item legend-ring-item">
+            <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#C9A227" strokeWidth="1.5" strokeDasharray="3 2" /></svg>
+            Cross-Category
+          </span>
+          <span className="brit-priority-matrix__legend-item legend-ring-item">
+            <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#5B8DEF" strokeWidth="1.5" strokeDasharray="3 2" /></svg>
+            Cross-Region
+          </span>
         </div>
 
         <PrioritizeTable flavors={topRight} />
