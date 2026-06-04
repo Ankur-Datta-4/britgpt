@@ -61,17 +61,28 @@ export const getBrandPositioning = (brandFit?: string) => {
   return BRITANNIA_BRAND_POSITIONING[key] || null;
 };
 
+import { FLAVOR_INDEX_DEFINITIONS } from "@/lib/demo-flow-data";
+
+/** UI column label → tooltip from BGPT.xlsx Variable Definitions */
 export const FLAVOR_INDEX_TOOLTIPS: Record<string, string> = {
   "DIY Index":
-    "How often consumers experiment with this flavour at home (recipes, mixes, hacks) — higher = more kitchen-led buzz.",
+    FLAVOR_INDEX_DEFINITIONS["Flavor-Snack DIY Index"] ||
+    "How often consumers attempt to recreate a flavor at home",
   Shareability:
-    "Social spread potential: posts, shares, and UGC velocity for this flavour across monitored channels.",
+    FLAVOR_INDEX_DEFINITIONS["Flavor Social Shareability Index"] ||
+    "How likely a flavor is to be posted or shared online",
   "Consumption Intent":
-    "Craving and repeat-snack intent signals — willingness to seek out and consume again soon.",
-  Comfort:
-    "Nostalgia and everyday ritual strength — tea-time, family, and habitual snacking association.",
-  Curiosity:
-    "Novelty and trial interest — how much the flavour drives discovery and first-time tries.",
+    FLAVOR_INDEX_DEFINITIONS["Consumption Intent"] ||
+    "Expressed desire and likelihood to purchase or try a flavor",
+  Advocacy:
+    FLAVOR_INDEX_DEFINITIONS["Flavor Advocacy Index"] ||
+    "How strongly consumers recommend a flavor to friends and family",
+  "Health–Indulgence":
+    FLAVOR_INDEX_DEFINITIONS["Health-Indulgence Tension Index"] ||
+    "Degree of conflict between guilt and desire around a flavor",
+  Gifting:
+    FLAVOR_INDEX_DEFINITIONS["Gifting / Sharing Index"] ||
+    "How often a flavor is associated with giving or sharing occasions",
 };
 
 export const BRANDS_COUNT_TOOLTIP =
@@ -87,6 +98,7 @@ export type BritanniaFitReasoning = {
 export const buildBritanniaFitReasoning = (flavor: {
   name: string;
   brandFit?: string;
+  brandFitReasoning?: string;
   whyPopular?: string;
   extensions?: string;
   trendType?: string;
@@ -95,7 +107,24 @@ export const buildBritanniaFitReasoning = (flavor: {
 }): BritanniaFitReasoning | null => {
   const brand = resolveBrandKey(flavor.brandFit);
   const positioning = brand ? getBrandPositioning(brand) : null;
-  if (!brand || !positioning) return null;
+  if (!brand) return null;
+
+  if (flavor.brandFitReasoning) {
+    const bullets = [
+      flavor.brandFitReasoning,
+      flavor.whyPopular ? `Consumer pull: ${flavor.whyPopular}` : null,
+      flavor.extensions ? `Extension runway: ${flavor.extensions}` : null,
+    ].filter(Boolean) as string[];
+
+    return {
+      brand,
+      positioning: positioning || "",
+      summary: `We recommend ${brand} — ${flavor.brandFitReasoning}`,
+      bullets,
+    };
+  }
+
+  if (!positioning) return null;
 
   const bullets = [
     `${flavor.name} scores ${flavor.engGrowth || "—"} engagement growth with ${flavor.trendType || "—"} trend status — ${positioning.split(".")[0]}.`,

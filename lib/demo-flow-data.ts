@@ -1,5 +1,7 @@
 import statesJson from "@/lib/demo-states-parsed.json";
 import nationalJson from "@/lib/demo-national-parsed.json";
+import flavorKeyInsightsJson from "@/lib/demo-flavor-key-insights.json";
+import flavorIndexDefinitionsJson from "@/lib/demo-flavor-index-definitions.json";
 import flavorMachineJson from "@/lib/demo-flavor-machine.json";
 import stateClustersJson from "@/lib/demo-state-clusters.json";
 import stateDetailsJson from "@/lib/demo-state-details-parsed.json";
@@ -153,12 +155,27 @@ export const NATIONAL_FLAVORS = nationalJson as Array<{
   whenTrends?: string;
   extensions: string;
   brandFit: string;
+  fitmentScore?: number;
+  brandFitReasoning?: string;
+  /** From BGPT "Product Extension Ideas and Exp" — Why These Extensions Would Work */
+  extensionReasoning?: string;
   diyIndex?: number;
   shareabilityIndex?: number;
   cravingIndex?: number;
   comfortIndex?: number;
   curiosityIndex?: number;
+  giftingIndex?: number;
 }>;
+
+export const FLAVOR_KEY_INSIGHTS = flavorKeyInsightsJson as Record<string, string>;
+
+export const FLAVORS_WITH_KEY_INSIGHT = Object.keys(FLAVOR_KEY_INSIGHTS);
+
+export const hasFlavorKeyInsight = (flavorName: string) =>
+  Boolean(FLAVOR_KEY_INSIGHTS[flavorName]);
+
+/** Excel "Variable Definitions" sheet — full index names → descriptions */
+export const FLAVOR_INDEX_DEFINITIONS = flavorIndexDefinitionsJson as Record<string, string>;
 
 const CROSS_LABELS: Record<string, Record<string, string>> = {
   zone: {

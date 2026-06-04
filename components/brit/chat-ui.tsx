@@ -181,11 +181,11 @@ const RESEARCH_SCRIPTS = {
     id: "extension",
     title: "Extension opportunities",
     scopeDefaults: { region: "Pan-India", obj: "Product extension" },
-    muted: "Indian sweet and savory extension ideas — Honey Chilli, Gunpowder Podi, and regional flavor platforms.",
+    muted: "Indian sweet and savory extension ideas — Kaju Katli, Gunpowder Podi, and regional flavor platforms.",
     cards: ["extensions", "flavour", "region", "summary", "doc_states", "doc_winning", "doc_brands", "doc_verbatims", "doc_cross", "doc_national", "exec", "doc_actionables"],
     insight: {
-      highlight: "Honey Chilli & Gunpowder Podi",
-      body: "drive the clearest extension opportunities — national sweet-heat formats and South podi-led savory biscuits, backed by 48.7% and 46.2% conversation growth.",
+      highlight: "Kaju Katli & Gunpowder Podi",
+      body: "drive the clearest extension opportunities — national premium-sweet formats and South podi-led savory biscuits, backed by 48.7% and 46.2% conversation growth.",
       stats: [
         ...heroFlavorStats(),
         { k: "Savory ideas", v: "5", suffix: "" },
@@ -195,7 +195,7 @@ const RESEARCH_SCRIPTS = {
     regionsData: FAVOUR_FLAVOR_SHARES,
     regionTitle: "Top savory flavor momentum (index)",
     flavours: [
-      { name: "Honey Chilli", grow: "+48.7%", bars: [38,39,41,42,44,45,46,47,48,48.5,48.7,48.7], down: false },
+      { name: "Kaju Katli", grow: "+48.7%", bars: [38,39,41,42,44,45,46,47,48,48.5,48.7,48.7], down: false },
       { name: "Gunpowder Podi", grow: "+46.2%", bars: [36,37,39,40,42,43,44,45,45.5,46,46.2,46.2], down: false },
       { name: "Schezwan Masala", grow: "+41.8%", bars: [32,33,35,36,38,39,40,40.5,41,41.5,41.8,41.8], down: false },
       { name: "Mishti Doi Caramel", grow: "+35.4%", bars: [28,29,30,31,32,33,34,34.5,35,35.2,35.4,35.4], down: false },
@@ -203,14 +203,14 @@ const RESEARCH_SCRIPTS = {
       { name: "Sattu Masala", grow: "+34.5%", bars: [26,27,28,29,30,31,32,33,33.5,34,34.3,34.5], down: false },
     ],
     quotes: [
-      { text: "Honey Chilli: coated crackers, baked chips, snack mix, cream biscuits — pan-India sweet-heat.", att: "Honey Chilli · national matrix" },
+      { text: "Kaju Katli: wafer, filled cookie, premium butter biscuit — pan-India festive-sweet.", att: "Kaju Katli · national matrix" },
       { text: "Gunpowder Podi: podi crackers, khakhra, savory biscuits — TN, Karnataka, AP, Telangana.", att: "Gunpowder Podi · South" },
       { text: "Regional sweets: Mishti Doi caramel biscuits, Nolen Gur toffee bites, Tamarind chewy formats.", att: "Sweet opportunities · India" },
     ],
     exec: {
-      h2: "Pilot Honey Chilli nationally and Gunpowder Podi in South — anchor packs to state top-5 flavors.",
+      h2: "Pilot Kaju Katli nationally and Gunpowder Podi in South — anchor packs to state top-5 flavors.",
       p: `Savory: ${SAVORY_EXTENSIONS.slice(0, 3).join(", ")}. Sweet: ${SWEET_EXTENSIONS.slice(0, 3).join(", ")}. Use state tables to localize naming before scale.`,
-      meta: [{ k: "Honey Chilli", v: "48.7%" }, { k: "Gunpowder", v: "46.2%" }, { k: "States", v: "29" }, { k: "Confidence", v: "92%" }],
+      meta: [{ k: "Kaju Katli", v: "48.7%" }, { k: "Gunpowder", v: "46.2%" }, { k: "States", v: "29" }, { k: "Confidence", v: "92%" }],
     },
   },
   honeyChilli: {
@@ -1242,15 +1242,17 @@ const dispatchHandoff = (target, detail = {}) => {
   window.dispatchEvent(new CustomEvent("brit-handoff", { detail: { target, ...detail } }));
 };
 
-const DeliverableHandoff = ({ label, target, flavor, state }) => {
+const CONCEPT_GENERATE_AGAIN_LABEL = "Generate again";
+
+const DeliverableHandoff = ({ label, target, flavor, state, secondaryAction }) => {
   const [sent, setSent] = useState(false);
   const onSend = () => {
     dispatchHandoff(target, { flavor, state, label });
     setSent(true);
   };
   return (
-    <div className="deliverable-handoff">
-      <p className="deliverable-handoff-lead">Ready for downstream review</p>
+    <div className={"deliverable-handoff" + (secondaryAction ? " deliverable-handoff--with-secondary" : "")}>
+      {secondaryAction}
       <button
         type="button"
         className="btn-primary deliverable-handoff-btn"
@@ -1310,7 +1312,7 @@ const StoryboardSceneVisual = ({ scene, videoUrl, veoStatus, veoError }) => {
       <div className="artifact-stack-visual storyboard-scene-visual storyboard-scene-visual--loading">
         <div className="storyboard-scene-veo-loader">
           <span className="storyboard-scene-veo-spinner" aria-hidden />
-          <p className="storyboard-scene-veo-loader-title">Rendering with Veo</p>
+          <p className="storyboard-scene-veo-loader-title">Generating video </p>
           <p className="storyboard-scene-veo-loader-sub">
             Scene {scene.beat} · {scene.timing} · ~2–4 min
           </p>
@@ -1432,7 +1434,7 @@ const StoryboardMockPanel = ({ payload }) => {
         }
 
         setSceneVeoStatus((s) => ({ ...s, [scene.beat]: "generating" }));
-        setVeoQueueNote(`Rendering scene ${scene.beat} of ${scenes.length} with Veo…`);
+        setVeoQueueNote(`Rendering scene ${scene.beat} of ${scenes.length} `);
 
         try {
           const res = await fetch("/api/veo", {
@@ -1620,55 +1622,169 @@ function ConceptArtifactCard({ concept, flavor, state }) {
     }
   };
 
+  const headline = concept.headline || concept.title;
+  const body = concept.body || concept.tagline;
+  const brand = concept.brandLabel || concept.sku;
+  const isFallbackImage =
+    !concept.imageUri ||
+    String(concept.imageUri).includes("/fallback/") ||
+    String(concept.imageUri).startsWith("data:");
+  const showFullBleedCard = concept.generated && !isFallbackImage;
+
   return (
-    <article className="concept-artifact" ref={cardRef}>
-      <div className="concept-artifact-visual">
+    <article
+      className={
+        "concept-board " + (showFullBleedCard ? "concept-board--full-bleed" : "concept-board--with-copy")
+      }
+      ref={cardRef}
+    >
+      <div className="concept-board-chrome">
+        <div className="concept-board-chrome-left">
+          <span className="concept-board-num">Concept {num}</span>
+          {concept.tone && <span className="concept-board-tone">{concept.tone}</span>}
+        </div>
+        <button
+          type="button"
+          className="concept-dl-btn"
+          data-noexport="true"
+          onClick={onDownload}
+          disabled={downloading}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M12 3v12" />
+            <path d="m7 11 5 5 5-5" />
+            <path d="M5 21h14" />
+          </svg>
+          {downloading ? "Exporting…" : "Download"}
+        </button>
+      </div>
+
+      <div className="concept-board-art">
         <ConceptCardImage concept={concept} />
       </div>
-      <div className="concept-artifact-copy">
-        <div className="concept-artifact-row">
-          <span className="concept-artifact-num">Concept {num}</span>
-          {concept.tone && <span className="concept-artifact-tone">{concept.tone}</span>}
+
+      {!showFullBleedCard && (
+        <div className="concept-board-meta">
+          <span className="concept-board-brand">{brand}</span>
+          <h4 className="concept-board-headline">{headline}</h4>
+          <p className="concept-board-body">{body}</p>
+          {concept.signOffTagline && (
+            <p className="concept-board-signoff">{concept.signOffTagline}</p>
+          )}
         </div>
-        <h4 className="concept-artifact-headline">{concept.headline || concept.title}</h4>
-        <p className="concept-artifact-body">{concept.body || concept.tagline}</p>
-        <div className="concept-artifact-foot">
-          <span className="concept-artifact-brand">{concept.brandLabel || concept.sku}</span>
-          <button
-            type="button"
-            className="concept-dl-btn"
-            data-noexport="true"
-            onClick={onDownload}
-            disabled={downloading}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M12 3v12" />
-              <path d="m7 11 5 5 5-5" />
-              <path d="M5 21h14" />
-            </svg>
-            {downloading ? "Exporting…" : "Download"}
-          </button>
-        </div>
-      </div>
+      )}
     </article>
   );
 }
 
-function ConceptCardsPanel({ payload }) {
-  const { concepts = [], mode, message, error, flavor, state } = payload || {};
-  const created = mode === "created";
-  const headerScope = [flavor, state].filter(Boolean).join(" · ");
+const ConceptRegenerateDialog = ({ flavor, state, onClose, onConfirm, busy }) => {
+  const [edits, setEdits] = useState("");
 
   return (
-    <div className="card concept-artifact-card artifact-panel">
+    <div className="deliverable-dialog-overlay" onClick={onClose} role="presentation">
+      <div
+        className="deliverable-dialog concept-regen-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="concept-regen-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button type="button" className="deliverable-dialog__close" onClick={onClose} aria-label="Close">
+          ✕
+        </button>
+        <h3 id="concept-regen-title" className="deliverable-dialog__title">
+          Generate concept cards again
+        </h3>
+        <p className="deliverable-dialog__lead muted">
+          Describe copy, tone, language, or visual changes. We&apos;ll generate all three cards again with your edits.
+        </p>
+        {(flavor || state) && (
+          <div className="deliverable-dialog__field deliverable-dialog__field--locked concept-regen-dialog__context">
+            <span className="deliverable-dialog__label">Brief</span>
+            <div className="deliverable-dialog__locked-val">
+              {[flavor, state].filter(Boolean).join(" · ")}
+            </div>
+          </div>
+        )}
+        <div className="deliverable-dialog__field">
+          <label className="deliverable-dialog__label" htmlFor="concept-regen-edits">
+            Edits &amp; instructions <span className="muted">(optional)</span>
+          </label>
+          <textarea
+            id="concept-regen-edits"
+            className="deliverable-dialog__textarea"
+            rows={5}
+            value={edits}
+            onChange={(e) => setEdits(e.target.value)}
+            placeholder="e.g. Headlines in Marathi, warmer festive tone, emphasize chai-time, bolder packshot, less health copy… Leave blank to rerun with the same brief."
+            autoFocus
+          />
+        </div>
+        <div className="deliverable-dialog__actions">
+          <button type="button" className="deliverable-dialog__cancel" onClick={onClose} disabled={busy}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="deliverable-dialog__go"
+            disabled={busy}
+            onClick={() => onConfirm?.(edits.trim())}
+          >
+            Generate again
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+function ConceptCardsPanel({
+  payload,
+  onRegenerate,
+  regenerating = false,
+  regenProgress,
+  actionBusy = false,
+}) {
+  const { concepts = [], mode, message, error, flavor, state } = payload || {};
+  const hasConcepts = concepts.length > 0;
+  const created = mode === "created" || hasConcepts;
+  const canRegenerate = Boolean(onRegenerate && hasConcepts);
+  const headerScope = [flavor, state].filter(Boolean).join(" · ");
+  const [regenOpen, setRegenOpen] = useState(false);
+  const busy = actionBusy || regenerating;
+
+  const openRegenDialog = () => setRegenOpen(true);
+
+  return (
+    <div className={"card concept-artifact-card artifact-panel" + (regenerating ? " concept-artifact-card--regenerating" : "")}>
       <div className="card-h">
         <h3>Concept cards{headerScope ? ` — ${headerScope}` : ""}</h3>
-        <span className="tag">{created ? `${concepts.length} concepts generated` : "Preview"}</span>
+        <div className="concept-artifact-card__header-actions">
+          {canRegenerate && (
+            <button
+              type="button"
+              className="btn-ghost concept-regen-btn concept-regen-btn--compact"
+              disabled={busy}
+              onClick={openRegenDialog}
+            >
+              {CONCEPT_GENERATE_AGAIN_LABEL}
+            </button>
+          )}
+          <span className="tag">{created ? `${concepts.length} concepts generated` : "Preview"}</span>
+        </div>
       </div>
       <div className="card-body artifact-panel-body">
-        {message && !error && <p className="concept-msg">{message}</p>}
+        {regenerating && (
+          <p className="concept-regen-status" role="status">
+            <span className="concept-regen-status__dots" aria-hidden>
+              <span /><span /><span />
+            </span>
+            {regenProgress || "Regenerating concept cards…"}
+          </p>
+        )}
+        {message && !error && !regenerating && <p className="concept-msg">{message}</p>}
         {error && <p className="concept-err">{error}</p>}
-        <div className="concept-stack">
+        <div className="concept-stack concept-stack--boards">
           {concepts.map((c) => (
             <ConceptArtifactCard key={c.id} concept={c} flavor={flavor} state={state} />
           ))}
@@ -1678,8 +1794,32 @@ function ConceptCardsPanel({ payload }) {
           target="FPD"
           flavor={flavor}
           state={state}
+          secondaryAction={
+            canRegenerate ? (
+              <button
+                type="button"
+                className="btn-ghost concept-regen-btn deliverable-handoff-secondary-btn"
+                disabled={busy}
+                onClick={openRegenDialog}
+              >
+                {CONCEPT_GENERATE_AGAIN_LABEL}
+              </button>
+            ) : null
+          }
         />
       </div>
+      {regenOpen && (
+        <ConceptRegenerateDialog
+          flavor={flavor}
+          state={state}
+          busy={busy}
+          onClose={() => setRegenOpen(false)}
+          onConfirm={(instructions) => {
+            setRegenOpen(false);
+            onRegenerate?.({ instructions });
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -1878,9 +2018,26 @@ function HeroFilmPanel({ payload, onOpenDetail }) {
   );
 }
 
-function ActionResultPanel({ payload, onOpenDetail }) {
+function ActionResultPanel({
+  payload,
+  onOpenDetail,
+  onRegenerateConcepts,
+  regenerating,
+  regenProgress,
+  actionBusy,
+}) {
   if (!payload) return null;
-  if (payload.type === "concept_cards") return <ConceptCardsPanel payload={payload} />;
+  if (payload.type === "concept_cards") {
+    return (
+      <ConceptCardsPanel
+        payload={payload}
+        onRegenerate={onRegenerateConcepts}
+        regenerating={regenerating}
+        regenProgress={regenProgress}
+        actionBusy={actionBusy}
+      />
+    );
+  }
   if (payload.type === "create_film") return <HeroFilmPanel payload={payload} onOpenDetail={onOpenDetail} />;
   if (payload.type === "storyboard") return <StoryboardMockPanel payload={payload} />;
   if (

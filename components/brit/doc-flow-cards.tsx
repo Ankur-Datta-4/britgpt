@@ -150,13 +150,17 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
           <span className="tag">confirmed</span>
         </div>
         <div className="card-body">
-          <div className="scope-meta">
-            <div><span className="k">Age generation</span><span className="v">{generations.join(", ") || "—"}</span></div>
-            <div><span className="k">Age category</span><span className="v">{ages.join(", ") || "—"}</span></div>
-            <div><span className="k">Lifestyle</span><span className="v">{lifestyles.join(", ") || "—"}</span></div>
-            <div><span className="k">City tier</span><span className="v">{tiers.join(", ") || "—"}</span></div>
-            <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
-            <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
+          <div className="scope-meta-wrap scope-meta-wrap--audience">
+            <div className="scope-meta scope-meta--audience-primary">
+              <div><span className="k">Age generation</span><span className="v">{generations.join(", ") || "—"}</span></div>
+              <div><span className="k">Age category</span><span className="v">{ages.join(", ") || "—"}</span></div>
+              <div><span className="k">Lifestyle</span><span className="v">{lifestyles.join(", ") || "—"}</span></div>
+              <div><span className="k">City tier</span><span className="v">{tiers.join(", ") || "—"}</span></div>
+            </div>
+            <div className="scope-meta scope-meta--audience-stats">
+              <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
+              <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -203,9 +207,11 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
               ))}
             </div>
           </div>
-          <div className="scope-meta">
-            <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
-            <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
+          <div className="scope-meta-wrap scope-meta-wrap--audience">
+            <div className="scope-meta scope-meta--audience-stats">
+              <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
+              <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -900,27 +906,29 @@ export const DocCrossStateCard = () => {
         <span className="tag">overall flavor reads</span>
       </div>
       <div className="card-body">
-        <p className="muted cross-state-lead">
-          Patterns that emerge when state-level data is read together — geographic clusters, seasonal triggers, and age-driven purchase behavior.
-        </p>
-        <div className="cross-state-tabs">
-          {[
-            { id: "zone", label: "Zone-wise" },
-            { id: "weather", label: "Seasonality" },
-            { id: "age", label: "Age & demographic" },
-          ].map((d) => (
-            <button
-              key={d.id}
-              type="button"
-              className={"cross-state-tab " + (dim === d.id ? "sel" : "")}
-              onClick={() => {
-                setDim(d.id);
-                setActiveId(CROSS_STATE_INSIGHTS[d.id][0].id);
-              }}
-            >
-              {d.label}
-            </button>
-          ))}
+        <div className="cross-state-intro">
+          <p className="muted cross-state-lead">
+            Patterns that emerge when state-level data is read together — geographic clusters, seasonal triggers, and age-driven purchase behavior.
+          </p>
+          <div className="cross-state-tabs">
+            {[
+              { id: "zone", label: "Zone-wise" },
+              { id: "weather", label: "Seasonality" },
+              { id: "age", label: "Age & demographic" },
+            ].map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                className={"cross-state-tab " + (dim === d.id ? "sel" : "")}
+                onClick={() => {
+                  setDim(d.id);
+                  setActiveId(CROSS_STATE_INSIGHTS[d.id][0].id);
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {dim === "age" ? (
