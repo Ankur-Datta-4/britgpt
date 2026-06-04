@@ -62,7 +62,8 @@ export async function POST(req: Request) {
             parts: [
               {
                 text: [
-                  "Create a premium FMCG product concept-card image for Britannia India.",
+                  "Create a premium FMCG product packshot for Britannia India (16:9).",
+                  "Product pack and props only — no people, no human faces, no hands, no models.",
                   "Use the supplied brief exactly. Avoid generic snack imagery.",
                   `Creative variation id: ${variationId}. Use this only to choose a fresh composition; do not render it as text.`,
                   prompt || "Create an image of a Britannia snack pack concept.",

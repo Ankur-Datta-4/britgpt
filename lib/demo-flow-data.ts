@@ -281,7 +281,7 @@ export const NATIONAL_TREND_FILTERS = [
   "Fad",
 ] as const;
 
-const STATE_ABBR: Record<string, string> = {
+export const STATE_ABBR: Record<string, string> = {
   "Andhra Pradesh": "AP",
   "Arunachal Pradesh": "AR",
   Assam: "AS",

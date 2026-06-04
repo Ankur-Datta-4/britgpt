@@ -32,6 +32,9 @@ next-env.d.ts
 .idea/
 .vscode/
 
+# generated Veo clips (cached locally)
+/public/generated/veo/
+
 # legacy static app (optional)
 /legacy/
 .vercel

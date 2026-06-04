@@ -66,6 +66,272 @@ const inferStateCues = (state: string) => {
 };
 
 
+type FlavorProfile = {
+  descriptor: string; // taste phrase, e.g. "punchy mustard heat"
+  defining: string; // defining character, e.g. "sharp, fermented kasundi tang"
+  region: string; // who grew up on it
+  occasion: string; // when it fits
+};
+
+// Hand-tuned flavour profiles so demo copy reads true-to-taste for Britannia.
+const FLAVOR_PROFILES: Record<string, FlavorProfile> = {
+  Kasundi: { descriptor: "punchy mustard heat", defining: "sharp, fermented kasundi tang", region: "Bengal", occasion: "an evening tea-time snack" },
+  "Honey Chilli": { descriptor: "sweet-then-spicy rush", defining: "honey-glazed chilli warmth", region: "snackers across India", occasion: "a chai-time treat" },
+  "Gunpowder Podi": { descriptor: "roasted lentil-and-chilli kick", defining: "authentic South-Indian podi spice", region: "the South", occasion: "a quick office snack" },
+  Schezwan: { descriptor: "garlicky chilli punch", defining: "fiery Indo-Chinese schezwan heat", region: "urban India", occasion: "movie-night munching" },
+  "Nolen Gur": { descriptor: "smoky date-palm sweetness", defining: "winter nolen gur warmth", region: "Bengal", occasion: "a cosy winter indulgence" },
+  "Mishti Doi": { descriptor: "caramelised sweet-tang", defining: "creamy mishti doi character", region: "the East", occasion: "an after-meal sweet moment" },
+  "Kaju Katli": { descriptor: "rich cashew sweetness", defining: "festive kaju katli indulgence", region: "families across India", occasion: "a festive, giftable moment" },
+  "Gulab Jamun": { descriptor: "warm, syrupy sweetness", defining: "nostalgic gulab jamun comfort", region: "India", occasion: "a celebratory treat" },
+  "Bhut Jolokia": { descriptor: "slow-building fiery heat", defining: "Naga bhut jolokia fire", region: "the Northeast", occasion: "a bold snacking dare" },
+  Tamarind: { descriptor: "tangy-sweet imli zing", defining: "sticky tamarind tang", region: "India", occasion: "an anytime tangy craving" },
+  "Garlic Chilli": { descriptor: "bold garlic-chilli punch", defining: "roasted garlic-chilli depth", region: "snackers everywhere", occasion: "an everyday savoury fix" },
+  "Mango Pickle": { descriptor: "spicy achaari tang", defining: "homestyle aam-ka-achaar masala", region: "India", occasion: "a tiffin-box favourite" },
+  Gongura: { descriptor: "sour-leaf tang", defining: "Andhra gongura sharpness", region: "Andhra & Telangana", occasion: "a regional savoury snack" },
+  "Chettinad Pepper": { descriptor: "slow-building pepper warmth", defining: "Chettinad black-pepper spice", region: "Tamil Nadu", occasion: "a late-night tea break" },
+  "Thecha Spice": { descriptor: "raw green-chilli heat", defining: "Maharashtrian thecha fire", region: "Maharashtra", occasion: "an evening snack with chai" },
+  Jhalmuri: { descriptor: "tangy street-masala mix", defining: "Kolkata jhalmuri masala", region: "Bengal", occasion: "a nostalgic street-snack moment" },
+  Jalebi: { descriptor: "crisp, caramelised sweetness", defining: "iconic jalebi crunch-and-syrup", region: "India", occasion: "a weekend sweet craving" },
+  "Bellam / Jaggery": { descriptor: "earthy jaggery sweetness", defining: "wholesome bellam warmth", region: "the South", occasion: "a feel-good everyday snack" },
+};
+
+const profileFor = (flavor?: string, state?: string): FlavorProfile => {
+  if (flavor && FLAVOR_PROFILES[flavor]) return FLAVOR_PROFILES[flavor];
+  const f = (flavor || "this flavour").toLowerCase();
+  return {
+    descriptor: `distinct ${f} character`,
+    defining: `unmistakable ${f} taste`,
+    region: state && state !== "Pan-India" ? state : "India",
+    occasion: "an everyday snack moment",
+  };
+};
+
+const CONCEPT_TONES = ["Nostalgic", "Bold", "Everyday"] as const;
+
+type ConceptCopyItem = { tone: string; headline: string; body: string; brandLabel: string };
+
+// Curated demo copy for flagship Britannia flavour–state pairs.
+const CURATED_CONCEPT_COPY: Record<string, Record<string, ConceptCopyItem[]>> = {
+  Kasundi: {
+    Maharashtra: [
+      {
+        tone: "Nostalgic",
+        headline: "That familiar, zingy bite from home",
+        body: "Kasundi brings the punchy mustard heat Maharashtrians love — balanced with a tang that cuts through the richness of an evening snack. Sharp, comforting, unmistakably homegrown.",
+        brandLabel: "Britannia 50-50 Kasundi",
+      },
+      {
+        tone: "Bold",
+        headline: "Now your cracker bites back",
+        body: "The sharp, fermented heat of kasundi — once only found in grandma's kitchen — is now baked right into every bite. A cracker that doesn't just complement flavour. It is the flavour.",
+        brandLabel: "Britannia 50-50 Kasundi",
+      },
+      {
+        tone: "Everyday",
+        headline: "Your 4 o'clock just got sharper",
+        body: "Tea time in Maharashtra has always had a condiment of choice: Kasundi. Now kasundi's signature mustard-tang lives on your favourite cracker — no preparation needed, no compromise on the real thing.",
+        brandLabel: "Britannia 50-50 Kasundi",
+      },
+    ],
+  },
+};
+
+// Three angled, Britannia-realistic concept write-ups (tone / headline / body).
+export const buildConceptCopy = (opts: {
+  flavor?: string;
+  state?: string;
+  brandFit?: string;
+  formats?: string[];
+}) => {
+  const flavor = opts.flavor || "This flavour";
+  const state = opts.state || "Pan-India";
+  const curated = flavor && CURATED_CONCEPT_COPY[flavor]?.[state];
+  if (curated) return curated;
+
+  const f = flavor.toLowerCase();
+  const profile = profileFor(opts.flavor, opts.state);
+  const brandToken = opts.brandFit?.split(",")[0]?.trim();
+  const brandLabel = brandToken ? `Britannia ${brandToken} · ${flavor}` : `Britannia · ${flavor}`;
+  const place = state !== "Pan-India" ? state : "India";
+  const formatLabel =
+    opts.formats?.[0]?.replace(new RegExp(flavor, "i"), "").trim() || "cracker";
+
+  return [
+    {
+      tone: CONCEPT_TONES[0],
+      headline: `That familiar ${f} bite, straight from home`,
+      body: `${flavor} brings the ${profile.descriptor} that ${profile.region} grew up on — now folded into a crunch that lifts an ordinary snack. Warm, comforting, and unmistakably homegrown.`,
+      brandLabel,
+    },
+    {
+      tone: CONCEPT_TONES[1],
+      headline: `Now your snack bites back`,
+      body: `The ${profile.defining} — once tucked away in family kitchens — is baked into every single bite. This isn't a flavour that waits politely on the side. It is the flavour.`,
+      brandLabel,
+    },
+    {
+      tone: CONCEPT_TONES[2],
+      headline: `Your 4 o'clock just got a lot sharper`,
+      body: `Tea-time in ${place} always needed a little something extra. Now ${flavor}'s ${profile.descriptor} lives right on your favourite ${formatLabel} — ${profile.occasion}, sorted.`,
+      brandLabel,
+    },
+  ];
+};
+
+export const buildStoryboardScenes = (opts: { flavor?: string; state?: string }) => {
+  const flavor = opts.flavor || "Honey Chilli";
+  const state = opts.state || "Maharashtra";
+  const profile = profileFor(flavor, state);
+  const brandLine = flavor === "Kasundi" ? "Britannia 50-50 Kasundi" : `Britannia · ${flavor}`;
+
+  if (flavor === "Kasundi" && state === "Maharashtra") {
+    return [
+      {
+        beat: 1,
+        timing: "0–3s",
+        title: "Kirana shelf hero",
+        shot: `Close push-in on ${brandLine} pack at eye level in a Pune kirana — warm evening light, chai glasses blurred in background`,
+        vo: "Maharashtra knows its kasundi…",
+        onScreen: "Kasundi",
+        frameStyle: "retail",
+      },
+      {
+        beat: 2,
+        timing: "3–8s",
+        title: "Mustard cue",
+        shot: "Macro of golden kasundi swirl beside broken crackers — sharp mustard seeds, no generic food props",
+        vo: "…that sharp, fermented tang.",
+        onScreen: "",
+        frameStyle: "macro",
+      },
+      {
+        beat: 3,
+        timing: "8–18s",
+        title: "4 o'clock moment",
+        shot: "Overhead tea table with Britannia pack and crackers — Marathi home cues, steam from chai, no people or faces in frame",
+        vo: "Now baked into every bite.",
+        onScreen: "4 o'clock, sorted",
+        frameStyle: "lifestyle",
+      },
+      {
+        beat: 4,
+        timing: "18–24s",
+        title: "Crunch pay-off",
+        shot: `Slow-motion cracker break revealing ${flavor.toLowerCase()} seasoning on biscuit surface`,
+        vo: "No jar. No prep. Just crunch.",
+        onScreen: brandLine,
+        frameStyle: "product",
+      },
+      {
+        beat: 5,
+        timing: "24–30s",
+        title: "Brand lock-up",
+        shot: `Pack hero on warm gradient with Britannia logo and "${brandLine}" end line`,
+        vo: "Britannia. Taste that travels home.",
+        onScreen: "Britannia",
+        frameStyle: "brand",
+      },
+    ];
+  }
+
+  return [
+    {
+      beat: 1,
+      timing: "0–3s",
+      title: "Shelf introduction",
+      shot: `${brandLine} pack enters frame on an Indian retail shelf in ${state}`,
+      vo: `When ${profile.region} reaches for something familiar…`,
+      onScreen: flavor,
+      frameStyle: "retail",
+    },
+    {
+      beat: 2,
+      timing: "3–8s",
+      title: "Ingredient truth",
+      shot: `Macro cues that signal ${profile.defining} — authentic to ${flavor}, not generic masala b-roll`,
+      vo: `…${profile.descriptor} hits first.`,
+      onScreen: "",
+      frameStyle: "macro",
+    },
+    {
+      beat: 3,
+      timing: "8–18s",
+      title: "Snack occasion",
+      shot: `Relatable ${state} tea-time / tiffin moment — sharing ${flavor} crackers`,
+      vo: `Built for ${profile.occasion}.`,
+      onScreen: flavor,
+      frameStyle: "lifestyle",
+    },
+    {
+      beat: 4,
+      timing: "18–24s",
+      title: "Product crunch",
+      shot: "Tight product crunch with visible seasoning on biscuit surface",
+      vo: "Crunch that carries the flavour.",
+      onScreen: brandLine,
+      frameStyle: "product",
+    },
+    {
+      beat: 5,
+      timing: "24–30s",
+      title: "End card",
+      shot: "Britannia logo lock-up with pack hero and flavour name",
+      vo: "Britannia. Flavour you can trust.",
+      onScreen: "Britannia",
+      frameStyle: "brand",
+    },
+  ];
+};
+
+export const buildMessagingCards = (opts: {
+  flavor?: string;
+  state?: string;
+  brandFit?: string;
+}) => {
+  const flavor = opts.flavor || "Honey Chilli";
+  const state = opts.state || "Maharashtra";
+  const brandToken = opts.brandFit?.split(",")[0]?.trim() || "50-50";
+  const profile = profileFor(flavor, state);
+
+  if (flavor === "Kasundi" && state === "Maharashtra") {
+    return [
+      {
+        tone: "Regional pride",
+        headline: "Maharashtra's kasundi, now in every bite",
+        body: "Lead with fermented mustard tang and evening chai occasion. Avoid generic 'spicy snack' — kasundi is a condiment memory, not just heat.",
+      },
+      {
+        tone: "Occasion",
+        headline: "4 o'clock deserves better than plain salt",
+        body: "Position on tea-time upgrade: no jar, no prep. Britannia 50-50 Kasundi delivers the condiment flavour on a format Maharashtra already reaches for daily.",
+      },
+      {
+        tone: "Shelf story",
+        headline: "From kitchen jar to biscuit aisle",
+        body: "Frame as cultural transfer — kasundi credibility from home kitchens into mass biscuit. RTB: Britannia distribution + 50-50 crunch equity.",
+      },
+    ];
+  }
+
+  return [
+    {
+      tone: "Consumer truth",
+      headline: `${flavor} resonates in ${state}`,
+      body: `Anchor on ${profile.defining}. Lead comms with ${profile.descriptor} and ${profile.occasion} — stay away from empty superlatives.`,
+    },
+    {
+      tone: "Tone of voice",
+      headline: "Warm, specific, never generic",
+      body: `Write like Britannia ${brandToken}: familiar Indian home voice, one sharp flavour claim per line, no medical or competitive attacks.`,
+    },
+    {
+      tone: "Channels",
+      headline: "Reels-first, kirana-visible",
+      body: `Prioritise 15s vertical hooks for ${state}, static pack for trade, and UGC-style tea-time demos — always show the actual ${flavor} pack.`,
+    },
+  ];
+};
+
 const inferPromptVariant = (instructions?: string): ConceptPromptVariant => {
   const text = (instructions || "").toLowerCase();
   if (!text) return "english";
@@ -74,6 +340,9 @@ const inferPromptVariant = (instructions?: string): ConceptPromptVariant => {
   }
   return "english";
 };
+
+const PACKSHOT_NO_PEOPLE =
+  "Product packshot only — no people, no human faces, no hands, no silhouettes, no models, no crowd.";
 
 const imagePromptFor = (
   concept: { sku: string; lane: string; title?: string; imagePromptHint?: string },
@@ -89,46 +358,23 @@ const imagePromptFor = (
   const flavor = opts.flavor || concept.lane;
   const brandFit = opts.brandFit;
   const productName = concept.title || concept.sku;
-  const language = inferPrimaryLanguage(state);
   const culturalCue = inferStateCues(state);
-  const variant = opts.variant || "english";
-  const brandLine = brandFit ? `The pack must be designed for Britannia ${brandFit} — match the visual identity, tone, and format of the ${brandFit} product line.` : "";
-  const hint = concept.imagePromptHint ? ` Extra creative direction: ${concept.imagePromptHint}.` : "";
-
-  if (variant === "vernacular") {
-    return [
-      "You are a concept card designer for Britannia India.",
-      "Generate one 16:9 product concept card for a new snack flavor launch.",
-      `State context: ${state}. Primary language: ${language}${HINDI_BELT_STATES.has(state) ? " (Hindi fallback allowed)." : "."}`,
-      `Product: ${productName}. Flavor: ${flavor}. Market: ${opts.region}.`,
-      "LEFT HALF (50%): real, relatable person actively eating or holding the product in a natural everyday moment.",
-      `Use state-authentic visual cues: ${culturalCue}. Warm, non-studio lighting.`,
-      `RIGHT HALF (50%): headline in ${language} (8-12 words) that captures the specific taste and feeling of ${flavor}.`,
-      `Body copy in ${language} (3-4 sentences): describe what ${flavor} tastes and feels like, the occasion it suits best, and a warm payoff.`,
-      "No health, nutritional, medicinal, or competitive claims.",
-      `Bottom-right: Britannia pack shot for ${productName}, 2-3 loose product pieces, and 1-2 ingredient visuals that authentically represent ${flavor} — show the actual defining ingredients or visual cues of this specific flavor, not generic food imagery.`,
-      "Background: warm solid or soft gradient, clean and uncluttered.",
-      `Critical rule: every visual element must be specific to ${flavor} — never generic.`,
-      brandLine,
-      hint,
-    ]
-      .filter(Boolean)
-      .join(" ");
-  }
+  const brandLine = brandFit
+    ? `Britannia ${brandFit} pack — match line visual identity and format.`
+    : "Britannia branded snack pack.";
+  const hint = concept.imagePromptHint
+    ? ` Creative notes (pack and props only): ${concept.imagePromptHint}.`
+    : "";
 
   return [
-    "You are a concept card designer for Britannia India.",
-    "Generate one 16:9 product concept card in English for a new snack flavor launch.",
-    `Product: ${productName}. Flavor: ${flavor}. State: ${state}.`,
+    "Professional 16:9 FMCG packshot for Britannia India.",
+    `Product: ${productName}. Flavor: ${flavor}. State: ${state}. Market: ${opts.region}.`,
     brandLine,
-    "LEFT HALF (50%): real-looking person actively holding or eating the product in an everyday moment.",
-    `State-authentic visual cues: ${culturalCue}. Warm natural lighting. No celebrity or model look.`,
-    `RIGHT HALF (50%): English headline (8-12 words) that captures the specific taste and character of ${flavor} — conversational and feeling-led, no ad jargon.`,
-    `Body copy in English (3-4 sentences): (1) describe what ${flavor} tastes and feels like specifically, (2) the occasion it suits, (3) a warm close with the product name.`,
-    "No health, nutritional, medicinal, competitive, or empty superlative claims.",
-    `Bottom-right: Britannia ${brandFit || "brand"} pack shot for ${productName}, 2-3 loose product pieces, and ingredient visuals that are authentically and specifically tied to ${flavor} — use your knowledge of what defines this flavor visually (actual ingredients, spices, or components), not generic food imagery.`,
-    "Background: warm solid or soft gradient, clean and uncluttered.",
-    `Everything — visuals and copy — must feel made specifically for ${flavor} in ${state} on a Britannia ${brandFit || ""} pack. Never generic.`,
+    "Studio-quality product photography: hero pack centered on a warm, clean gradient backdrop.",
+    `Subtle ${state}-authentic styling — ${culturalCue} — as surface textures or ingredient props beside the pack, not lifestyle staging.`,
+    `Show 2–3 loose biscuits and ingredient cues specific to ${flavor}; never generic masala or honey-pour imagery.`,
+    PACKSHOT_NO_PEOPLE,
+    "No readable text overlays, no competitor logos, no health or medicinal claims.",
     hint,
   ]
     .filter(Boolean)
@@ -200,7 +446,7 @@ export const pickConceptSkus = (ctx: {
     title: String(c.name).slice(0, 42),
     sku: c.name,
     lane: c.lane,
-    tagline: `Bold ${c.lane.toLowerCase()} flavor. Try the new ${c.name.toLowerCase()}!`,
+    tagline: `${c.lane} · Britannia innovation concept`,
     imagePrompt: imagePromptFor(
       { sku: c.name, lane: c.lane },
       { region, state, flavor, brandFit: ctx.brandFit, variant }
@@ -234,7 +480,11 @@ const mergeLlmConcepts = (
       tagline:
         (c as { tagline?: string }).tagline ||
         b.tagline ||
-        `New ${lane} flavor. Made for ${opts.region}.`,
+        `${lane} · ${opts.state || opts.region}`,
+      tone: (c as { tone?: string }).tone,
+      headline: (c as { headline?: string }).headline,
+      body: (c as { body?: string }).body,
+      brandLabel: (c as { brandLabel?: string }).brandLabel,
       imagePrompt: imagePromptFor(
         {
           sku,
@@ -247,6 +497,42 @@ const mergeLlmConcepts = (
       gradient: b.gradient || "#c45c3e",
     };
   });
+
+export const STORYBOARD_PREVIEW_MP4 = "/fallback/hero-spot.mp4";
+
+export const buildStoryboardFilmPreview = async (
+  ctx: {
+    script?: {
+      title?: string;
+      id?: string;
+      exec?: { h2?: string; p?: string };
+      scopeDefaults?: { region?: string };
+    };
+    params?: { region?: string };
+    state?: string;
+    flavor?: string;
+  } = {}
+) => {
+  const script = ctx.script || {};
+  const region =
+    ctx.params?.region || script.scopeDefaults?.region || "Pan-India";
+  const state = ctx.state || region;
+  const flavor = ctx.flavor || "Honey Chilli";
+  const ex = script.exec || {};
+  const hero = pickConceptSkus(ctx)[0];
+  const filmPrompt = videoPromptFor(
+    hero,
+    (ex.p || ex.h2 || script.title || "").slice(0, 200),
+    state,
+    script.title
+  );
+
+  return {
+    filmPrompt,
+    filmMode: "preview" as const,
+    filmMessage: `6s hero spot for ${flavor} in ${state} — renders from Scene 1 (Veo) when GEMINI_API_KEY is set.`,
+  };
+};
 
 export const generateHeroFilmMock = async (
   ctx: {
@@ -380,8 +666,7 @@ export const generateHeroFilm = async (
     console.warn("Hero film generation failed, using local fallback:", msg);
     
     // Using local mock MP4s if generation fails
-    const fallbackId = Math.floor(Math.random() * 4) + 1;
-    const fallbackHref = `/fallback/${fallbackId}.mp4`;
+    const fallbackHref = STORYBOARD_PREVIEW_MP4;
     
     return {
       type: "create_film",
@@ -505,9 +790,35 @@ export const generateConceptCards = async (
 
   const mode = "created" as const;
 
+  const copy = buildConceptCopy({
+    flavor,
+    state,
+    brandFit,
+    formats: concepts.map((c) =>
+      flavor ? String(c.title || c.sku || "").replace(flavor, "").trim() || "snack" : "snack"
+    ),
+  });
+
+  const enriched = withImages.map((c, i) => {
+    const row = c as typeof c & {
+      tone?: string;
+      headline?: string;
+      body?: string;
+      brandLabel?: string;
+    };
+    return {
+      ...row,
+      conceptNumber: i + 1,
+      tone: row.tone || copy[i]?.tone,
+      headline: row.headline || copy[i]?.headline,
+      body: row.body || copy[i]?.body,
+      brandLabel: row.brandLabel || copy[i]?.brandLabel,
+    };
+  });
+
   return {
     mode,
-    concepts: withImages,
+    concepts: enriched,
     error: generatedCount === 0 ? lastImageError : undefined,
     message:
       generatedCount > 0

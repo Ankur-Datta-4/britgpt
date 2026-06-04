@@ -125,7 +125,7 @@ const invokeImageModel = async (
         output_format: "png",
         mode: "text-to-image",
         negative_prompt:
-          "text, logos, watermark, blurry, honey pour, syrup, liquid drizzle, generic food, people, hands",
+          "text, logos, watermark, blurry, honey pour, syrup, liquid drizzle, generic food, people, face, portrait, hands, human, model, crowd",
       }
     : {
         taskType: "TEXT_IMAGE",

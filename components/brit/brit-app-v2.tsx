@@ -387,6 +387,12 @@ function MessageView({ m, ctx }) {
           <ActionResultPanel payload={m.payload} onOpenDetail={ctx.onOpenDetail} />
         )}
         {m.kind === "qa" && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
+        {m.kind === "workflow_select" && (
+          <WorkflowSelectorCard
+            query={m.query}
+            onProceed={(workflowId) => ctx.onWorkflowProceed(m.query, workflowId)}
+          />
+        )}
         {m.kind === "research_reco" && (
           <ResearchRecoCard tag={m.tag} query={m.query} hint={m.hint} onStart={ctx.onStartResearch} />
         )}
@@ -715,6 +721,34 @@ export default function BritAppV2() {
     pushDelayed({ role: "asst", kind: "data_config", defaults: { geography: "India" } }, 550);
   };
 
+  const startWorkflowSelect = (text) => {
+    const prompt = (text?.trim() || DEFAULT_RESEARCH_PROMPT);
+    const script = matchResearchScript(prompt);
+    scriptRef.current = script;
+    setActiveScript(script);
+    setParams({ region: "Pan-India", obj: "Product extension" });
+    setPhase("workflow_select");
+
+    const hasUser = messagesRef.current.some(
+      (m) => m.role === "user" && m.text?.trim() === prompt
+    );
+    if (!hasUser) {
+      push({ role: "user", text: prompt });
+      messagesRef.current = [...messagesRef.current, { role: "user", text: prompt }];
+    }
+
+    pushDelayed({ role: "asst", kind: "workflow_select", query: prompt }, 350);
+  };
+
+  const onWorkflowProceed = (query, workflowId) => {
+    if (phaseRef.current !== "workflow_select") return;
+    const workflow = WORKFLOW_OPTIONS.find((w) => w.id === workflowId);
+    if (workflow) {
+      setRunConfig((c) => ({ ...c, workflowId: workflow.id, workflowLabel: workflow.label }));
+    }
+    startDocPipeline(query);
+  };
+
   const onDataConfig = (msgId, dataConfig) => {
     setRunConfig((c) => ({ ...c, dataConfig }));
     setMessages((ms) => ms.map((m) => (m.id === msgId ? { ...m, locked: true, defaults: dataConfig } : m)));
@@ -753,21 +787,26 @@ export default function BritAppV2() {
       return;
     }
 
+    if (currentPhase === "workflow_select") {
+      showToast("Pick a workflow above to continue.");
+      return;
+    }
+
     if (!hasMessages || currentPhase === "idle" || currentPhase === "reco") {
-      startDocPipeline(q);
+      startWorkflowSelect(q);
       return;
     }
 
     if (currentPhase === "done") {
       if (wantsResearchPipeline(q)) {
-        startDocPipeline(q);
+        startWorkflowSelect(q);
         return;
       }
       await replyWithQA(q);
       return;
     }
 
-    startDocPipeline(q);
+    startWorkflowSelect(q);
   }, [actionBusy, showToast, replyWithQA]);
 
   const updateFilmJob = useCallback((jobId, patch) => {
@@ -1041,6 +1080,7 @@ export default function BritAppV2() {
     onShareBrief: handleShareBrief,
     onPickRelated: (q) => handleUserSubmit(q),
     onStartResearch: (q) => startDocPipeline(q),
+    onWorkflowProceed,
     onRunDeliverable,
     onFilmJobClick,
     onOpenDetail: (item) => setDetail(item),
@@ -1104,6 +1144,7 @@ export default function BritAppV2() {
           onChipAction={handleChipAction}
           disabled={composerLocked}
           placeholder={
+            phase === "workflow_select" ? "Pick a workflow above to continue…" :
             phase === "data_config" ? "Confirm data configuration above…" :
             phase === "audience_config" ? "Confirm audience above to run research…" :
             phase === "running" ? "Research is running. You'll see updates inline…" :
@@ -1129,6 +1170,180 @@ export default function BritAppV2() {
         config={bedrockConfig}
       />
       <DetailPanel item={detail} onClose={() => setDetail(null)} />
+    </div>
+  );
+}
+
+const WF_ICONS = {
+  trendspotting: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M3 17l5-5 4 4 7-7" />
+      <path d="M16 6h5v5" />
+    </svg>
+  ),
+  hypothesis: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M9 3h6" />
+      <path d="M10 3v6l-5 9a1.5 1.5 0 0 0 1.3 2.2h11.4A1.5 1.5 0 0 0 19 18l-5-9V3" />
+      <path d="M7.5 14h9" />
+    </svg>
+  ),
+  consumer: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+      <path d="M16 3.5a3 3 0 0 1 0 5.8" />
+      <path d="M21 20c0-2.5-1.4-4.6-3.5-5.6" />
+    </svg>
+  ),
+  category: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </svg>
+  ),
+};
+
+const WORKFLOW_OPTIONS = [
+  {
+    id: "trendspotting",
+    label: "Trendspotting for innovation",
+    keywords: /trend|emerging|innovat|new\b|future|spot|discover|shaping|whitespace|opportunit/i,
+    description:
+      "The output will provide a comprehensive view of various flavor trends across India, consumer voice excerpts, and an emotional and functional analysis of each trend — along with FPD recommendations to guide product development.",
+  },
+  {
+    id: "hypothesis",
+    label: "Hypothesis testing",
+    keywords: /hypothes|\btest\b|validate|prove|assumption|experiment|does\b|will\b|impact of/i,
+    description:
+      "Validate a specific assumption against consumer signals — surfacing supporting and contradicting evidence, with a confidence read to back your decision.",
+  },
+  {
+    id: "consumer",
+    label: "Consumer understanding study",
+    keywords: /consumer|understand|behaviou?r|need|persona|audience|who\b|motivation|occasion/i,
+    description:
+      "Build a deep profile of the target consumer — needs, occasions, motivations, and barriers — read across cohorts and regions.",
+  },
+  {
+    id: "category",
+    label: "Category analysis",
+    keywords: /categor|market|landscape|competit|segment|share|players|benchmark/i,
+    description:
+      "Map the category landscape — segments, key players, white spaces, and momentum — to frame where to play and how to win.",
+  },
+];
+
+const recommendWorkflowId = (query) => {
+  const q = String(query || "");
+  const match = WORKFLOW_OPTIONS.find((w) => w.keywords.test(q));
+  return match?.id || "trendspotting";
+};
+
+function WorkflowSelectorCard({ query, onProceed }) {
+  const recommendedId = recommendWorkflowId(query);
+  const [workflowId, setWorkflowId] = useState(recommendedId);
+  const [enabled, setEnabled] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const [proceeded, setProceeded] = useState(false);
+
+  const active =
+    WORKFLOW_OPTIONS.find((w) => w.id === workflowId) || WORKFLOW_OPTIONS[0];
+  const alternates = WORKFLOW_OPTIONS.filter((w) => w.id !== workflowId);
+  const isRecommended = workflowId === recommendedId;
+
+  const pickWorkflow = (id) => {
+    setWorkflowId(id);
+    setEnabled(false);
+    setProceeded(false);
+  };
+
+  return (
+    <div className="workflow-panel">
+      <p className="workflow-panel__head">
+        Pick a workflow for your query — all paths use the same data configuration and research pipeline.
+      </p>
+
+      <div className="workflow-panel__query">
+        <svg className="workflow-panel__query-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-3.5-3.5" />
+        </svg>
+        <span>{query}</span>
+      </div>
+
+      <div className="workflow-panel__label">
+        {isRecommended ? "Suggested workflow" : "Selected workflow"}
+        {isRecommended && <span className="workflow-panel__rec-tag">Best match</span>}
+      </div>
+
+      <div className={"workflow-card " + (enabled ? "workflow-card--selected" : "")}>
+        <span className="workflow-card__icon">{WF_ICONS[active.id]}</span>
+        <span className="workflow-card__title">{active.label}</span>
+        {enabled ? (
+          <span className="workflow-card__badge">Selected</span>
+        ) : (
+          <button type="button" className="workflow-card__enable" onClick={() => setEnabled(true)}>
+            Enable
+          </button>
+        )}
+      </div>
+
+      {enabled && (
+        <div className="workflow-confirm">
+          <div className="workflow-confirm__head">
+            <svg className="workflow-confirm__check" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.8-4.8 1.4 1.4-6.2 6.2z" />
+            </svg>
+            <b>{active.label} selected</b>
+          </div>
+          <p className="workflow-confirm__desc">{active.description}</p>
+          <button
+            type="button"
+            className="workflow-confirm__cta"
+            disabled={proceeded}
+            onClick={() => {
+              setProceeded(true);
+              onProceed?.(active.id);
+            }}
+          >
+            <span aria-hidden>→</span> Proceed to data configuration
+          </button>
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="workflow-panel__more"
+        onClick={() => setShowMore((v) => !v)}
+        aria-expanded={showMore}
+      >
+        {showMore ? "Show fewer workflows" : "Show more workflows"}
+        <span className={"workflow-panel__more-chev " + (showMore ? "open" : "")} aria-hidden>▾</span>
+      </button>
+
+      {showMore && (
+        <div className="workflow-secondary" role="list">
+          {alternates.map((w) => (
+            <button
+              key={w.id}
+              type="button"
+              role="listitem"
+              className="workflow-secondary__item"
+              onClick={() => pickWorkflow(w.id)}
+            >
+              <span className="workflow-secondary__icon">{WF_ICONS[w.id]}</span>
+              <span className="workflow-secondary__label">{w.label}</span>
+              {w.id === recommendedId && (
+                <span className="workflow-secondary__rec">Suggested</span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

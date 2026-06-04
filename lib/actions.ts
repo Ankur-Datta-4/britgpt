@@ -1,5 +1,11 @@
 import { BRIT_DATA } from "@/lib/data";
-import { generateConceptCards, generateHeroFilm } from "@/lib/create";
+import {
+  generateConceptCards,
+  generateHeroFilm,
+  buildStoryboardScenes,
+  buildStoryboardFilmPreview,
+  buildMessagingCards,
+} from "@/lib/create";
 import { checkBedrockConfigured } from "@/lib/api-status";
 import { isLlmLiveEnabled } from "@/lib/llm-mode";
 import { runActionWithLLM, type ActionContext } from "@/lib/llm";
@@ -247,20 +253,35 @@ const withDeliverableContext = (
   const state = ctx.state || ctx.params?.region || "Pan-India";
   const base = { ...data, flavor, state };
 
-  if (actionId === "storyboard" && !base.scenes?.length) {
-    const fb = fallback.storyboard;
-    base.scenes = fb.scenes.map((s) => ({
-      ...s,
-      onScreen: s.onScreen || flavor,
-    }));
-    base.bullets = fb.scenes.map(
-      (s) => `Scene ${s.beat}: ${s.title} — ${s.timing}`
-    );
+  if (actionId === "storyboard") {
+    if (!base.scenes?.length) {
+      base.scenes = buildStoryboardScenes({ flavor, state });
+    }
+    base.title = base.title || `Video ad storyboard · ${flavor}`;
+    base.body =
+      base.body ||
+      `30-second Britannia spot for ${flavor} in ${state} — grounded in regional snack occasions and pack-forward framing.`;
+    base.bullets =
+      base.bullets?.length > 0
+        ? base.bullets
+        : base.scenes.map((s) => `Scene ${s.beat}: ${s.title} — ${s.timing}`);
   }
 
-  if (actionId === "creative_brief") {
-    if (!base.messaging?.length) base.messaging = fallback.creative_brief.messaging;
-    if (!base.positioning?.length) base.positioning = fallback.creative_brief.positioning;
+  if (actionId === "creative_brief" || actionId === "content_engine" || actionId === "positioning") {
+    const cards = buildMessagingCards({ flavor, state, brandFit: ctx.brandFit });
+    if (!base.messagingCards?.length) {
+      base.messagingCards = cards;
+    }
+    if (!base.messaging?.length) {
+      base.messaging = cards.map((c) => `${c.headline} — ${c.body}`);
+    }
+    if (!base.positioning?.length) {
+      base.positioning = fallback.creative_brief.positioning;
+    }
+    base.title = base.title || `Messaging · ${flavor} · ${state}`;
+    base.body =
+      base.body ||
+      `Comms recommendations for launching ${flavor} in ${state} — tone, hooks, and shelf story for Britannia stakeholders.`;
   }
 
   return base;
@@ -339,7 +360,19 @@ export const runAction = async (
     return generateHeroFilm(ctx, onProgress);
   }
   if (actionId === "content_engine") return runWithLlm("creative_brief", ctx, onProgress);
-  if (actionId === "storyboard") return runWithLlm("storyboard", ctx, onProgress);
+  if (actionId === "storyboard") {
+    const result = await runWithLlm("storyboard", ctx, onProgress);
+    onProgress?.("Preparing hero spot preview…");
+    const film = await buildStoryboardFilmPreview(ctx);
+    return withDeliverableContext(actionId, ctx, {
+      type: "storyboard",
+      ...result,
+      ...film,
+      message:
+        result.message ||
+        "Storyboard ready — scene clips generate with Google Veo when GEMINI_API_KEY is set (about 2–4 min per scene).",
+    });
+  }
   if (actionId === "positioning") return runWithLlm("creative_brief", ctx, onProgress);
   if (actionId === "creative_brief") return runWithLlm("creative_brief", ctx, onProgress);
   if (actionId === "fpd_scout") return runWithLlm("fpd_scout", ctx, onProgress);

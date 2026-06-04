@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef, useCallback, Fragment } from "react";
+import { createPortal } from "react-dom";
 import {
   CartesianGrid,
   Line,
@@ -38,7 +39,20 @@ import {
   parseNationalStatePills,
   parseNationalExtensions,
   inferNationalCategory,
+  STATE_ABBR,
 } from "@/lib/demo-flow-data";
+import {
+  BRANDS_COUNT_TOOLTIP,
+  FLAVOR_INDEX_TOOLTIPS,
+  buildBritanniaFitReasoning,
+  getBrandPositioning,
+  resolveBrandKey,
+} from "@/lib/flavor-card-meta";
+import {
+  fetchVerbatimFeed,
+  hasVerbatimWall,
+  FLAVORS_WITH_VERBATIM_WALL,
+} from "@/lib/verbatim-feed";
 
 const openDetail = (item) => {
   window.dispatchEvent(new CustomEvent("brit-detail", { detail: item }));
@@ -1315,46 +1329,68 @@ export { DEFAULT_RESEARCH_PROMPT };
 /* ============================================================
    Simple state table (v2)
 ============================================================ */
-export const DocSimpleStateTableCard = () => (
-  <div className="card simple-state-table-card">
-    <div className="card-h">
-      <h3>State-wise flavor overview</h3>
-      <span className="tag">{DEMO_STATES.length} states · top 5 sweet &amp; savory</span>
-    </div>
-    <div className="card-body state-table-wrap">
-      <table className="national-table simple-state-table">
-        <thead>
-          <tr>
-            <th>State</th>
-            <th>Top 5 Sweet</th>
-            <th>Top 5 Savory</th>
-          </tr>
-        </thead>
-        <tbody>
-          {DEMO_STATES.map((s) => (
-            <tr key={s.state}>
-              <td className="sst-state"><b>{s.state}</b></td>
-              <td className="sst-flavors sst-sweet">
-                {s.sweet.slice(0, 5).map((f, i) => (
-                  <span key={f} className="sst-pill sst-pill--sweet">
-                    <span className="sst-rank">{i + 1}</span>{f}
-                  </span>
-                ))}
-              </td>
-              <td className="sst-flavors sst-savory">
-                {s.savory.slice(0, 5).map((f, i) => (
-                  <span key={f} className="sst-pill sst-pill--savory">
-                    <span className="sst-rank">{i + 1}</span>{f}
-                  </span>
-                ))}
-              </td>
+const SIMPLE_STATE_PREVIEW_COUNT = 5;
+
+export const DocSimpleStateTableCard = () => {
+  const [expanded, setExpanded] = useState(false);
+  const hiddenCount = DEMO_STATES.length - SIMPLE_STATE_PREVIEW_COUNT;
+  const visibleStates = expanded ? DEMO_STATES : DEMO_STATES.slice(0, SIMPLE_STATE_PREVIEW_COUNT);
+  const canToggle = hiddenCount > 0;
+
+  return (
+    <div className="card simple-state-table-card">
+      <div className="card-h">
+        <h3>State-wise flavor overview</h3>
+        <span className="tag">{DEMO_STATES.length} states · top 5 sweet &amp; savory</span>
+      </div>
+      <div className="card-body state-table-wrap">
+        <table className="national-table simple-state-table">
+          <thead>
+            <tr>
+              <th>State</th>
+              <th>Top 5 Sweet</th>
+              <th>Top 5 Savory</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {visibleStates.map((s) => (
+              <tr key={s.state}>
+                <td className="sst-state"><b>{s.state}</b></td>
+                <td className="sst-flavors sst-sweet">
+                  {s.sweet.slice(0, 5).map((f, i) => (
+                    <span key={f} className="sst-pill sst-pill--sweet">
+                      <span className="sst-rank">{i + 1}</span>{f}
+                    </span>
+                  ))}
+                </td>
+                <td className="sst-flavors sst-savory">
+                  {s.savory.slice(0, 5).map((f, i) => (
+                    <span key={f} className="sst-pill sst-pill--savory">
+                      <span className="sst-rank">{i + 1}</span>{f}
+                    </span>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {canToggle && (
+        <div className="sst-toggle-row">
+          <button
+            type="button"
+            className="sst-toggle-btn"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+          >
+            {expanded ? "Show fewer states" : `Show ${hiddenCount} states`}
+            <span className={"sst-toggle-chevron " + (expanded ? "open" : "")} aria-hidden>▾</span>
+          </button>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 /* ============================================================
    Flavor Prioritization Matrix (v2 singular view)
@@ -1368,21 +1404,12 @@ const medianVal = (arr) => {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
+const meanVal = (arr) => (arr.length ? arr.reduce((s, n) => s + n, 0) / arr.length : 0);
+
 const getBrandCount = (flavorName) => {
   const row = FLAVOR_BRAND_ROWS.find((r) => r.flavor === flavorName);
   if (!row) return 0;
   return row.brands.split(",").filter((b) => b.trim()).length;
-};
-
-const FLAVOR_VOICE_QUOTES: Record<string, string> = {
-  "Kaju Katli": "Nothing says celebration like kaju katli — it's the one mithai you actually want to receive, not just give. The cashew richness just hits differently in biscuit form.",
-  "Nolen Gur": "The moment I smell nolen gur I'm back in Kolkata in January. Smoky, sweet, irreplaceable — nothing from a bottle comes close to the real thing.",
-  "Honey": "Found raw forest honey from a tribal market last year and it completely changed how I think about sweetness. Floral, slightly tangy — nothing like the supermarket stuff.",
-  "Schezwan": "Schezwan is literally on everything now — maggi, momos, dosa — and I'm not complaining. That garlic-chilli heat with a hint of sweetness is genuinely addictive.",
-  "Garlic Chilli": "Garlic chilli is my baseline now. Plain snacks feel boring after you've had something with that proper garlic-chilli punch. Can't go back.",
-  "Bhut Jolokia": "Tried Bhut Jolokia chutney once in Nagaland and I've been chasing that flavour ever since. It's not just heat — there's an actual fruity depth underneath the fire.",
-  "Tandoori Spice": "Tandoori snacks just make sense — smoky, spiced, but familiar enough that you finish the whole packet without noticing. That charred smokiness is what I'm hooked on.",
-  "Mishti Doi": "Mishti doi is the comfort food I never talk about enough. Sweet but not cloying, and that slight tang makes it feel almost earned. Wish everything came in mishti doi flavour.",
 };
 
 const TREND_DOT_COLORS = {
@@ -1395,8 +1422,302 @@ const TREND_DOT_COLORS = {
 };
 const trendDotColor = (t) => TREND_DOT_COLORS[t] || TREND_DOT_COLORS.Stable;
 
+const FLAVOR_CAT_COLORS = { sweet: "#E0922F", savory: "#C0392B" };
+
+const DELIVERABLE_ACTION_LABELS: Record<string, string> = {
+  concept_cards: "Concept cards",
+  storyboard: "Video ad storyboard",
+  creative_brief: "Messaging recommendations",
+};
+
+const inferDefaultStateForFlavor = (flavorName: string) => {
+  for (const s of DEMO_STATES) {
+    if (s.sweet.includes(flavorName) || s.savory.includes(flavorName)) return s.state;
+  }
+  return "Maharashtra";
+};
+
+const DeliverableConfigDialog = ({
+  actionId,
+  flavor,
+  onClose,
+  onConfirm,
+  busy,
+}) => {
+  const defaultState = useMemo(
+    () => inferDefaultStateForFlavor(flavor?.name || ""),
+    [flavor?.name]
+  );
+  const [state, setState] = useState(defaultState);
+  const [instructions, setInstructions] = useState("");
+
+  useEffect(() => {
+    setState(defaultState);
+    setInstructions("");
+  }, [defaultState, actionId]);
+
+  const label = DELIVERABLE_ACTION_LABELS[actionId] || "Deliverable";
+
+  return (
+    <div className="deliverable-dialog-overlay" onClick={onClose}>
+      <div
+        className="deliverable-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deliverable-dialog-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button type="button" className="deliverable-dialog__close" onClick={onClose} aria-label="Close">
+          ✕
+        </button>
+        <h3 id="deliverable-dialog-title" className="deliverable-dialog__title">
+          Configure {label}
+        </h3>
+        <p className="deliverable-dialog__lead muted">
+          Confirm state context and any creative specifications before we generate your output.
+        </p>
+
+        <div className="deliverable-dialog__field deliverable-dialog__field--locked">
+          <span className="deliverable-dialog__label">Flavor</span>
+          <div className="deliverable-dialog__locked-val">{flavor?.name}</div>
+        </div>
+
+        <div className="deliverable-dialog__field">
+          <label className="deliverable-dialog__label" htmlFor="deliverable-state">
+            Select state
+          </label>
+          <select
+            id="deliverable-state"
+            className="matrix-filter-select deliverable-dialog__select"
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+          >
+            {DEMO_STATES.map((s) => (
+              <option key={s.state} value={s.state}>{s.state}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="deliverable-dialog__field">
+          <label className="deliverable-dialog__label" htmlFor="deliverable-specs">
+            Specifications <span className="hint">optional</span>
+          </label>
+          <textarea
+            id="deliverable-specs"
+            className="deliverable-dialog__textarea"
+            rows={4}
+            value={instructions}
+            onChange={(e) => setInstructions(e.target.value)}
+            placeholder="e.g. Focus on evening chai occasion, Marathi cultural cues, premium 50-50 pack architecture, no health claims…"
+          />
+        </div>
+
+        <div className="deliverable-dialog__actions">
+          <button type="button" className="deliverable-dialog__cancel" onClick={onClose}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="deliverable-dialog__go"
+            disabled={busy}
+            onClick={() => onConfirm?.({ state, instructions: instructions.trim() })}
+          >
+            Generate {label}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FlavorInfoTip = ({ text }) => (
+  <span className="flavor-info-tip">
+    <button type="button" className="flavor-info-tip__btn" aria-label="More information">
+      i
+    </button>
+    <span className="flavor-info-tip__bubble" role="tooltip">{text}</span>
+  </span>
+);
+
+const FlavorBritanniaFitBlock = ({ flavor }) => {
+  const [showReasoning, setShowReasoning] = useState(false);
+  const brandKey = resolveBrandKey(flavor.brandFit);
+  const positioning = getBrandPositioning(flavor.brandFit);
+  const reasoning = useMemo(() => buildBritanniaFitReasoning(flavor), [flavor]);
+
+  if (!flavor.brandFit) return null;
+
+  return (
+    <div className="flavor-modal-qual-item flavor-modal-qual-item--fit">
+      <span className="fmq-label">Britannia fit</span>
+      <p className="fmq-val">
+        <strong className="fmq-brand">{brandKey || flavor.brandFit}</strong>
+        {positioning ? ` — ${positioning}` : ` — ${flavor.brandFit}`}
+      </p>
+      {reasoning && (
+        <div className="flavor-fit-reasoning-wrap">
+          <button
+            type="button"
+            className="flavor-fit-reasoning-btn"
+            onClick={() => setShowReasoning((v) => !v)}
+            aria-expanded={showReasoning}
+          >
+            {showReasoning ? "Hide reasoning" : "Reasoning"}
+          </button>
+          {showReasoning && (
+            <div className="flavor-fit-reasoning-panel" role="region" aria-label="Britannia fit reasoning">
+              <p className="flavor-fit-reasoning-lead">{reasoning.summary}</p>
+              <ul className="flavor-fit-reasoning-list">
+                {reasoning.bullets.map((b) => (
+                  <li key={b}>{b}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const VERBATIM_PLATFORM_INITIAL: Record<string, string> = {
+  YouTube: "▶",
+  Instagram: "◎",
+  X: "𝕏",
+  Facebook: "f",
+  Reddit: "r",
+  Social: "◆",
+};
+
+const VerbatimWallThumb = ({ post }) => {
+  const [failed, setFailed] = useState(false);
+  const showImg = post.thumbnailUrl && !failed;
+  const initial = VERBATIM_PLATFORM_INITIAL[post.platformLabel] || "◆";
+
+  if (!showImg) {
+    return (
+      <div
+        className={`verbatim-wall-thumb verbatim-wall-thumb--placeholder verbatim-wall-thumb--${post.platformLabel.toLowerCase().replace(/\s+/g, "")}`}
+        aria-hidden
+      >
+        <span>{initial}</span>
+      </div>
+    );
+  }
+
+  return (
+    <a
+      className="verbatim-wall-thumb"
+      href={post.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Open ${post.platformLabel} post`}
+    >
+      <img
+        src={post.thumbnailUrl}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(true)}
+      />
+    </a>
+  );
+};
+
+const FlavorVerbatimWall = ({ flavorName }) => {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    fetchVerbatimFeed(flavorName, 48)
+      .then((rows) => {
+        if (!cancelled) setPosts(rows);
+      })
+      .catch((e) => {
+        if (!cancelled) setError(e?.message || "Could not load verbatim feed");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [flavorName]);
+
+  if (loading) {
+    return <p className="verbatim-wall-status">Loading social verbatim feed…</p>;
+  }
+  if (error) {
+    return <p className="verbatim-wall-status verbatim-wall-status--err">{error}</p>;
+  }
+  if (!posts.length) {
+    return <p className="verbatim-wall-status">No posts in the verbatim dataset for this flavor.</p>;
+  }
+
+  return (
+    <div className="verbatim-wall-feed" role="feed" aria-label={`Verbatim wall for ${flavorName}`}>
+      {posts.map((post) => (
+        <article key={post.id} className="verbatim-wall-card">
+          <VerbatimWallThumb post={post} />
+          <div className="verbatim-wall-card__body">
+            <header className="verbatim-wall-card__head">
+              <span className={`verbatim-wall-platform verbatim-wall-platform--${post.platformLabel.toLowerCase().replace(/\s+/g, "")}`}>
+                {post.platformLabel}
+              </span>
+              {post.timeLabel && <time className="verbatim-wall-time">{post.timeLabel}</time>}
+            </header>
+            <p className="verbatim-wall-excerpt">{post.excerpt}</p>
+            <footer className="verbatim-wall-card__foot">
+              <span className="verbatim-wall-engagement">{post.engagementLabel}</span>
+              <a
+                className="verbatim-wall-link"
+                href={post.link}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View post
+              </a>
+            </footer>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+};
+
 const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
+  const [mounted, setMounted] = useState(false);
   const [showPendingIntegrations, setShowPendingIntegrations] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+  const [activeTab, setActiveTab] = useState("overview");
+  const showVerbatimTab = hasVerbatimWall(flavor.name);
+
+  useEffect(() => {
+    setMounted(true);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
+    setActiveTab("overview");
+  }, [flavor.name]);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
   const trendData = useMemo(
     () => buildTrendData([{ flavor: flavor.name, convVolume: flavor.convVolume, convGrowth: flavor.convGrowth }]),
     [flavor]
@@ -1411,104 +1732,140 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
   ];
 
   const indices = [
-    ["DIY Index", flavor.diyIndex],
-    ["Shareability", flavor.shareabilityIndex],
-    ["Consumption Intent", flavor.cravingIndex],
-    ["Comfort", flavor.comfortIndex],
-    ["Curiosity", flavor.curiosityIndex],
+    ["DIY Index", flavor.diyIndex, FLAVOR_INDEX_TOOLTIPS["DIY Index"]],
+    ["Shareability", flavor.shareabilityIndex, FLAVOR_INDEX_TOOLTIPS.Shareability],
+    ["Consumption Intent", flavor.cravingIndex, FLAVOR_INDEX_TOOLTIPS["Consumption Intent"]],
+    ["Comfort", flavor.comfortIndex, FLAVOR_INDEX_TOOLTIPS.Comfort],
+    ["Curiosity", flavor.curiosityIndex, FLAVOR_INDEX_TOOLTIPS.Curiosity],
   ];
 
-  return (
-    <div className="flavor-modal-overlay" onClick={onClose}>
-      <div className="flavor-modal-card" onClick={(e) => e.stopPropagation()}>
+  const qualFields = [
+    ["Why the flavor is popular", flavor.whyPopular],
+    ["States most popular in", flavor.states],
+    ["When the flavor trends", flavor.whenTrends],
+    ["Product extensions", flavor.extensions],
+  ].filter(([, v]) => v);
+
+  const modal = (
+    <div className="flavor-modal-overlay" onClick={onClose} role="presentation">
+      <div
+        className="flavor-modal-card flavor-modal-card--popout"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="flavor-modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button className="flavor-modal-close" onClick={onClose} aria-label="Close">✕</button>
 
         <div className="flavor-modal-header">
-          <h2 className="flavor-modal-title">{flavor.name}</h2>
-          <div className="flavor-modal-header-badges">
-            <span className="flavor-modal-trend-badge" style={{ background: trendDotColor(flavor.trendType) }}>
-              {flavor.trendType}
-            </span>
-            {CROSS_CATEGORY_FLAVORS.has(flavor.name) && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
-            {isCrossRegion(flavor.states || "") && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
+          <div className="flavor-modal-header-main">
+            <h2 id="flavor-modal-title" className="flavor-modal-title">{flavor.name}</h2>
+            <div className="flavor-modal-header-badges">
+              <span className="flavor-modal-trend-badge" style={{ background: trendDotColor(flavor.trendType) }}>
+                {flavor.trendType}
+              </span>
+              {CROSS_CATEGORY_FLAVORS.has(flavor.name) && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
+              {isCrossRegion(flavor.states || "") && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
+            </div>
+          </div>
+          <div className="flavor-modal-tabs" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "overview"}
+              className={"flavor-modal-tab " + (activeTab === "overview" ? "sel" : "")}
+              onClick={() => setActiveTab("overview")}
+            >
+              Overview
+            </button>
+            {showVerbatimTab && (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === "verbatim"}
+                className={"flavor-modal-tab " + (activeTab === "verbatim" ? "sel" : "")}
+                onClick={() => setActiveTab("verbatim")}
+              >
+                Verbatim wall
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="flavor-modal-body flavor-modal-body--split">
-          {/* ── Left column ── */}
-          <div className="flavor-modal-left">
-            {/* Core metrics row */}
-            <div className="flavor-modal-core-metrics">
-              {[
-                ["Conv. Volume", flavor.convVolume],
-                ["Eng. Volume", flavor.engVolume],
-                ["Conv. Growth", flavor.convGrowth],
-                ["Eng. Growth", flavor.engGrowth],
-                ["Trend Type", flavor.trendType],
-                ["No. of Brands", brandCount || "—"],
-              ].map(([label, val]) => (
-                <div key={label} className="flavor-modal-metric-item">
-                  <span className="fmm-label">{label}</span>
-                  <b className="fmm-val">{val}</b>
+        <div className="flavor-modal-scroll">
+          {activeTab === "overview" ? (
+            <div className="flavor-modal-body flavor-modal-body--split">
+              <div className="flavor-modal-left">
+                <div className="flavor-modal-core-metrics">
+                  {[
+                    ["Conv. volume", flavor.convVolume],
+                    ["Eng. volume", flavor.engVolume],
+                    ["Conv. growth", flavor.convGrowth],
+                    ["Eng. growth", flavor.engGrowth],
+                    ["Trend type", flavor.trendType],
+                  ].map(([label, val]) => (
+                    <div key={label} className="flavor-modal-metric-item">
+                      <span className="fmm-label">{label}</span>
+                      <b className="fmm-val">{val}</b>
+                    </div>
+                  ))}
+                  <div className="flavor-modal-metric-item flavor-modal-metric-item--brands">
+                    <span className="fmm-label">
+                      No. of brands
+                      <FlavorInfoTip text={BRANDS_COUNT_TOOLTIP} />
+                    </span>
+                    <b className="fmm-val">{brandCount || "—"}</b>
+                  </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Qual fields */}
-            <div className="flavor-modal-qual">
-              {[
-                ["Why the Flavor is Popular", flavor.whyPopular],
-                ["States Most Popular In", flavor.states],
-                ["When the Flavor Trends", flavor.whenTrends],
-                ["Product Extensions", flavor.extensions],
-                ["Britannia Fit", flavor.brandFit],
-              ]
-                .filter(([, v]) => v)
-                .map(([label, val]) => (
-                  <div key={label} className="flavor-modal-qual-item">
-                    <span className="fmq-label">{label}</span>
-                    <p className="fmq-val">{val}</p>
+                <div className="flavor-modal-qual">
+                  {qualFields.map(([label, val]) => (
+                    <div key={label} className="flavor-modal-qual-item">
+                      <span className="fmq-label">{label}</span>
+                      <p className="fmq-val">{val}</p>
+                    </div>
+                  ))}
+                  <FlavorBritanniaFitBlock flavor={flavor} />
+                </div>
+
+                <div className="flavor-modal-trend-chart">
+                  <p className="flavor-modal-chart-label">Conversation volume · L1Y trend</p>
+                  <ResponsiveContainer width="100%" height={150}>
+                    <LineChart data={trendData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+                      <CartesianGrid stroke="#E6E1D8" strokeDasharray="3 4" vertical={false} />
+                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#8A8478" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 10, fill: "#8A8478" }} axisLine={false} tickLine={false} width={40} />
+                      <Tooltip
+                        contentStyle={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: 8, fontSize: 12 }}
+                        formatter={(v) => [v, "Conv. Volume"]}
+                      />
+                      <Line type="monotone" dataKey={flavor.name} stroke="#B4232A" strokeWidth={2} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="flavor-modal-right">
+                <p className="flavor-modal-indices-label">Flavor indices</p>
+                {indices.map(([label, val, tip]) => (
+                  <div key={label} className="flavor-modal-index-item">
+                    <span className="fmi-val">{val ?? "—"}</span>
+                    <span className="fmi-label">
+                      {label}
+                      <FlavorInfoTip text={tip} />
+                    </span>
                   </div>
                 ))}
-            </div>
-
-            {/* Consumer verbatim */}
-            {FLAVOR_VOICE_QUOTES[flavor.name] && (
-              <div className="flavor-modal-verbatim">
-                <span className="flavor-modal-verbatim__mark">"</span>
-                <p className="flavor-modal-verbatim__text">{FLAVOR_VOICE_QUOTES[flavor.name]}</p>
-                <span className="flavor-modal-verbatim__source">Consumer voice · Social listening</span>
               </div>
-            )}
-
-            {/* Trendline */}
-            <div className="flavor-modal-trend-chart">
-              <p className="flavor-modal-chart-label">Conversation volume · L1Y trend</p>
-              <ResponsiveContainer width="100%" height={150}>
-                <LineChart data={trendData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
-                  <CartesianGrid stroke="#E6E1D8" strokeDasharray="3 4" vertical={false} />
-                  <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#8A8478" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "#8A8478" }} axisLine={false} tickLine={false} width={40} />
-                  <Tooltip
-                    contentStyle={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: 8, fontSize: 12 }}
-                    formatter={(v) => [v, "Conv. Volume"]}
-                  />
-                  <Line type="monotone" dataKey={flavor.name} stroke="#B4232A" strokeWidth={2} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
             </div>
-          </div>
-
-          {/* ── Right column — 5 index scores ── */}
-          <div className="flavor-modal-right">
-            <p className="flavor-modal-indices-label">Flavor Indices</p>
-            {indices.map(([label, val]) => (
-              <div key={label} className="flavor-modal-index-item">
-                <span className="fmi-val">{val ?? "—"}</span>
-                <span className="fmi-label">{label}</span>
-              </div>
-            ))}
-          </div>
+          ) : (
+            <div className="flavor-modal-verbatim-pane">
+              <p className="flavor-modal-verbatim-intro">
+                Live social posts from Flavor Insights — same verbatim wall pattern as RRP. Click <strong>Reasoning</strong> on Overview for Britannia fit logic.
+              </p>
+              <FlavorVerbatimWall flavorName={flavor.name} />
+            </div>
+          )}
         </div>
 
         <div className="flavor-modal-actions">
@@ -1523,14 +1880,32 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
                   setShowPendingIntegrations(true);
                   return;
                 }
-                onRunDeliverable?.({ actionId: d.actionId, flavor: flavor.name, brandFit: flavor.brandFit, state: "Maharashtra", instructions: "" });
-                onClose();
+                setPendingAction(d.actionId);
               }}
             >
               {d.label}
             </button>
           ))}
         </div>
+        {pendingAction && (
+          <DeliverableConfigDialog
+            actionId={pendingAction}
+            flavor={flavor}
+            onClose={() => setPendingAction(null)}
+            busy={busy}
+            onConfirm={({ state, instructions }) => {
+              onRunDeliverable?.({
+                actionId: pendingAction,
+                flavor: flavor.name,
+                brandFit: flavor.brandFit,
+                state,
+                instructions,
+              });
+              setPendingAction(null);
+              onClose();
+            }}
+          />
+        )}
         {showPendingIntegrations && (
           <div className="flavor-pending-dialog-backdrop" onClick={() => setShowPendingIntegrations(false)}>
             <div
@@ -1556,99 +1931,77 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
       </div>
     </div>
   );
+
+  if (!mounted || typeof document === "undefined") return null;
+  return createPortal(modal, document.body);
 };
 
-const PrioritizeTable = ({ flavors }) => {
-  const [sortKey, setSortKey] = useState("convVolume");
-  const [sortDir, setSortDir] = useState("desc");
+const FLAVOR_TABLE_PAGE_SIZE = 10;
 
-  const sorted = useMemo(() => {
-    const rows = [...flavors];
-    const dir = sortDir === "asc" ? 1 : -1;
-    rows.sort((a, b) => {
-      if (sortKey === "name") return a.name.localeCompare(b.name) * dir;
-      if (sortKey === "convVolume") return (parseNatVol(a.convVolume) - parseNatVol(b.convVolume)) * dir;
-      if (sortKey === "engVolume") return (parseNatVol(a.engVolume) - parseNatVol(b.engVolume)) * dir;
-      if (sortKey === "convGrowth") return (parsePct(a.convGrowth) - parsePct(b.convGrowth)) * dir;
-      if (sortKey === "engGrowth") return (parsePct(a.engGrowth) - parsePct(b.engGrowth)) * dir;
-      if (sortKey === "diyIndex") return ((a.diyIndex || 0) - (b.diyIndex || 0)) * dir;
-      if (sortKey === "shareabilityIndex") return ((a.shareabilityIndex || 0) - (b.shareabilityIndex || 0)) * dir;
-      if (sortKey === "cravingIndex") return ((a.cravingIndex || 0) - (b.cravingIndex || 0)) * dir;
-      if (sortKey === "comfortIndex") return ((a.comfortIndex || 0) - (b.comfortIndex || 0)) * dir;
-      if (sortKey === "curiosityIndex") return ((a.curiosityIndex || 0) - (b.curiosityIndex || 0)) * dir;
-      return 0;
-    });
-    return rows;
-  }, [flavors, sortKey, sortDir]);
+// Sweet/savory tags from state top-5 lists + national row metadata
+const FLAVOR_CATEGORY_SETS: Record<string, Set<string>> = (() => {
+  const map: Record<string, Set<string>> = {};
+  DEMO_STATES.forEach((s) => {
+    s.sweet.forEach((f) => { (map[f] ||= new Set()).add("sweet"); });
+    s.savory.forEach((f) => { (map[f] ||= new Set()).add("savory"); });
+  });
 
-  const onSort = (key) => {
-    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortKey(key); setSortDir(key === "name" ? "asc" : "desc"); }
-  };
+  const sweetHint =
+    /sweet|mithai|jaggery|dessert|rabri|ladoo|halwa|jamun|katli|gur|doi|caramel|kesar|shrikhand|basundi|phirni|modak|honey|berry|saffron|cream|milk|fruit|papdi|barfi|rasgulla|malai|bebinca|soan|til jaggery|nolen|mishti|gajar|payasam|pradhaman/i;
+  const savoryHint =
+    /chilli|chili|masala|spice|pickle|podi|savoury|savory|ferment|mustard|garlic|pepper|achar|chatpata|tandoori|thecha|jhalmuri|namkeen|schezwan|gunpowder|tamarind|kokum|kasundi|bhut|chaat|panch phoron|sattu|recheado|xacuti|smoked|pod/i;
 
-  const SortTh = ({ k, label }) => (
-    <th className="sortable" onClick={() => onSort(k)} style={{ cursor: "pointer", userSelect: "none" }}>
-      {label}{sortKey === k ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
-    </th>
-  );
+  NATIONAL_FLAVORS.forEach((f) => {
+    if (map[f.name]?.size) return;
+    const text = `${f.name} ${f.whyPopular || ""} ${f.extensions || ""}`.toLowerCase();
+    if (sweetHint.test(text) && !savoryHint.test(text)) map[f.name] = new Set(["sweet"]);
+    else if (savoryHint.test(text)) map[f.name] = new Set(["savory"]);
+    else map[f.name] = new Set(["sweet", "savory"]);
+  });
 
-  return (
-    <div className="prioritize-table-wrap">
-      <div className="prioritize-table-head">
-        <h4>Prioritize · top-right quadrant</h4>
-        <span className="tag">{sorted.length} flavors</span>
-      </div>
-      <div className="state-table-wrap">
-        <table className="national-table prioritize-table">
-          <thead>
-            <tr>
-              <SortTh k="name" label="Flavor" />
-              <SortTh k="convVolume" label="Conv. Volume" />
-              <SortTh k="engVolume" label="Eng. Volume" />
-              <SortTh k="convGrowth" label="Conv. Growth" />
-              <SortTh k="engGrowth" label="Eng. Growth" />
-              <SortTh k="diyIndex" label="DIY" />
-              <SortTh k="shareabilityIndex" label="Shareability" />
-              <SortTh k="cravingIndex" label="Craving" />
-              <SortTh k="comfortIndex" label="Comfort" />
-              <SortTh k="curiosityIndex" label="Curiosity" />
-              <th>Trend</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map((f) => {
-              const isCrossCategory = CROSS_CATEGORY_FLAVORS.has(f.name);
-              const crossRegion = isCrossRegion(f.states || "");
-              return (
-                <tr key={f.name}>
-                  <td><b>{f.name}</b></td>
-                  <td>{f.convVolume}</td>
-                  <td>{f.engVolume}</td>
-                  <td>{f.convGrowth}</td>
-                  <td>{f.engGrowth}</td>
-                  <td><span className="national-index">{f.diyIndex ?? "—"}</span></td>
-                  <td><span className="national-index">{f.shareabilityIndex ?? "—"}</span></td>
-                  <td><span className="national-index">{f.cravingIndex ?? "—"}</span></td>
-                  <td><span className="national-index">{f.comfortIndex ?? "—"}</span></td>
-                  <td><span className="national-index">{f.curiosityIndex ?? "—"}</span></td>
-                  <td>
-                    <div className="prioritize-trend-tags">
-                      <span>{f.trendType}</span>
-                      {isCrossCategory && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
-                      {crossRegion && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+  return map;
+})();
+
+const STATE_TOKEN_TO_FULL: Record<string, string> = (() => {
+  const map: Record<string, string> = {};
+  Object.entries(STATE_ABBR).forEach(([full, abbr]) => {
+    map[full.toLowerCase()] = full;
+    map[abbr.toLowerCase()] = full;
+  });
+  map["west bengal"] = "West Bengal";
+  map.wb = "West Bengal";
+  return map;
+})();
+
+const STATE_FLAVOR_SETS: Record<string, Set<string>> = (() => {
+  const map: Record<string, Set<string>> = {};
+  DEMO_STATES.forEach((s) => { map[s.state] = new Set([...s.sweet, ...s.savory]); });
+  return map;
+})();
+
+const flavorMatchesState = (flavor, stateFilter) => {
+  if (!stateFilter || stateFilter === "All States") return true;
+  if (STATE_FLAVOR_SETS[stateFilter]?.has(flavor.name)) return true;
+
+  const target = stateFilter.toLowerCase();
+  const tokens = String(flavor.states || "")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+
+  return tokens.some((token) => {
+    const resolved = STATE_TOKEN_TO_FULL[token] || token;
+    return resolved.toLowerCase() === target || token === target;
+  });
 };
 
-/* ── Cross-category / cross-region helpers ── */
+const flavorMatchesCategory = (flavorName, categoryFilter) => {
+  if (categoryFilter === "both") return true;
+  const cats = FLAVOR_CATEGORY_SETS[flavorName];
+  if (!cats) return true;
+  return cats.has(categoryFilter);
+};
+
 const CROSS_CATEGORY_FLAVORS = new Set([
   "Honey", "Wild Honey", "Mahua Honey", "Kesar Milk", "Turmeric",
   "Coconut Jaggery", "Tamarind", "Schezwan", "Garlic Chilli", "Kokum",
@@ -1677,70 +2030,431 @@ const isCrossRegion = (states: string): boolean => {
   return zones.size >= 3;
 };
 
+const VERBATIM_FLAVOR_SET = new Set(FLAVORS_WITH_VERBATIM_WALL);
+
+const FLAVOR_SCOPE_OPTIONS = [
+  { id: "all", label: "All flavors" },
+  { id: "verbatim", label: "Verbatim wall available" },
+  { id: "cross_region", label: "Cross-region" },
+  { id: "cross_category", label: "Cross-category" },
+  { id: "emerging", label: "Emerging trend" },
+  { id: "established", label: "Established trend" },
+  { id: "seasonal", label: "Seasonal trend" },
+];
+
+const flavorMatchesScope = (flavor, scopeFilter) => {
+  if (!scopeFilter || scopeFilter === "all") return true;
+  const name = flavor.name;
+  if (scopeFilter === "verbatim") return VERBATIM_FLAVOR_SET.has(name);
+  if (scopeFilter === "cross_region") return isCrossRegion(flavor.states || "");
+  if (scopeFilter === "cross_category") return CROSS_CATEGORY_FLAVORS.has(name);
+  if (scopeFilter === "emerging") return flavor.trendType === "Emerging";
+  if (scopeFilter === "established") return flavor.trendType === "Established";
+  if (scopeFilter === "seasonal") return flavor.trendType === "Seasonal";
+  return true;
+};
+
+const flavorMatchesSearch = (flavor, searchQuery) => {
+  const q = String(searchQuery || "").trim().toLowerCase();
+  if (!q) return true;
+  return flavor.name.toLowerCase().includes(q);
+};
+
+const FlavorScopeSearchSelect = ({ value, onChange }) => {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const rootRef = useRef(null);
+
+  const selected =
+    FLAVOR_SCOPE_OPTIONS.find((o) => o.id === value) || FLAVOR_SCOPE_OPTIONS[0];
+
+  const visibleOptions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return FLAVOR_SCOPE_OPTIONS;
+    return FLAVOR_SCOPE_OPTIONS.filter((o) => o.label.toLowerCase().includes(q));
+  }, [query]);
+
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  return (
+    <div className="matrix-filter-group flavor-scope-select" ref={rootRef}>
+      <span className="matrix-filter-label">Filter flavors</span>
+      <button
+        type="button"
+        className="flavor-scope-select__trigger"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span>{selected.label}</span>
+        <span className="flavor-scope-select__chev" aria-hidden>{open ? "▴" : "▾"}</span>
+      </button>
+      {open && (
+        <div className="flavor-scope-select__panel" role="listbox">
+          <input
+            type="search"
+            className="flavor-scope-select__search"
+            placeholder="Search filters…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoFocus
+          />
+          <ul className="flavor-scope-select__list">
+            {visibleOptions.map((opt) => (
+              <li key={opt.id}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={value === opt.id}
+                  className={"flavor-scope-select__opt " + (value === opt.id ? "sel" : "")}
+                  onClick={() => {
+                    onChange(opt.id);
+                    setOpen(false);
+                    setQuery("");
+                  }}
+                >
+                  {opt.label}
+                  {opt.id === "verbatim" && (
+                    <span className="flavor-scope-select__meta">{VERBATIM_FLAVOR_SET.size}</span>
+                  )}
+                </button>
+              </li>
+            ))}
+            {visibleOptions.length === 0 && (
+              <li className="flavor-scope-select__empty">No matching filters</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Windowed page list with ellipses, e.g. [1, "…", 4, 5, 6, "…", 10]
+const buildPageList = (current, total) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const wanted = new Set([1, total, current, current - 1, current + 1]);
+  const pages = [...wanted].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
+  const out: Array<number | "…"> = [];
+  let prev = 0;
+  pages.forEach((p) => {
+    if (p - prev > 1) out.push("…");
+    out.push(p);
+    prev = p;
+  });
+  return out;
+};
+
+const FlavorAnalysisFilters = ({
+  categoryFilter,
+  stateFilter,
+  scopeFilter,
+  flavorSearch,
+  onCategoryChange,
+  onStateChange,
+  onScopeChange,
+  onFlavorSearchChange,
+}) => (
+  <div className="matrix-filters matrix-filters--centered flavor-analysis-filters">
+    <div className="matrix-filter-group">
+      <span className="matrix-filter-label">Sweet &amp; savory</span>
+      <div className="matrix-filter-toggle">
+        {["sweet", "savory", "both"].map((opt) => (
+          <button
+            key={opt}
+            type="button"
+            className={"matrix-filter-btn " + (categoryFilter === opt ? "sel" : "")}
+            onClick={() => onCategoryChange(opt)}
+          >
+            {opt === "both" ? "Both" : opt.charAt(0).toUpperCase() + opt.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+    <FlavorScopeSearchSelect value={scopeFilter} onChange={onScopeChange} />
+    <div className="matrix-filter-group">
+      <span className="matrix-filter-label">Select state</span>
+      <select
+        className="matrix-filter-select"
+        value={stateFilter}
+        onChange={(e) => onStateChange(e.target.value)}
+      >
+        <option value="All States">All States</option>
+        {DEMO_STATES.map((s) => (
+          <option key={s.state} value={s.state}>{s.state}</option>
+        ))}
+      </select>
+    </div>
+    <div className="matrix-filter-group matrix-filter-group--search">
+      <span className="matrix-filter-label">Find flavor</span>
+      <input
+        type="search"
+        className="flavor-name-search"
+        placeholder="Type to search…"
+        value={flavorSearch}
+        onChange={(e) => onFlavorSearchChange(e.target.value)}
+      />
+    </div>
+  </div>
+);
+
+const FlavorAnalysisTable = ({
+  onFlavorSelect,
+  categoryFilter = "both",
+  stateFilter = "All States",
+  scopeFilter = "all",
+  flavorSearch = "",
+}) => {
+  const [sortKey, setSortKey] = useState("name");
+  const [sortDir, setSortDir] = useState("desc");
+  const [page, setPage] = useState(1);
+
+  const filtered = useMemo(() => {
+    return NATIONAL_FLAVORS.filter(
+      (f) =>
+        flavorMatchesCategory(f.name, categoryFilter) &&
+        flavorMatchesState(f, stateFilter) &&
+        flavorMatchesScope(f, scopeFilter) &&
+        flavorMatchesSearch(f, flavorSearch)
+    );
+  }, [categoryFilter, stateFilter, scopeFilter, flavorSearch]);
+
+  const sorted = useMemo(() => {
+    const rows = [...filtered];
+    const dir = sortDir === "asc" ? 1 : -1;
+    const indexKeys = ["diyIndex", "shareabilityIndex", "cravingIndex", "comfortIndex", "curiosityIndex"];
+    const trendOrder = { Established: 0, "Regional Classic": 1, Seasonal: 2, Emerging: 3, Stable: 4, Fad: 5 };
+    rows.sort((a, b) => {
+      if (sortKey === "name") return a.name.localeCompare(b.name) * dir;
+      if (sortKey === "convVolume") return (parseNatVol(a.convVolume) - parseNatVol(b.convVolume)) * dir;
+      if (sortKey === "engVolume") return (parseNatVol(a.engVolume) - parseNatVol(b.engVolume)) * dir;
+      if (sortKey === "convGrowth") return (parsePct(a.convGrowth) - parsePct(b.convGrowth)) * dir;
+      if (sortKey === "engGrowth") return (parsePct(a.engGrowth) - parsePct(b.engGrowth)) * dir;
+      if (sortKey === "trendType") {
+        return ((trendOrder[a.trendType] ?? 9) - (trendOrder[b.trendType] ?? 9)) * dir;
+      }
+      if (indexKeys.includes(sortKey)) return ((a[sortKey] || 0) - (b[sortKey] || 0)) * dir;
+      return 0;
+    });
+    return rows;
+  }, [filtered, sortKey, sortDir]);
+
+  const pageCount = Math.max(1, Math.ceil(sorted.length / FLAVOR_TABLE_PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const pageRows = sorted.slice(
+    (currentPage - 1) * FLAVOR_TABLE_PAGE_SIZE,
+    currentPage * FLAVOR_TABLE_PAGE_SIZE
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [categoryFilter, stateFilter, scopeFilter, flavorSearch, sortKey, sortDir]);
+
+  const onSort = (key) => {
+    if (sortKey === key) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortKey(key);
+      setSortDir(key === "name" ? "desc" : "desc");
+    }
+  };
+
+  const SortTh = ({ k, label }) => {
+    const active = sortKey === k;
+    return (
+      <th>
+        <button type="button" className="flavor-th-sort" onClick={() => onSort(k)}>
+          {label}
+          <span className={"flavor-th-sort-ind " + (active ? "active" : "")}>
+            {active ? (sortDir === "asc" ? "↑" : "↓") : "↕"}
+          </span>
+        </button>
+      </th>
+    );
+  };
+
+  const pageList = buildPageList(currentPage, pageCount);
+  const rangeStart = sorted.length === 0 ? 0 : (currentPage - 1) * FLAVOR_TABLE_PAGE_SIZE + 1;
+  const rangeEnd = Math.min(currentPage * FLAVOR_TABLE_PAGE_SIZE, sorted.length);
+
+  return (
+    <div className="prioritize-table-wrap flavor-analysis-wrap">
+      <div className="prioritize-table-head">
+        <h4>Flavor Analysis</h4>
+        <span className="tag">{sorted.length} flavors</span>
+      </div>
+
+      <div className="state-table-wrap">
+        <table className="national-table prioritize-table flavor-analysis-table">
+          <thead>
+            <tr>
+              <SortTh k="name" label="Flavor" />
+              <SortTh k="convVolume" label="Conv. Volume" />
+              <SortTh k="engVolume" label="Eng. Volume" />
+              <SortTh k="convGrowth" label="Conv. Growth" />
+              <SortTh k="engGrowth" label="Eng. Growth" />
+              <SortTh k="diyIndex" label="DIY" />
+              <SortTh k="shareabilityIndex" label="Shareability" />
+              <SortTh k="cravingIndex" label="Craving" />
+              <SortTh k="comfortIndex" label="Comfort" />
+              <SortTh k="curiosityIndex" label="Curiosity" />
+              <SortTh k="trendType" label="Trend" />
+            </tr>
+          </thead>
+          <tbody>
+            {pageRows.length === 0 ? (
+              <tr>
+                <td colSpan={11} className="national-table-empty">No flavors match these filters.</td>
+              </tr>
+            ) : (
+              pageRows.map((f) => {
+                const isCrossCategory = CROSS_CATEGORY_FLAVORS.has(f.name);
+                const crossRegion = isCrossRegion(f.states || "");
+                return (
+                  <tr
+                    key={f.name}
+                    className={onFlavorSelect ? "clickable-row" : ""}
+                    onClick={() => onFlavorSelect?.(f)}
+                    tabIndex={onFlavorSelect ? 0 : undefined}
+                    onKeyDown={
+                      onFlavorSelect
+                        ? (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              onFlavorSelect(f);
+                            }
+                          }
+                        : undefined
+                    }
+                  >
+                    <td><b>{f.name}</b></td>
+                    <td>{f.convVolume || "—"}</td>
+                    <td>{f.engVolume || "—"}</td>
+                    <td>{f.convGrowth || "—"}</td>
+                    <td>{f.engGrowth || "—"}</td>
+                    <td><span className="national-index">{f.diyIndex ?? "—"}</span></td>
+                    <td><span className="national-index">{f.shareabilityIndex ?? "—"}</span></td>
+                    <td><span className="national-index">{f.cravingIndex ?? "—"}</span></td>
+                    <td><span className="national-index">{f.comfortIndex ?? "—"}</span></td>
+                    <td><span className="national-index">{f.curiosityIndex ?? "—"}</span></td>
+                    <td>
+                      <div className="prioritize-trend-tags">
+                        <span>{f.trendType}</span>
+                        {isCrossCategory && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
+                        {crossRegion && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flavor-table-foot">
+        {sorted.length > 0 && (
+          <p className="flavor-table-range">
+            Showing {rangeStart}–{rangeEnd} of {sorted.length}
+            {pageCount > 1 ? ` · page ${currentPage} of ${pageCount}` : ""}
+          </p>
+        )}
+      {pageCount > 1 && (
+        <div className="flavor-pager">
+          <button
+            type="button"
+            className="flavor-pager__arrow"
+            disabled={currentPage === 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            aria-label="Previous page"
+          >
+            ‹
+          </button>
+          {pageList.map((p, i) =>
+            p === "…" ? (
+              <span key={`gap-${i}`} className="flavor-pager__gap">…</span>
+            ) : (
+              <button
+                type="button"
+                key={p}
+                className={"flavor-pager__page " + (p === currentPage ? "sel" : "")}
+                onClick={() => setPage(p)}
+              >
+                {p}
+              </button>
+            )
+          )}
+          <button
+            type="button"
+            className="flavor-pager__arrow"
+            disabled={currentPage === pageCount}
+            onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+            aria-label="Next page"
+          >
+            ›
+          </button>
+        </div>
+      )}
+      </div>
+    </div>
+  );
+};
+
 export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
   const [hovered, setHovered] = useState(null);
   const [selectedFlavor, setSelectedFlavor] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("both");
   const [stateFilter, setStateFilter] = useState("All States");
-  const [showCrossCategory, setShowCrossCategory] = useState(false);
-  const [showCrossRegion, setShowCrossRegion] = useState(false);
+  const [scopeFilter, setScopeFilter] = useState("all");
+  const [flavorSearch, setFlavorSearch] = useState("");
   const hideTimerRef = useRef(null);
   const chartWrapRef = useRef(null);
 
-  // Build sweet/savory category map from state data
-  const flavorCategories = useMemo(() => {
-    const map: Record<string, Set<string>> = {};
-    DEMO_STATES.forEach((s) => {
-      s.sweet.forEach((f) => { if (!map[f]) map[f] = new Set(); map[f].add("sweet"); });
-      s.savory.forEach((f) => { if (!map[f]) map[f] = new Set(); map[f].add("savory"); });
-    });
-    return map;
+  const flavorCat = useCallback((name) => {
+    const cats = FLAVOR_CATEGORY_SETS[name];
+    if (cats?.has("savory") && !cats.has("sweet")) return "savory";
+    return "sweet";
   }, []);
-
-  // Set of flavors visible in the selected state
-  const stateFlavorSet = useMemo(() => {
-    if (stateFilter === "All States") return null;
-    const s = DEMO_STATES.find((d) => d.state === stateFilter);
-    if (!s) return null;
-    return new Set([...s.sweet, ...s.savory]);
-  }, [stateFilter]);
 
   const plotData = useMemo(
     () =>
       NATIONAL_FLAVORS.map((p) => ({
         name: p.name,
-        conv: parseNatVol(p.convVolume),
-        eng: parseNatVol(p.engVolume),
-        trendType: p.trendType,
+        eng: parseNatVol(p.engVolume), // Y axis — engagement volume (K)
+        agr: parsePct(p.engGrowth), // X axis — engagement growth rate (%)
+        cat: flavorCat(p.name),
         raw: p,
       })),
-    []
+    [flavorCat]
   );
 
-  const filteredPlotData = useMemo(() => {
-    return plotData.filter((d) => {
-      if (stateFlavorSet && !stateFlavorSet.has(d.name)) return false;
-      if (categoryFilter !== "both") {
-        const cats = flavorCategories[d.name] || new Set();
-        if (!cats.has(categoryFilter)) return false;
-      }
-      if (showCrossCategory && !CROSS_CATEGORY_FLAVORS.has(d.name)) return false;
-      if (showCrossRegion && !isCrossRegion(d.raw.states || "")) return false;
-      return true;
-    });
-  }, [plotData, stateFlavorSet, categoryFilter, flavorCategories, showCrossCategory, showCrossRegion]);
+  const filteredPlotData = useMemo(
+    () =>
+      plotData.filter(
+        (d) =>
+          flavorMatchesCategory(d.name, categoryFilter) &&
+          flavorMatchesState(d.raw, stateFilter) &&
+          flavorMatchesScope(d.raw, scopeFilter) &&
+          flavorMatchesSearch(d.raw, flavorSearch)
+      ),
+    [plotData, categoryFilter, stateFilter, scopeFilter, flavorSearch]
+  );
 
-  const convVals = plotData.map((d) => d.conv);
+  const agrVals = plotData.map((d) => d.agr);
   const engVals = plotData.map((d) => d.eng);
-  const midConv = medianVal(convVals);
-  const midEng = medianVal(engVals);
-  const maxConv = Math.ceil(Math.max(...convVals, 10) + 4);
-  const maxEng = Math.ceil(Math.max(...engVals, 10) + 4);
+  const avgAgr = meanVal(agrVals); // average engagement growth across all flavors
+  const avgEng = meanVal(engVals); // average engagement volume across all flavors
+  const minAgr = Math.min(...agrVals);
+  const maxAgr = Math.max(...agrVals);
+  const xDomain = [Math.floor(minAgr / 5) * 5, Math.ceil(maxAgr / 5) * 5];
+  const maxEng = Math.ceil(Math.max(...engVals, 10) / 200) * 200;
+  const engTicks = Array.from({ length: maxEng / 200 + 1 }, (_, i) => i * 200);
 
-  const topRight = useMemo(
-    () => NATIONAL_FLAVORS.filter((p) => parseNatVol(p.convVolume) >= midConv && parseNatVol(p.engVolume) >= midEng),
-    [midConv, midEng]
-  );
 
   const showHover = useCallback((info) => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
@@ -1748,7 +2462,7 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
     const width = wrap?.getBoundingClientRect().width || 760;
     const height = wrap?.getBoundingClientRect().height || 520;
     const tipWidth = 230;
-    const tipHeight = 170;
+    const tipHeight = 88;
     const gap = 16;
     const left = info.cx + gap + tipWidth > width
       ? Math.max(8, info.cx - tipWidth - gap)
@@ -1771,6 +2485,7 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
   useEffect(() => () => { if (hideTimerRef.current) clearTimeout(hideTimerRef.current); }, []);
 
   return (
+    <>
     <div className="card flavor-matrix-v2-card">
       <div className="card-h">
         <h3>Flavor Prioritization View</h3>
@@ -1778,87 +2493,51 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
       </div>
       <div className="card-body">
 
-        {/* ── Filters ── */}
-        <div className="matrix-filters">
-          <div className="matrix-filter-group">
-            <span className="matrix-filter-label">Category</span>
-            <div className="matrix-filter-toggle">
-              {["both", "sweet", "savory"].map((opt) => (
-                <button
-                  key={opt}
-                  className={"matrix-filter-btn " + (categoryFilter === opt ? "sel" : "")}
-                  onClick={() => setCategoryFilter(opt)}
-                >
-                  {opt === "both" ? "Both" : opt.charAt(0).toUpperCase() + opt.slice(1)}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="matrix-filter-group">
-            <span className="matrix-filter-label">State</span>
-            <select
-              className="matrix-filter-select"
-              value={stateFilter}
-              onChange={(e) => setStateFilter(e.target.value)}
-            >
-              <option value="All States">All States</option>
-              {DEMO_STATES.map((s) => (
-                <option key={s.state} value={s.state}>{s.state}</option>
-              ))}
-            </select>
-          </div>
-          <div className="matrix-filter-group">
-            <span className="matrix-filter-label">Signals</span>
-            <div className="matrix-filter-toggle">
-              <button
-                className={"matrix-filter-btn " + (showCrossCategory ? "sel sel--gold" : "")}
-                onClick={() => setShowCrossCategory((v) => !v)}
-              >
-                ◈ Cross-Category
-              </button>
-              <button
-                className={"matrix-filter-btn " + (showCrossRegion ? "sel sel--blue" : "")}
-                onClick={() => setShowCrossRegion((v) => !v)}
-              >
-                ◎ Cross-Region
-              </button>
-            </div>
-          </div>
-        </div>
+        <FlavorAnalysisFilters
+          categoryFilter={categoryFilter}
+          stateFilter={stateFilter}
+          scopeFilter={scopeFilter}
+          flavorSearch={flavorSearch}
+          onCategoryChange={setCategoryFilter}
+          onStateChange={setStateFilter}
+          onScopeChange={setScopeFilter}
+          onFlavorSearchChange={setFlavorSearch}
+        />
 
-        <div ref={chartWrapRef} style={{ position: "relative" }}>
+        <div ref={chartWrapRef} className="flavor-matrix-plot" style={{ position: "relative" }}>
           <div className="brit-priority-matrix__quadrants" aria-hidden>
-            <span className="brit-priority-matrix__q brit-priority-matrix__q--tl">Build momentum</span>
+            <span className="brit-priority-matrix__q brit-priority-matrix__q--tl">Established</span>
             <span className="brit-priority-matrix__q brit-priority-matrix__q--tr">Prioritize</span>
-            <span className="brit-priority-matrix__q brit-priority-matrix__q--bl">Fading / fad</span>
-            <span className="brit-priority-matrix__q brit-priority-matrix__q--br">Niche loyal</span>
+            <span className="brit-priority-matrix__q brit-priority-matrix__q--br">Emerging</span>
+            <span className="brit-priority-matrix__q brit-priority-matrix__q--bl">Fading</span>
           </div>
 
-          <ResponsiveContainer width="100%" height={520}>
-            <ScatterChart margin={{ top: 24, right: 28, bottom: 48, left: 44 }}>
-              <CartesianGrid stroke="#E6E1D8" strokeDasharray="3 4" />
-              <ReferenceLine x={midEng} stroke="#8A8478" strokeDasharray="4 4" strokeOpacity={0.4} />
-              <ReferenceLine y={midConv} stroke="#8A8478" strokeDasharray="4 4" strokeOpacity={0.4} />
+          <ResponsiveContainer width="100%" height="100%">
+            <ScatterChart margin={{ top: 28, right: 36, bottom: 56, left: 64 }}>
+              <ReferenceLine x={avgAgr} stroke="#B0A899" strokeDasharray="5 4" strokeWidth={1.25} />
+              <ReferenceLine y={avgEng} stroke="#B0A899" strokeDasharray="5 4" strokeWidth={1.25} />
               <XAxis
                 type="number"
-                dataKey="eng"
-                domain={[0, maxEng]}
+                dataKey="agr"
+                domain={xDomain}
+                allowDecimals={false}
                 tick={{ fill: "#6F695E", fontSize: 11 }}
-                tickFormatter={(v) => `${v}K`}
+                tickFormatter={(v) => `${v}%`}
                 axisLine={{ stroke: "#D2CCC0", strokeWidth: 1 }}
                 tickLine={false}
-                label={{ value: "Engagement Volume", position: "insideBottom", offset: -32, fill: "#6F695E", fontSize: 12 }}
+                label={{ value: "AGR (%)", position: "insideBottom", offset: -18, fill: "#6F695E", fontSize: 12, fontWeight: 600 }}
               />
               <YAxis
                 type="number"
-                dataKey="conv"
-                domain={[0, maxConv]}
+                dataKey="eng"
+                domain={[0, maxEng]}
+                ticks={engTicks}
                 tick={{ fill: "#6F695E", fontSize: 11 }}
                 tickFormatter={(v) => `${v}K`}
                 axisLine={{ stroke: "#D2CCC0", strokeWidth: 1 }}
                 tickLine={false}
-                width={72}
-                label={{ value: "Conversation Volume", angle: -90, position: "insideLeft", offset: 30, fill: "#6F695E", fontSize: 11 }}
+                width={56}
+                label={{ value: "Engagement (K)", angle: -90, position: "insideLeft", offset: -28, fill: "#6F695E", fontSize: 12, fontWeight: 600 }}
               />
               <Tooltip content={() => null} cursor={false} />
               <Scatter
@@ -1866,17 +2545,17 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
                 shape={(props) => {
                   const { cx, cy, payload } = props;
                   if (cx == null || cy == null) return null;
-                  const isCat = CROSS_CATEGORY_FLAVORS.has(payload.name);
-                  const isReg = isCrossRegion(payload.raw?.states || "");
                   return (
                     <g
                       style={{ cursor: "pointer" }}
                       onMouseEnter={() => showHover({ cx, cy, data: payload })}
                       onMouseLeave={scheduleHide}
+                      onClick={() => {
+                        setSelectedFlavor(payload.raw);
+                        setHovered(null);
+                      }}
                     >
-                      {isReg && <circle cx={cx} cy={cy} r={13} fill="none" stroke="#5B8DEF" strokeWidth={1.5} strokeDasharray="3 2" opacity={0.85} />}
-                      {isCat && <circle cx={cx} cy={cy} r={isReg ? 18 : 13} fill="none" stroke="#C9A227" strokeWidth={1.5} strokeDasharray="3 2" opacity={0.85} />}
-                      <circle cx={cx} cy={cy} r={8} fill={trendDotColor(payload.trendType)} stroke="#fff" strokeWidth={2.5} opacity={0.9} />
+                      <circle cx={cx} cy={cy} r={8} fill={FLAVOR_CAT_COLORS[payload.cat]} stroke="#fff" strokeWidth={2.5} opacity={0.92} />
                     </g>
                   );
                 }}
@@ -1891,58 +2570,46 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
               onMouseEnter={cancelHide}
               onMouseLeave={scheduleHide}
             >
-              <div className="flavor-hover-tip__name">{hovered.data.name}</div>
+              <p className="flavor-hover-tip__name">{hovered.data.name}</p>
               <div className="flavor-hover-tip__metrics">
-                <div><span>Conv. Volume</span> <b>{hovered.data.raw.convVolume}</b></div>
-                <div><span>Eng. Volume</span> <b>{hovered.data.raw.engVolume}</b></div>
+                <div><span>Engagement (K)</span> <b>{hovered.data.raw.engVolume}</b></div>
+                <div><span>AGR (%)</span> <b>{hovered.data.raw.engGrowth}</b></div>
               </div>
-              {(CROSS_CATEGORY_FLAVORS.has(hovered.data.name) || isCrossRegion(hovered.data.raw?.states || "")) && (
-                <div className="flavor-hover-tip__flags">
-                  {CROSS_CATEGORY_FLAVORS.has(hovered.data.name) && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
-                  {isCrossRegion(hovered.data.raw?.states || "") && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
-                </div>
-              )}
-              <button
-                className="flavor-hover-tip__cta"
-                onClick={() => {
-                  setSelectedFlavor(hovered.data.raw);
-                  setHovered(null);
-                }}
-              >
-                Explore Flavor →
-              </button>
             </div>
           )}
         </div>
 
-        <div className="brit-priority-matrix__legend" style={{ marginTop: 12, marginBottom: 28 }}>
-          {Object.entries(TREND_DOT_COLORS).map(([label, color]) => (
-            <span key={label} className="brit-priority-matrix__legend-item">
-              <i style={{ background: color }} />
-              {label}
-            </span>
-          ))}
-          <span className="brit-priority-matrix__legend-item legend-ring-item">
-            <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#C9A227" strokeWidth="1.5" strokeDasharray="3 2" /></svg>
-            Cross-Category
+        <div className="brit-priority-matrix__legend" style={{ marginTop: 12, marginBottom: 16 }}>
+          <span className="brit-priority-matrix__legend-item">
+            <i style={{ background: FLAVOR_CAT_COLORS.sweet }} />
+            Sweet
           </span>
-          <span className="brit-priority-matrix__legend-item legend-ring-item">
-            <svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="none" stroke="#5B8DEF" strokeWidth="1.5" strokeDasharray="3 2" /></svg>
-            Cross-Region
+          <span className="brit-priority-matrix__legend-item">
+            <i style={{ background: FLAVOR_CAT_COLORS.savory }} />
+            Savory
           </span>
         </div>
 
-        <PrioritizeTable flavors={topRight} />
-
-        {selectedFlavor && (
-          <FlavorDetailModal
-            flavor={selectedFlavor}
-            onClose={() => setSelectedFlavor(null)}
-            onRunDeliverable={onRunDeliverable}
-            busy={busy}
-          />
-        )}
+        <FlavorAnalysisTable
+          categoryFilter={categoryFilter}
+          stateFilter={stateFilter}
+          scopeFilter={scopeFilter}
+          flavorSearch={flavorSearch}
+          onFlavorSelect={(row) => {
+            const full = NATIONAL_FLAVORS.find((f) => f.name === row.name) || row;
+            setSelectedFlavor(full);
+          }}
+        />
       </div>
     </div>
+    {selectedFlavor && (
+      <FlavorDetailModal
+        flavor={selectedFlavor}
+        onClose={() => setSelectedFlavor(null)}
+        onRunDeliverable={onRunDeliverable}
+        busy={busy}
+      />
+    )}
+  </>
   );
 };

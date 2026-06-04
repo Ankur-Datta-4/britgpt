@@ -204,7 +204,7 @@ export const runActionWithLLM = async (
 
   const systems: Record<string, string> = {
     concept_cards:
-      "You are a Britannia India innovation strategist. Output JSON: concepts (array of 3: title, sku, lane, tagline, imagePrompt for professional packshot photo). Ground in Flavor Insights data only.",
+      "You are a Britannia India snack innovation copywriter. Output JSON only: concepts (array of exactly 3). Each concept: title (SKU-style name), sku, lane (flavor name), tone (one of Nostalgic|Bold|Everyday), headline (8-12 words, conversational, no ad jargon), body (2-3 sentences — taste, occasion, emotional payoff for Indian consumers), imagePrompt (16:9 packshot brief: Britannia pack on studio backdrop, regional ingredient props only, no people/faces/hands, no health claims). Ground in Flavor Insights data only.",
     fpd_scout: `You are an FMCG field product discovery lead for Britannia India. ${ACTION_OUTPUT_SCHEMA} For FPD, prioritize 2–3 states from the dataset with concrete flavor white-space and field validation plans.`,
     triangulate_1ds: `You are a data triangulation analyst linking social flavor insights to 1DS sales for Britannia India. ${ACTION_OUTPUT_SCHEMA} Link social buzz metrics to sell-out hypotheses by state.`,
     storyboard: `You are a video creative director for Britannia India. ${STORYBOARD_OUTPUT_SCHEMA}`,
@@ -214,12 +214,12 @@ export const runActionWithLLM = async (
   };
 
   const prompts: Record<string, string> = {
-    concept_cards: `Create 3 product concept cards with detailed packshot image prompts.\n\n${context}${extra}`,
+    concept_cards: `Create 3 Britannia product concept cards for a new ${ctx.flavor || "regional"} flavour launch in ${ctx.state || ctx.params?.region || "India"}. Each card needs distinct tone (Nostalgic, Bold, Everyday), a feeling-led headline, body copy that names the actual taste (not generic "spicy" or "delicious"), and a packshot-only imagePrompt (product pack + flavor-specific props, no people or faces). Britannia ${ctx.brandFit || "brand"} pack for ${ctx.state || "India"}. No competitor names. No health claims.\n\n${context}${extra}`,
     content_engine: `Draft a unified creative brief: messaging, tone, hooks, and positioning for the selected flavor-state pair.\n\n${context}${extra}`,
-    creative_brief: `Draft a unified creative brief: messaging, tone, hooks, and positioning for the selected flavor-state pair.\n\n${context}${extra}`,
+    creative_brief: `Draft messaging and comms recommendations for Britannia ${ctx.flavor || "flavour"} in ${ctx.state || "India"}. Write like an agency brief for Indian consumers — specific taste language, channel hooks (Reels, kirana, tea-time), no empty superlatives.\n\n${context}${extra}`,
     fpd_scout: `Draft an FPD (field product discovery) scout brief. Name specific states, sweet/savory flavors from the dataset, and what field reps should validate in trade.\n\n${context}${extra}`,
     triangulate_1ds: `Draft a 1DS triangulation plan linking social flavor themes to sell-out velocity by state.\n\n${context}${extra}`,
-    storyboard: `Draft a 30-second video ad storyboard mock-up for the selected flavor and state. Full scene objects with shot, VO, on-screen text, and timing.\n\n${context}${extra}`,
+    storyboard: `Draft a 30-second Britannia video ad storyboard for ${ctx.flavor || "the flavour"} in ${ctx.state || "India"}. Scenes must feel like real Indian FMCG advertising — kirana shelf, tea-time table, product crunch — product-forward shots with no visible faces or people in frame. Full scene objects with shot, VO, on-screen text, and timing.\n\n${context}${extra}`,
     positioning: `Draft a unified creative brief (messaging + positioning) for the selected flavor-state pair.\n\n${context}${extra}`,
   };
 

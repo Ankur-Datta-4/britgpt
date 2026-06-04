@@ -1151,14 +1151,25 @@ function ConceptCardImage({ concept }) {
         />
       ) : (
         <div className="concept-placeholder concept-placeholder-rich">
+          <span className="concept-ph-icon" aria-hidden>🖼</span>
+          <span className="concept-ph-generated">Generated image</span>
           <span className="concept-ph-lane">{concept.lane}</span>
           <span className="concept-ph-title">{concept.title}</span>
-          <span className="concept-ph-sku">{concept.sku}</span>
         </div>
       )}
     </div>
   );
 }
+
+const resolveFilmPlayUrl = (videoUri, filmHref) => {
+  const candidate = filmHref || videoUri;
+  if (!candidate) return null;
+  if (candidate.startsWith("/") || candidate.startsWith("data:")) return candidate;
+  if (/^https?:\/\//i.test(candidate) && (candidate.includes(".mp4") || candidate.includes("X-Amz"))) {
+    return candidate;
+  }
+  return null;
+};
 
 function InlineFilmPlayer({ videoUri, filmHref, className = "hero-film-video" }) {
   const [playUrl, setPlayUrl] = useState(null);
@@ -1172,15 +1183,17 @@ function InlineFilmPlayer({ videoUri, filmHref, className = "hero-film-video" })
       setLoading(true);
       setError(null);
 
-      if (filmHref && (filmHref.includes("X-Amz") || filmHref.includes(".mp4"))) {
+      const direct = resolveFilmPlayUrl(videoUri, filmHref);
+      if (direct) {
         if (!cancelled) {
-          setPlayUrl(filmHref);
+          setPlayUrl(direct);
           setLoading(false);
         }
         return;
       }
 
-      if (!videoUri) {
+      const uri = videoUri || filmHref;
+      if (!uri) {
         if (!cancelled) {
           setError("No video URI");
           setLoading(false);
@@ -1189,7 +1202,7 @@ function InlineFilmPlayer({ videoUri, filmHref, className = "hero-film-video" })
       }
 
       try {
-        const res = await fetch(`/api/film?uri=${encodeURIComponent(videoUri)}`);
+        const res = await fetch(`/api/film?uri=${encodeURIComponent(uri)}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Could not load film");
         if (!cancelled) setPlayUrl(data.playUrl);
@@ -1275,47 +1288,241 @@ const buildStoryboardScenes = (payload) => {
   }));
 };
 
+const StoryboardSceneVisual = ({ scene, videoUrl, veoStatus, veoError }) => {
+  if (videoUrl && veoStatus === "ready") {
+    return (
+      <div className="artifact-stack-visual storyboard-scene-visual storyboard-scene-visual--video">
+        <video
+          className="storyboard-scene-video"
+          src={videoUrl}
+          controls
+          playsInline
+          muted
+          loop
+          preload="metadata"
+        />
+      </div>
+    );
+  }
+
+  if (veoStatus === "generating") {
+    return (
+      <div className="artifact-stack-visual storyboard-scene-visual storyboard-scene-visual--loading">
+        <div className="storyboard-scene-veo-loader">
+          <span className="storyboard-scene-veo-spinner" aria-hidden />
+          <p className="storyboard-scene-veo-loader-title">Rendering with Veo</p>
+          <p className="storyboard-scene-veo-loader-sub">
+            Scene {scene.beat} · {scene.timing} · ~2–4 min
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (veoStatus === "queued") {
+    return (
+      <div className="artifact-stack-visual storyboard-scene-visual storyboard-scene-visual--queued">
+        <div className="storyboard-scene-veo-loader storyboard-scene-veo-loader--muted">
+          <span className="storyboard-scene-veo-queue-icon" aria-hidden>◷</span>
+          <p className="storyboard-scene-veo-loader-title">Queued</p>
+          <p className="storyboard-scene-veo-loader-sub">Scene {scene.beat} · {scene.title}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (veoStatus === "error") {
+    return (
+      <div className="artifact-stack-visual storyboard-scene-visual storyboard-scene-visual--error">
+        <p className="storyboard-scene-veo-loader-title">Clip unavailable</p>
+        <p className="storyboard-scene-veo-loader-sub">{veoError || "Veo generation failed"}</p>
+      </div>
+    );
+  }
+
+  if (veoStatus === "skipped") {
+    return (
+      <div className="artifact-stack-visual storyboard-scene-visual storyboard-scene-visual--skipped">
+        <p className="storyboard-scene-veo-loader-title">Veo not configured</p>
+        <p className="storyboard-scene-veo-loader-sub">Add GEMINI_API_KEY to .env</p>
+      </div>
+    );
+  }
+
+  const frameBg = STORYBOARD_FRAME_STYLES[scene.frameStyle] || STORYBOARD_FRAME_STYLES.retail;
+  return (
+    <div
+      className="artifact-stack-visual storyboard-scene-visual storyboard-scene-visual--mock"
+      style={{ background: frameBg }}
+    >
+      <span className="storyboard-frame-beat">Scene {scene.beat}</span>
+      <span className="storyboard-frame-timing">{scene.timing}</span>
+      <p className="storyboard-frame-title">{scene.title}</p>
+    </div>
+  );
+};
+
+const StoryboardSceneCard = ({ scene, videoUrl, veoStatus, veoError }) => {
+  const showVeoBadge = videoUrl && veoStatus === "ready";
+
+  return (
+    <article className="artifact-stack-card storyboard-scene-card">
+      <StoryboardSceneVisual
+        scene={scene}
+        videoUrl={videoUrl}
+        veoStatus={veoStatus}
+        veoError={veoError}
+      />
+      <div className="artifact-stack-copy">
+        <div className="concept-artifact-row">
+          <span className="concept-artifact-num">Scene {String(scene.beat).padStart(2, "0")}</span>
+          <span className="concept-artifact-tone">{scene.timing}</span>
+          {showVeoBadge && <span className="storyboard-scene-veo-badge">Veo</span>}
+          {veoStatus === "generating" && (
+            <span className="storyboard-scene-veo-badge storyboard-scene-veo-badge--live">Rendering</span>
+          )}
+        </div>
+        <h4 className="concept-artifact-headline">{scene.title}</h4>
+        <p className="concept-artifact-body">
+          <b>Shot</b> {scene.shot}
+          {scene.vo ? <> · <b>VO</b> {scene.vo}</> : null}
+          {scene.onScreen ? <> · <b>On-screen</b> {scene.onScreen}</> : null}
+        </p>
+      </div>
+    </article>
+  );
+};
+
 const StoryboardMockPanel = ({ payload }) => {
   const scenes = buildStoryboardScenes(payload);
   const flavor = payload?.flavor;
   const state = payload?.state;
+  const headerScope = [flavor, state].filter(Boolean).join(" · ");
+  const [sceneVideos, setSceneVideos] = useState({});
+  const [sceneVeoStatus, setSceneVeoStatus] = useState({});
+  const [sceneVeoErrors, setSceneVeoErrors] = useState({});
+  const [veoQueueNote, setVeoQueueNote] = useState("");
+  const sceneRunKey = scenes.map((s) => `${s.beat}:${s.shot}`).join("|");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const run = async () => {
+      const configRes = await fetch("/api/veo");
+      const config = await configRes.json().catch(() => ({ configured: false }));
+      if (!config.configured) {
+        const skipped = {};
+        scenes.forEach((s) => { skipped[s.beat] = "skipped"; });
+        if (!cancelled) setSceneVeoStatus(skipped);
+        return;
+      }
+
+      const queued = {};
+      scenes.forEach((s) => { queued[s.beat] = "queued"; });
+      if (!cancelled) setSceneVeoStatus(queued);
+
+      setVeoQueueNote(`Generating ${scenes.length} Veo clips (about 2–4 min each)…`);
+
+      for (const scene of scenes) {
+        if (cancelled) break;
+        if (scene.videoUri) {
+          setSceneVideos((v) => ({ ...v, [scene.beat]: scene.videoUri }));
+          setSceneVeoStatus((s) => ({ ...s, [scene.beat]: "ready" }));
+          continue;
+        }
+
+        setSceneVeoStatus((s) => ({ ...s, [scene.beat]: "generating" }));
+        setVeoQueueNote(`Rendering scene ${scene.beat} of ${scenes.length} with Veo…`);
+
+        try {
+          const res = await fetch("/api/veo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scene, flavor, state, beat: scene.beat }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Veo failed");
+          if (!cancelled && data.videoUrl) {
+            setSceneVideos((v) => ({ ...v, [scene.beat]: data.videoUrl }));
+            setSceneVeoStatus((s) => ({ ...s, [scene.beat]: "ready" }));
+          }
+        } catch (e) {
+          if (!cancelled) {
+            const msg = e instanceof Error ? e.message : String(e);
+            setSceneVeoStatus((s) => ({ ...s, [scene.beat]: "error" }));
+            setSceneVeoErrors((errs) => ({ ...errs, [scene.beat]: msg }));
+          }
+        }
+      }
+
+      if (!cancelled) setVeoQueueNote("");
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [sceneRunKey, flavor, state]);
+
+  const heroBeat = scenes[0]?.beat ?? 1;
+  const heroVideoUri = sceneVideos[heroBeat];
+  const heroVeoStatus = sceneVeoStatus[heroBeat];
+  const showHeroBlock =
+    heroVideoUri ||
+    heroVeoStatus === "generating" ||
+    heroVeoStatus === "queued" ||
+    heroVeoStatus === "error";
 
   return (
-    <div className="card storyboard-mock-card">
+    <div className="card storyboard-mock-card artifact-panel">
       <div className="card-h">
-        <h3>{payload?.title || "Video ad storyboard"}</h3>
-        <span className="tag">30s mock-up</span>
+        <h3>Video ad storyboard{headerScope ? ` — ${headerScope}` : ""}</h3>
+        <span className="tag">{scenes.length} scenes · 30s · Veo</span>
       </div>
       <div className="card-body">
         {payload?.message && <p className="concept-msg">{payload.message}</p>}
         {payload?.body && <p className="action-outcome-lead">{payload.body}</p>}
-        <div className="storyboard-mock-meta">
-          {flavor && <span className="storyboard-mock-chip">{flavor}</span>}
-          {state && <span className="storyboard-mock-chip">{state}</span>}
-          <span className="storyboard-mock-chip">5 scenes · 30s</span>
-        </div>
-        <div className="storyboard-mock-grid">
+        {veoQueueNote && <p className="storyboard-veo-queue-note">{veoQueueNote}</p>}
+        {showHeroBlock && (
+          <div className="storyboard-hero-film">
+            <p className="storyboard-hero-film-label">6s hero spot</p>
+            {heroVideoUri && heroVeoStatus === "ready" ? (
+              <InlineFilmPlayer
+                videoUri={heroVideoUri}
+                filmHref={heroVideoUri}
+                className="storyboard-hero-video"
+              />
+            ) : (
+              <StoryboardSceneVisual
+                scene={scenes[0]}
+                videoUrl={null}
+                veoStatus={heroVeoStatus || "queued"}
+                veoError={sceneVeoErrors[heroBeat]}
+              />
+            )}
+            {payload?.filmMessage && heroVideoUri && (
+              <p className="muted storyboard-hero-film-note">
+                {flavor && state
+                  ? `Hero clip for ${flavor} in ${state} (Scene 1).`
+                  : payload.filmMessage}
+              </p>
+            )}
+          </div>
+        )}
+        <div className="artifact-stack storyboard-scene-stack">
           {scenes.map((s) => (
-            <article key={s.beat} className="storyboard-frame">
-              <div
-                className="storyboard-frame-visual"
-                style={{ background: STORYBOARD_FRAME_STYLES[s.frameStyle] || STORYBOARD_FRAME_STYLES.retail }}
-              >
-                <span className="storyboard-frame-beat">Scene {s.beat}</span>
-                <span className="storyboard-frame-timing">{s.timing}</span>
-                <p className="storyboard-frame-title">{s.title}</p>
-              </div>
-              <div className="storyboard-frame-copy">
-                <p className="storyboard-shot"><b>Shot</b> {s.shot}</p>
-                {s.vo ? <p className="storyboard-vo"><b>VO</b> {s.vo}</p> : null}
-                {s.onScreen ? <p className="storyboard-os"><b>On-screen</b> {s.onScreen}</p> : null}
-              </div>
-            </article>
+            <StoryboardSceneCard
+              key={s.beat}
+              scene={s}
+              videoUrl={sceneVideos[s.beat] || s.videoUri}
+              veoStatus={sceneVeoStatus[s.beat] || (s.videoUri ? "ready" : "idle")}
+              veoError={sceneVeoErrors[s.beat]}
+            />
           ))}
         </div>
         <DeliverableHandoff
-          label="Send to Creative Agency"
-          target="Creative Agency"
+          label="Send to FPD"
+          target="FPD"
           flavor={flavor}
           state={state}
         />
@@ -1324,108 +1531,146 @@ const StoryboardMockPanel = ({ payload }) => {
   );
 };
 
+const MessagingCard = ({ card, index }) => (
+  <article className="artifact-stack-card messaging-card">
+    <div className="artifact-stack-visual messaging-card-visual">
+      <span className="concept-ph-generated">Comms frame</span>
+      <span className="concept-ph-lane">Recommendation {String(index + 1).padStart(2, "0")}</span>
+    </div>
+    <div className="artifact-stack-copy">
+      <div className="concept-artifact-row">
+        <span className="concept-artifact-num">Message {String(index + 1).padStart(2, "0")}</span>
+        {card.tone && <span className="concept-artifact-tone">{card.tone}</span>}
+      </div>
+      <h4 className="concept-artifact-headline">{card.headline}</h4>
+      <p className="concept-artifact-body">{card.body}</p>
+    </div>
+  </article>
+);
+
 const CreativeBriefPanel = ({ payload }) => {
-  const messaging = payload?.messaging?.length
-    ? payload.messaging
-    : payload?.type === "content_engine"
-      ? payload?.bullets
-      : [];
-  const positioning = payload?.positioning?.length
-    ? payload.positioning
-    : payload?.type === "positioning"
-      ? payload?.bullets
-      : [];
-  const mergedMessaging =
-    messaging?.length > 0
-      ? messaging
-      : (payload?.bullets || []).slice(0, 3);
-  const mergedPositioning =
-    positioning?.length > 0
-      ? positioning
-      : (payload?.bullets || []).slice(3, 8);
+  const flavor = payload?.flavor;
+  const state = payload?.state;
+  const headerScope = [flavor, state].filter(Boolean).join(" · ");
+
+  const cards = payload?.messagingCards?.length
+    ? payload.messagingCards
+    : (payload?.messaging || payload?.bullets || []).slice(0, 3).map((line, i) => ({
+        tone: ["Regional", "Occasion", "Shelf"][i] || "Comms",
+        headline: `Recommendation ${i + 1}`,
+        body: String(line),
+      }));
 
   return (
-    <div className="card creative-brief-card">
+    <div className="card creative-brief-card artifact-panel">
       <div className="card-h">
-        <h3>Creative brief</h3>
-        <span className="tag">Messaging + positioning</span>
+        <h3>Messaging recommendations{headerScope ? ` — ${headerScope}` : ""}</h3>
+        <span className="tag">{cards.length} recommendations</span>
       </div>
       <div className="card-body">
         {payload?.message && <p className="concept-msg">{payload.message}</p>}
         {payload?.body && <p className="action-outcome-lead">{payload.body}</p>}
-        <div className="creative-brief-grid">
-          <section className="creative-brief-section">
-            <h4 className="creative-brief-heading">Messaging &amp; communication</h4>
-            <ul className="creative-brief-list">
-              {mergedMessaging.map((line, i) => (
-                <li key={`msg-${i}`}>{String(line)}</li>
-              ))}
-            </ul>
-          </section>
-          <section className="creative-brief-section">
-            <h4 className="creative-brief-heading">Positioning</h4>
-            <ul className="creative-brief-list">
-              {mergedPositioning.map((line, i) => (
-                <li key={`pos-${i}`}>{String(line)}</li>
-              ))}
-            </ul>
-          </section>
+        <div className="artifact-stack">
+          {cards.map((card, i) => (
+            <MessagingCard key={`msg-card-${i}`} card={card} index={i} />
+          ))}
         </div>
-        {payload?.recommendations?.length > 0 && (
-          <div className="action-outcome-section compact">
-            <h4 className="aoc-section-title">Recommendations</h4>
-            <ul className="action-reco-list">
-              {payload.recommendations.map((r, i) => (
-                <li key={`reco-${i}`}>{String(r)}</li>
-              ))}
-            </ul>
-          </div>
-        )}
         <DeliverableHandoff
-          label="Send to Hogarth"
-          target="Hogarth"
-          flavor={payload?.flavor}
-          state={payload?.state}
+          label="Send to FPD"
+          target="FPD"
+          flavor={flavor}
+          state={state}
         />
       </div>
     </div>
   );
 };
 
+function ConceptArtifactCard({ concept, flavor, state }) {
+  const cardRef = useRef(null);
+  const [downloading, setDownloading] = useState(false);
+  const num = String(concept.conceptNumber || 1).padStart(2, "0");
+
+  const onDownload = async () => {
+    if (!cardRef.current || downloading) return;
+    setDownloading(true);
+    try {
+      const { toPng } = await import("html-to-image");
+      const dataUrl = await toPng(cardRef.current, {
+        pixelRatio: 2,
+        cacheBust: true,
+        backgroundColor: "#ffffff",
+        filter: (node) => !(node?.dataset && node.dataset.noexport === "true"),
+      });
+      const a = document.createElement("a");
+      a.download = `${flavor || "concept"}-${state || "india"}-concept-${num}.png`
+        .replace(/\s+/g, "-")
+        .toLowerCase();
+      a.href = dataUrl;
+      a.click();
+    } catch (e) {
+      console.warn("Concept PNG export failed:", e);
+      if (typeof window !== "undefined") {
+        window.alert(
+          "Couldn't export this card as PNG — the AI visual may be cross-origin. The styled preview still downloads when local images are used."
+        );
+      }
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  return (
+    <article className="concept-artifact" ref={cardRef}>
+      <div className="concept-artifact-visual">
+        <ConceptCardImage concept={concept} />
+      </div>
+      <div className="concept-artifact-copy">
+        <div className="concept-artifact-row">
+          <span className="concept-artifact-num">Concept {num}</span>
+          {concept.tone && <span className="concept-artifact-tone">{concept.tone}</span>}
+        </div>
+        <h4 className="concept-artifact-headline">{concept.headline || concept.title}</h4>
+        <p className="concept-artifact-body">{concept.body || concept.tagline}</p>
+        <div className="concept-artifact-foot">
+          <span className="concept-artifact-brand">{concept.brandLabel || concept.sku}</span>
+          <button
+            type="button"
+            className="concept-dl-btn"
+            data-noexport="true"
+            onClick={onDownload}
+            disabled={downloading}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M12 3v12" />
+              <path d="m7 11 5 5 5-5" />
+              <path d="M5 21h14" />
+            </svg>
+            {downloading ? "Exporting…" : "Download"}
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function ConceptCardsPanel({ payload }) {
   const { concepts = [], mode, message, error, flavor, state } = payload || {};
   const created = mode === "created";
+  const headerScope = [flavor, state].filter(Boolean).join(" · ");
 
   return (
-    <div className="card concept-cards-card">
+    <div className="card concept-artifact-card artifact-panel">
       <div className="card-h">
-        <h3>Concept cards</h3>
-        <span className="tag">{created ? "Ready" : "Preview"}</span>
+        <h3>Concept cards{headerScope ? ` — ${headerScope}` : ""}</h3>
+        <span className="tag">{created ? `${concepts.length} concepts generated` : "Preview"}</span>
       </div>
-      <div className="card-body">
+      <div className="card-body artifact-panel-body">
         {message && !error && <p className="concept-msg">{message}</p>}
         {error && <p className="concept-err">{error}</p>}
-        <div className="concept-grid concept-grid--mockups">
+        <div className="concept-stack">
           {concepts.map((c) => (
-            <div key={c.id} className="concept-mock-shell">
-              <div className="concept-mock-device" aria-label={`Concept mock-up: ${c.title}`}>
-                <div className="concept-mock-chrome">
-                  <span className="concept-mock-dot" />
-                  <span className="concept-mock-dot" />
-                  <span className="concept-mock-dot" />
-                  <span className="concept-mock-label">Social · Story</span>
-                </div>
-                <div className="concept-card concept-card--mock">
-                  <ConceptCardImage concept={c} />
-                  <div className="concept-meta">
-                    <span className="concept-lane">{c.lane}</span>
-                    <h4>{c.title}</h4>
-                    <p className="concept-tag">{c.tagline}</p>
-                  </div>
-                  <div className="concept-mock-cta">{c.cta || "Shop now →"}</div>
-                </div>
-              </div>
-            </div>
+            <ConceptArtifactCard key={c.id} concept={c} flavor={flavor} state={state} />
           ))}
         </div>
         <DeliverableHandoff
