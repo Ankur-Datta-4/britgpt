@@ -919,10 +919,13 @@ export default function BritApp() {
 
   const onRegenerateConcepts = useCallback(
     async ({ messageId, instructions, flavor, state, brandFit, priorInstructions }) => {
-      if (actionBusy || !messageId || !instructions?.trim()) return;
-      const merged = priorInstructions?.trim()
-        ? `${priorInstructions.trim()}\n\nRegeneration edits:\n${instructions.trim()}`
-        : instructions.trim();
+      if (actionBusy || !messageId) return;
+      const editBlock = instructions?.trim() || "";
+      const merged = editBlock
+        ? priorInstructions?.trim()
+          ? `${priorInstructions.trim()}\n\nRegeneration edits:\n${editBlock}`
+          : editBlock
+        : priorInstructions?.trim() || "";
 
       push({
         role: "user",

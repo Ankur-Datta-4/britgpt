@@ -84,7 +84,7 @@ const buildExcerpt = (title: string, platformLabel: string, link: string) => {
   }
 };
 
-type RawPost = {
+export type VerbatimRawPost = {
   link?: string;
   platform?: string;
   title?: string;
@@ -92,26 +92,15 @@ type RawPost = {
   metrics?: { likes?: number; comments?: number; shares?: number; views?: number };
 };
 
-let verbatimCache: Record<string, RawPost[]> | null = null;
+export const verbatimDatasetKeyForFlavor = (flavorName: string) =>
+  NATIONAL_TO_VERBATIM_KEY[flavorName] ?? null;
 
-const loadVerbatimDataset = async (): Promise<Record<string, RawPost[]>> => {
-  if (verbatimCache) return verbatimCache;
-  const mod = await import("@/lib/verbatium.json");
-  verbatimCache = (mod.default || mod) as Record<string, RawPost[]>;
-  return verbatimCache;
-};
-
-export const fetchVerbatimFeed = async (
-  flavorName: string,
-  limit = 40
-): Promise<VerbatimPost[]> => {
-  const key = NATIONAL_TO_VERBATIM_KEY[flavorName];
-  if (!key) return [];
-
-  const data = await loadVerbatimDataset();
-  const rows = data[key] || [];
-
-  return rows.slice(0, limit).map((row, i) => {
+export const mapVerbatimRowsToPosts = (
+  datasetKey: string,
+  rows: VerbatimRawPost[],
+  limit: number
+): VerbatimPost[] =>
+  rows.slice(0, limit).map((row, i) => {
     const platformLabel = formatPlatform(row.platform || "");
     const title = String(row.title || "").trim();
     const metrics = {
@@ -122,7 +111,7 @@ export const fetchVerbatimFeed = async (
     };
     const link = row.link || "#";
     return {
-      id: `${key}-${i}`,
+      id: `${datasetKey}-${i}`,
       link,
       platform: row.platform || "",
       platformLabel,
@@ -135,4 +124,21 @@ export const fetchVerbatimFeed = async (
       thumbnailUrl: resolveThumbnailUrl(link),
     };
   });
+
+export const fetchVerbatimFeed = async (
+  flavorName: string,
+  limit = 40
+): Promise<VerbatimPost[]> => {
+  if (!verbatimDatasetKeyForFlavor(flavorName)) return [];
+
+  const params = new URLSearchParams({
+    flavor: flavorName,
+    limit: String(limit),
+  });
+  const res = await fetch(`/api/verbatim-feed?${params}`);
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(body.error || `Could not load verbatim feed (${res.status})`);
+  }
+  return res.json() as Promise<VerbatimPost[]>;
 };

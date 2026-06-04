@@ -1242,14 +1242,15 @@ const dispatchHandoff = (target, detail = {}) => {
   window.dispatchEvent(new CustomEvent("brit-handoff", { detail: { target, ...detail } }));
 };
 
-const DeliverableHandoff = ({ label, target, flavor, state }) => {
+const DeliverableHandoff = ({ label, target, flavor, state, secondaryAction }) => {
   const [sent, setSent] = useState(false);
   const onSend = () => {
     dispatchHandoff(target, { flavor, state, label });
     setSent(true);
   };
   return (
-    <div className="deliverable-handoff">
+    <div className={"deliverable-handoff" + (secondaryAction ? " deliverable-handoff--with-secondary" : "")}>
+      {secondaryAction}
       <button
         type="button"
         className="btn-primary deliverable-handoff-btn"
@@ -1705,7 +1706,7 @@ const ConceptRegenerateDialog = ({ flavor, state, onClose, onConfirm, busy }) =>
         )}
         <div className="deliverable-dialog__field">
           <label className="deliverable-dialog__label" htmlFor="concept-regen-edits">
-            Edits &amp; instructions
+            Edits &amp; instructions <span className="muted">(optional)</span>
           </label>
           <textarea
             id="concept-regen-edits"
@@ -1713,7 +1714,7 @@ const ConceptRegenerateDialog = ({ flavor, state, onClose, onConfirm, busy }) =>
             rows={5}
             value={edits}
             onChange={(e) => setEdits(e.target.value)}
-            placeholder="e.g. Headlines in Marathi, warmer festive tone, emphasize chai-time, bolder packshot on the right, less health copy…"
+            placeholder="e.g. Headlines in Marathi, warmer festive tone, emphasize chai-time, bolder packshot, less health copy… Leave blank to rerun with the same brief."
             autoFocus
           />
         </div>
@@ -1724,7 +1725,7 @@ const ConceptRegenerateDialog = ({ flavor, state, onClose, onConfirm, busy }) =>
           <button
             type="button"
             className="deliverable-dialog__go"
-            disabled={busy || !edits.trim()}
+            disabled={busy}
             onClick={() => onConfirm?.(edits.trim())}
           >
             Regenerate
@@ -1743,22 +1744,26 @@ function ConceptCardsPanel({
   actionBusy = false,
 }) {
   const { concepts = [], mode, message, error, flavor, state } = payload || {};
-  const created = mode === "created";
+  const hasConcepts = concepts.length > 0;
+  const created = mode === "created" || hasConcepts;
+  const canRegenerate = Boolean(onRegenerate && hasConcepts);
   const headerScope = [flavor, state].filter(Boolean).join(" · ");
   const [regenOpen, setRegenOpen] = useState(false);
   const busy = actionBusy || regenerating;
+
+  const openRegenDialog = () => setRegenOpen(true);
 
   return (
     <div className={"card concept-artifact-card artifact-panel" + (regenerating ? " concept-artifact-card--regenerating" : "")}>
       <div className="card-h">
         <h3>Concept cards{headerScope ? ` — ${headerScope}` : ""}</h3>
         <div className="concept-artifact-card__header-actions">
-          {created && onRegenerate && (
+          {canRegenerate && (
             <button
               type="button"
               className="btn-ghost concept-regen-btn"
               disabled={busy}
-              onClick={() => setRegenOpen(true)}
+              onClick={openRegenDialog}
             >
               Regenerate
             </button>
@@ -1787,6 +1792,18 @@ function ConceptCardsPanel({
           target="FPD"
           flavor={flavor}
           state={state}
+          secondaryAction={
+            canRegenerate ? (
+              <button
+                type="button"
+                className="btn-ghost concept-regen-btn"
+                disabled={busy}
+                onClick={openRegenDialog}
+              >
+                Regenerate
+              </button>
+            ) : null
+          }
         />
       </div>
       {regenOpen && (

@@ -1346,6 +1346,16 @@ export { DEFAULT_RESEARCH_PROMPT };
 ============================================================ */
 const SIMPLE_STATE_PREVIEW_COUNT = 3;
 
+const StateFlavorList = ({ flavors, variant }) => (
+  <ol className={"sst-flavor-list sst-flavor-list--" + variant}>
+    {flavors.slice(0, 5).map((f) => (
+      <li key={f}>
+        <span className="sst-flavor-name">{f}</span>
+      </li>
+    ))}
+  </ol>
+);
+
 export const DocSimpleStateTableCard = () => {
   const [expanded, setExpanded] = useState(false);
   const hiddenCount = DEMO_STATES.length - SIMPLE_STATE_PREVIEW_COUNT;
@@ -1354,42 +1364,45 @@ export const DocSimpleStateTableCard = () => {
 
   return (
     <div className="card simple-state-table-card">
-      <div className="card-h">
-        <h3>State-wise flavor overview</h3>
-        <span className="tag">{DEMO_STATES.length} states · top 5 sweet &amp; savory</span>
+      <div className="card-h simple-state-table-card__head">
+        <div>
+          <h3>State-wise flavor overview</h3>
+          <p className="simple-state-table-card__sub">
+            Top 5 sweet and savory flavors by state
+          </p>
+        </div>
+        <span className="tag">{DEMO_STATES.length} states</span>
       </div>
-      <div className="card-body state-table-wrap">
-        <table className="national-table simple-state-table">
+      <div className="card-body simple-state-table-wrap">
+        <table className="simple-state-table">
           <thead>
             <tr>
-              <th>State</th>
-              <th>Top 5 Sweet</th>
-              <th>Top 5 Savory</th>
+              <th className="sst-th sst-th-state" scope="col">State</th>
+              <th className="sst-th sst-th-sweet" scope="col">
+                <span className="sst-th-label">
+                  <span className="sst-th-dot sst-th-dot--sweet" aria-hidden />
+                  Sweet
+                </span>
+              </th>
+              <th className="sst-th sst-th-savory" scope="col">
+                <span className="sst-th-label">
+                  <span className="sst-th-dot sst-th-dot--savory" aria-hidden />
+                  Savory
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody>
             {visibleStates.map((s) => (
-              <tr key={s.state}>
-                <td className="sst-state"><b>{s.state}</b></td>
-                <td className="sst-flavors sst-sweet">
-                  <p className="sst-flavor-text">
-                    {s.sweet.slice(0, 5).map((f, i) => (
-                      <span key={f}>
-                        {i > 0 ? " · " : ""}
-                        {i + 1}. {f}
-                      </span>
-                    ))}
-                  </p>
+              <tr key={s.state} className="sst-row">
+                <th className="sst-state" scope="row">
+                  <span className="sst-state-name">{s.state}</span>
+                </th>
+                <td className="sst-cell sst-cell--sweet">
+                  <StateFlavorList flavors={s.sweet} variant="sweet" />
                 </td>
-                <td className="sst-flavors sst-savory">
-                  <p className="sst-flavor-text">
-                    {s.savory.slice(0, 5).map((f, i) => (
-                      <span key={f}>
-                        {i > 0 ? " · " : ""}
-                        {i + 1}. {f}
-                      </span>
-                    ))}
-                  </p>
+                <td className="sst-cell sst-cell--savory">
+                  <StateFlavorList flavors={s.savory} variant="savory" />
                 </td>
               </tr>
             ))}
@@ -1404,7 +1417,7 @@ export const DocSimpleStateTableCard = () => {
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
           >
-            {expanded ? "Show fewer states" : `Show ${hiddenCount} states`}
+            {expanded ? "Show fewer states" : `Show ${hiddenCount} more states`}
             <span className={"sst-toggle-chevron " + (expanded ? "open" : "")} aria-hidden>▾</span>
           </button>
         </div>
