@@ -1242,6 +1242,8 @@ const dispatchHandoff = (target, detail = {}) => {
   window.dispatchEvent(new CustomEvent("brit-handoff", { detail: { target, ...detail } }));
 };
 
+const CONCEPT_GENERATE_AGAIN_LABEL = "Generate again";
+
 const DeliverableHandoff = ({ label, target, flavor, state, secondaryAction }) => {
   const [sent, setSent] = useState(false);
   const onSend = () => {
@@ -1691,10 +1693,10 @@ const ConceptRegenerateDialog = ({ flavor, state, onClose, onConfirm, busy }) =>
           ✕
         </button>
         <h3 id="concept-regen-title" className="deliverable-dialog__title">
-          Regenerate concept cards
+          Generate concept cards again
         </h3>
         <p className="deliverable-dialog__lead muted">
-          Describe copy, tone, language, or visual changes. We&apos;ll regenerate all three cards with your edits.
+          Describe copy, tone, language, or visual changes. We&apos;ll generate all three cards again with your edits.
         </p>
         {(flavor || state) && (
           <div className="deliverable-dialog__field deliverable-dialog__field--locked concept-regen-dialog__context">
@@ -1728,7 +1730,7 @@ const ConceptRegenerateDialog = ({ flavor, state, onClose, onConfirm, busy }) =>
             disabled={busy}
             onClick={() => onConfirm?.(edits.trim())}
           >
-            Regenerate
+            Generate again
           </button>
         </div>
       </div>
@@ -1761,11 +1763,11 @@ function ConceptCardsPanel({
           {canRegenerate && (
             <button
               type="button"
-              className="btn-ghost concept-regen-btn"
+              className="btn-ghost concept-regen-btn concept-regen-btn--compact"
               disabled={busy}
               onClick={openRegenDialog}
             >
-              Regenerate
+              {CONCEPT_GENERATE_AGAIN_LABEL}
             </button>
           )}
           <span className="tag">{created ? `${concepts.length} concepts generated` : "Preview"}</span>
@@ -1796,11 +1798,11 @@ function ConceptCardsPanel({
             canRegenerate ? (
               <button
                 type="button"
-                className="btn-ghost concept-regen-btn"
+                className="btn-ghost concept-regen-btn deliverable-handoff-secondary-btn"
                 disabled={busy}
                 onClick={openRegenDialog}
               >
-                Regenerate
+                {CONCEPT_GENERATE_AGAIN_LABEL}
               </button>
             ) : null
           }
