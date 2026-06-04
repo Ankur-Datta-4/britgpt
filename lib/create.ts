@@ -8,62 +8,12 @@ import { sleep } from "@/lib/film-job";
 import { runActionWithLLM, buildHeroFilmPrompt } from "@/lib/llm";
 import { getBedrockKey } from "@/lib/config-client";
 import { resolveFilmPlaybackUrl } from "@/lib/film-url";
-
-type ConceptPromptVariant = "english" | "vernacular";
-
-const HINDI_BELT_STATES = new Set([
-  "Delhi",
-  "Delhi NCR",
-  "Uttar Pradesh",
-  "Madhya Pradesh",
-  "Rajasthan",
-  "Bihar",
-  "Haryana",
-  "Chhattisgarh",
-  "Jharkhand",
-  "Uttarakhand",
-  "Himachal Pradesh",
-]);
-
-const LANGUAGE_BY_STATE: Record<string, string> = {
-  "Tamil Nadu": "Tamil",
-  "West Bengal": "Bengali",
-  Karnataka: "Kannada",
-  Maharashtra: "Marathi",
-  Gujarat: "Gujarati",
-  Kerala: "Malayalam",
-  "Andhra Pradesh": "Telugu",
-  Telangana: "Telugu",
-  Punjab: "Punjabi",
-  Odisha: "Odia",
-  Assam: "English + Assamese",
-  Meghalaya: "English + Khasi",
-  Manipur: "English + Meitei",
-  Mizoram: "English + Mizo",
-  Nagaland: "English + Nagamese",
-  Tripura: "English + Bengali",
-  Sikkim: "English + Nepali",
-  "Arunachal Pradesh": "English + Hindi",
-};
-
-const inferPrimaryLanguage = (state: string) => {
-  if (!state || state === "Pan-India") return "English";
-  if (LANGUAGE_BY_STATE[state]) return LANGUAGE_BY_STATE[state];
-  if (HINDI_BELT_STATES.has(state)) return "Hindi";
-  return "English";
-};
-
-const inferStateCues = (state: string) => {
-  const cues: Record<string, string> = {
-    "Tamil Nadu": "home verandah, steel dabba, kolam cue",
-    "West Bengal": "balcony chai setup, adda vibe, subtle terracotta cues",
-    Karnataka: "Bengaluru apartment kitchen or cafe corner, modern-casual styling",
-    Maharashtra: "Mumbai/Pune home evening snack setup, warm family context",
-    "Delhi NCR": "urban home evening setup, winter chai/snack context",
-    Gujarat: "bright home kitchen table, sharing-with-family snack moment",
-  };
-  return cues[state] || "relatable Indian home or neighborhood snack-time context";
-};
+import {
+  type ConceptPromptVariant,
+  buildConceptCardGeminiPrompt,
+  inferConceptCardVariant,
+  inferStateCues,
+} from "@/lib/concept-card-prompts";
 
 
 type FlavorProfile = {
@@ -152,7 +102,8 @@ export const buildConceptCopy = (opts: {
   const profile = profileFor(opts.flavor, opts.state);
   const brandToken = opts.brandFit?.split(",")[0]?.trim();
   const brandLabel = brandToken ? `Britannia ${brandToken} · ${flavor}` : `Britannia · ${flavor}`;
-  const place = state !== "Pan-India" ? state : "India";
+  const place =
+    state === "National" || state === "Pan-India" ? "India" : state;
   const formatLabel =
     opts.formats?.[0]?.replace(new RegExp(flavor, "i"), "").trim() || "cracker";
 
@@ -332,15 +283,6 @@ export const buildMessagingCards = (opts: {
   ];
 };
 
-const inferPromptVariant = (instructions?: string): ConceptPromptVariant => {
-  const text = (instructions || "").toLowerCase();
-  if (!text) return "english";
-  if (text.includes("vernacular") || text.includes("local language") || text.includes("regional language")) {
-    return "vernacular";
-  }
-  return "english";
-};
-
 const PACKSHOT_NO_PEOPLE =
   "Product packshot only — no people, no human faces, no hands, no silhouettes, no models, no crowd.";
 
@@ -440,17 +382,21 @@ export const pickConceptSkus = (ctx: {
     ctx.params?.region || script.scopeDefaults?.region || "Pan-India";
   const state = ctx.state || region;
   const flavor = ctx.flavor;
-  const variant = inferPromptVariant(ctx.instructions);
+  const variant = inferConceptCardVariant(ctx.instructions);
   return out.slice(0, 3).map((c, i) => ({
     id: `concept-${i}`,
     title: String(c.name).slice(0, 42),
     sku: c.name,
     lane: c.lane,
     tagline: `${c.lane} · Britannia innovation concept`,
-    imagePrompt: imagePromptFor(
-      { sku: c.name, lane: c.lane },
-      { region, state, flavor, brandFit: ctx.brandFit, variant }
-    ),
+    imagePrompt: buildConceptCardGeminiPrompt({
+      variant,
+      state,
+      flavor: flavor || c.lane,
+      brandFit: ctx.brandFit,
+      productTitle: c.name,
+      tone: ["Nostalgic", "Bold", "Everyday"][i],
+    }),
     gradient: ["#c45c3e", "#8b2e1a", "#e8a87c", "#5c3d2e", "#d4a574", "#7a4a32"][
       i % 6
     ],
@@ -484,16 +430,20 @@ const mergeLlmConcepts = (
       tone: (c as { tone?: string }).tone,
       headline: (c as { headline?: string }).headline,
       body: (c as { body?: string }).body,
+      signOffTagline: (c as { signOffTagline?: string }).signOffTagline,
       brandLabel: (c as { brandLabel?: string }).brandLabel,
-      imagePrompt: imagePromptFor(
-        {
-          sku,
-          lane,
-          title: (c as { title?: string }).title || b.title,
-          imagePromptHint: (c as { imagePrompt?: string }).imagePrompt,
-        },
-        opts
-      ),
+      imagePrompt: buildConceptCardGeminiPrompt({
+        variant: opts.variant || "english",
+        state: opts.state || opts.region,
+        flavor: lane || opts.flavor || "",
+        brandFit: opts.brandFit,
+        productTitle: (c as { title?: string }).title || b.title,
+        headline: (c as { headline?: string }).headline,
+        body: (c as { body?: string }).body,
+        signOffTagline: (c as { signOffTagline?: string }).signOffTagline,
+        tone: (c as { tone?: string }).tone,
+        imagePromptHint: (c as { imagePrompt?: string }).imagePrompt,
+      }),
       gradient: b.gradient || "#c45c3e",
     };
   });
@@ -683,11 +633,19 @@ export const generateHeroFilm = async (
   }
 };
 
-const generateNanoBananaImage = async (prompt: string, signal?: AbortSignal) => {
+const generateNanoBananaImage = async (
+  prompt: string,
+  signal?: AbortSignal,
+  opts?: { conceptCard?: boolean; variant?: ConceptPromptVariant }
+) => {
   const res = await fetch("/api/nanobanana", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({
+      prompt,
+      mode: opts?.conceptCard ? "concept_card" : "packshot",
+      variant: opts?.variant || "english",
+    }),
     signal,
   });
   if (!res.ok) throw new Error("Nano Banana API failed");
@@ -719,7 +677,7 @@ export const generateConceptCards = async (
   const state = ctx.state || region;
   const flavor = ctx.flavor;
   const brandFit = ctx.brandFit;
-  const variant = inferPromptVariant(ctx.instructions);
+  const variant = inferConceptCardVariant(ctx.instructions);
   let concepts = pickConceptSkus(ctx);
   const bedrockKey = getBedrockKey();
   const bedrockReady = await checkBedrockConfigured();
@@ -737,27 +695,43 @@ export const generateConceptCards = async (
   let generatedCount = 0;
   let lastImageError: string | undefined;
 
-  onProgress?.("Creating packshots…");
+  onProgress?.("Creating concept cards…");
   const withImages = await Promise.all(
     concepts.map(async (c, i) => {
       try {
-        onProgress?.(`Packshot ${i + 1} of 3…`);
+        onProgress?.(`Concept card ${i + 1} of 3…`);
+        const concept = c as typeof c & {
+          headline?: string;
+          body?: string;
+          signOffTagline?: string;
+          tone?: string;
+        };
         const imagePrompt =
-          c.imagePrompt ||
-          imagePromptFor(c, { region, state, flavor, brandFit, variant });
-        
+          concept.imagePrompt ||
+          buildConceptCardGeminiPrompt({
+            variant,
+            state,
+            flavor: flavor || concept.lane,
+            brandFit,
+            productTitle: concept.title || concept.sku,
+            headline: concept.headline,
+            body: concept.body,
+            signOffTagline: concept.signOffTagline,
+            tone: concept.tone,
+          });
+
         let uri = "";
         let generated = false;
-        
+
         try {
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(new Error("Nano Banana timeout")), 45000);
-          
+
           try {
-            uri = await generateNanoBananaImage(
-              imagePrompt,
-              controller.signal
-            );
+            uri = await generateNanoBananaImage(imagePrompt, controller.signal, {
+              conceptCard: true,
+              variant,
+            });
             generated = true;
           } finally {
             clearTimeout(timeoutId);
@@ -769,7 +743,7 @@ export const generateConceptCards = async (
         }
 
         if (generated) generatedCount++;
-        return { ...c, imageUri: uri, packshotReady: true, generated };
+        return { ...concept, imageUri: uri, packshotReady: true, generated };
       } catch (e) {
         lastImageError = e instanceof Error ? e.message : String(e);
         const { buildPackshotDataUrl } = await import("@/lib/packshot-visual");
@@ -804,6 +778,7 @@ export const generateConceptCards = async (
       tone?: string;
       headline?: string;
       body?: string;
+      signOffTagline?: string;
       brandLabel?: string;
     };
     return {
@@ -812,7 +787,9 @@ export const generateConceptCards = async (
       tone: row.tone || copy[i]?.tone,
       headline: row.headline || copy[i]?.headline,
       body: row.body || copy[i]?.body,
+      signOffTagline: row.signOffTagline,
       brandLabel: row.brandLabel || copy[i]?.brandLabel,
+      cardVariant: variant,
     };
   });
 
@@ -822,7 +799,7 @@ export const generateConceptCards = async (
     error: generatedCount === 0 ? lastImageError : undefined,
     message:
       generatedCount > 0
-        ? `${generatedCount} packshot${generatedCount !== 1 ? "s" : ""} ready.`
+        ? `${generatedCount} concept card${generatedCount !== 1 ? "s" : ""} ready (${variant}).`
         : "Concept cards ready — AI images unavailable, showing styled previews.",
   };
 };

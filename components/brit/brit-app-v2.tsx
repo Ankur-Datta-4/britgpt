@@ -1144,7 +1144,7 @@ export default function BritAppV2() {
           onChipAction={handleChipAction}
           disabled={composerLocked}
           placeholder={
-            phase === "workflow_select" ? "Click a workflow above to continue…" :
+            phase === "workflow_select" ? "Enable a workflow above, then proceed to data configuration…" :
             phase === "data_config" ? "Confirm data configuration above…" :
             phase === "audience_config" ? "Confirm audience above to run research…" :
             phase === "running" ? "Research is running. You'll see updates inline…" :
@@ -1245,23 +1245,26 @@ const recommendWorkflowId = (query) => {
 
 function WorkflowSelectorCard({ query, onProceed }) {
   const recommendedId = recommendWorkflowId(query);
+  const [workflowId, setWorkflowId] = useState(recommendedId);
+  const [enabled, setEnabled] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [proceeded, setProceeded] = useState(false);
 
-  const recommended =
-    WORKFLOW_OPTIONS.find((w) => w.id === recommendedId) || WORKFLOW_OPTIONS[0];
-  const alternates = WORKFLOW_OPTIONS.filter((w) => w.id !== recommendedId);
+  const active =
+    WORKFLOW_OPTIONS.find((w) => w.id === workflowId) || WORKFLOW_OPTIONS[0];
+  const alternates = WORKFLOW_OPTIONS.filter((w) => w.id !== workflowId);
+  const isRecommended = workflowId === recommendedId;
 
-  const handleProceed = (id) => {
-    if (proceeded) return;
-    setProceeded(true);
-    onProceed?.(id);
+  const pickWorkflow = (id) => {
+    setWorkflowId(id);
+    setEnabled(false);
+    setProceeded(false);
   };
 
   return (
-    <div className={"workflow-panel " + (proceeded ? "workflow-panel--done" : "")}>
+    <div className="workflow-panel">
       <p className="workflow-panel__head">
-        Click a workflow to continue — all paths use the same data configuration and research pipeline.
+        I found a workflow that fits your query well. Would you like to enable it?
       </p>
 
       <div className="workflow-panel__query">
@@ -1273,28 +1276,48 @@ function WorkflowSelectorCard({ query, onProceed }) {
       </div>
 
       <div className="workflow-panel__label">
-        Suggested workflow
-        <span className="workflow-panel__rec-tag">Best match</span>
+        {isRecommended ? "Suggested workflow" : "Selected workflow"}
+        {isRecommended && <span className="workflow-panel__rec-tag">Best match</span>}
       </div>
 
-      <button
-        type="button"
-        className="workflow-card"
-        disabled={proceeded}
-        onClick={() => handleProceed(recommended.id)}
-      >
-        <span className="workflow-card__icon">{WF_ICONS[recommended.id]}</span>
-        <span className="workflow-card__body">
-          <span className="workflow-card__title">{recommended.label}</span>
-          <span className="workflow-card__desc">{recommended.description}</span>
-        </span>
-        <span className="workflow-card__cta" aria-hidden>→</span>
-      </button>
+      <div className={"workflow-card " + (enabled ? "workflow-card--selected" : "")}>
+        <span className="workflow-card__icon">{WF_ICONS[active.id]}</span>
+        <span className="workflow-card__title">{active.label}</span>
+        {enabled ? (
+          <span className="workflow-card__badge">Selected</span>
+        ) : (
+          <button type="button" className="workflow-card__enable" onClick={() => setEnabled(true)}>
+            Enable
+          </button>
+        )}
+      </div>
+
+      {enabled && (
+        <div className="workflow-confirm">
+          <div className="workflow-confirm__head">
+            <svg className="workflow-confirm__check" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.8-4.8 1.4 1.4-6.2 6.2z" />
+            </svg>
+            <b>{active.label} selected</b>
+          </div>
+          <p className="workflow-confirm__desc">{active.description}</p>
+          <button
+            type="button"
+            className="workflow-confirm__cta"
+            disabled={proceeded}
+            onClick={() => {
+              setProceeded(true);
+              onProceed?.(active.id);
+            }}
+          >
+            <span aria-hidden>→</span> Proceed to data configuration
+          </button>
+        </div>
+      )}
 
       <button
         type="button"
         className="workflow-panel__more"
-        disabled={proceeded}
         onClick={() => setShowMore((v) => !v)}
         aria-expanded={showMore}
       >
@@ -1310,12 +1333,13 @@ function WorkflowSelectorCard({ query, onProceed }) {
               type="button"
               role="listitem"
               className="workflow-secondary__item"
-              disabled={proceeded}
-              onClick={() => handleProceed(w.id)}
+              onClick={() => pickWorkflow(w.id)}
             >
               <span className="workflow-secondary__icon">{WF_ICONS[w.id]}</span>
               <span className="workflow-secondary__label">{w.label}</span>
-              <span className="workflow-secondary__go" aria-hidden>→</span>
+              {w.id === recommendedId && (
+                <span className="workflow-secondary__rec">Suggested</span>
+              )}
             </button>
           ))}
         </div>

@@ -900,27 +900,29 @@ export const DocCrossStateCard = () => {
         <span className="tag">overall flavor reads</span>
       </div>
       <div className="card-body">
-        <p className="muted cross-state-lead">
-          Patterns that emerge when state-level data is read together — geographic clusters, seasonal triggers, and age-driven purchase behavior.
-        </p>
-        <div className="cross-state-tabs">
-          {[
-            { id: "zone", label: "Zone-wise" },
-            { id: "weather", label: "Seasonality" },
-            { id: "age", label: "Age & demographic" },
-          ].map((d) => (
-            <button
-              key={d.id}
-              type="button"
-              className={"cross-state-tab " + (dim === d.id ? "sel" : "")}
-              onClick={() => {
-                setDim(d.id);
-                setActiveId(CROSS_STATE_INSIGHTS[d.id][0].id);
-              }}
-            >
-              {d.label}
-            </button>
-          ))}
+        <div className="cross-state-intro">
+          <p className="muted cross-state-lead">
+            Patterns that emerge when state-level data is read together — geographic clusters, seasonal triggers, and age-driven purchase behavior.
+          </p>
+          <div className="cross-state-tabs">
+            {[
+              { id: "zone", label: "Zone-wise" },
+              { id: "weather", label: "Seasonality" },
+              { id: "age", label: "Age & demographic" },
+            ].map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                className={"cross-state-tab " + (dim === d.id ? "sel" : "")}
+                onClick={() => {
+                  setDim(d.id);
+                  setActiveId(CROSS_STATE_INSIGHTS[d.id][0].id);
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {dim === "age" ? (

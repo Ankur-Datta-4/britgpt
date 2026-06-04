@@ -7,6 +7,11 @@ import {
 import { checkBedrockConfigured } from "@/lib/api-status";
 import { getBedrockKey, hasBedrockKey } from "@/lib/config-client";
 import { isLlmLiveEnabled } from "@/lib/llm-mode";
+import {
+  getConceptCardLlmSystem,
+  getConceptCardLlmUserPrompt,
+  inferConceptCardVariant,
+} from "@/lib/concept-card-prompts";
 
 export type ActionContext = {
   script?: { title?: string; exec?: { h2?: string; p?: string } };
@@ -203,8 +208,7 @@ export const runActionWithLLM = async (
   const extra = followUpNote(ctx);
 
   const systems: Record<string, string> = {
-    concept_cards:
-      "You are a Britannia India snack innovation copywriter. Output JSON only: concepts (array of exactly 3). Each concept: title (SKU-style name), sku, lane (flavor name), tone (one of Nostalgic|Bold|Everyday), headline (8-12 words, conversational, no ad jargon), body (2-3 sentences — taste, occasion, emotional payoff for Indian consumers), imagePrompt (16:9 packshot brief: Britannia pack on studio backdrop, regional ingredient props only, no people/faces/hands, no health claims). Ground in Flavor Insights data only.",
+    concept_cards: getConceptCardLlmSystem(inferConceptCardVariant(ctx.instructions)),
     fpd_scout: `You are an FMCG field product discovery lead for Britannia India. ${ACTION_OUTPUT_SCHEMA} For FPD, prioritize 2–3 states from the dataset with concrete flavor white-space and field validation plans.`,
     triangulate_1ds: `You are a data triangulation analyst linking social flavor insights to 1DS sales for Britannia India. ${ACTION_OUTPUT_SCHEMA} Link social buzz metrics to sell-out hypotheses by state.`,
     storyboard: `You are a video creative director for Britannia India. ${STORYBOARD_OUTPUT_SCHEMA}`,
@@ -214,7 +218,14 @@ export const runActionWithLLM = async (
   };
 
   const prompts: Record<string, string> = {
-    concept_cards: `Create 3 Britannia product concept cards for a new ${ctx.flavor || "regional"} flavour launch in ${ctx.state || ctx.params?.region || "India"}. Each card needs distinct tone (Nostalgic, Bold, Everyday), a feeling-led headline, body copy that names the actual taste (not generic "spicy" or "delicious"), and a packshot-only imagePrompt (product pack + flavor-specific props, no people or faces). Britannia ${ctx.brandFit || "brand"} pack for ${ctx.state || "India"}. No competitor names. No health claims.\n\n${context}${extra}`,
+    concept_cards: getConceptCardLlmUserPrompt({
+      flavor: ctx.flavor,
+      state: ctx.state,
+      brandFit: ctx.brandFit,
+      params: ctx.params,
+      instructions: ctx.instructions,
+      researchContext: [context, extra].filter(Boolean).join("\n\n"),
+    }),
     content_engine: `Draft a unified creative brief: messaging, tone, hooks, and positioning for the selected flavor-state pair.\n\n${context}${extra}`,
     creative_brief: `Draft messaging and comms recommendations for Britannia ${ctx.flavor || "flavour"} in ${ctx.state || "India"}. Write like an agency brief for Indian consumers — specific taste language, channel hooks (Reels, kirana, tea-time), no empty superlatives.\n\n${context}${extra}`,
     fpd_scout: `Draft an FPD (field product discovery) scout brief. Name specific states, sweet/savory flavors from the dataset, and what field reps should validate in trade.\n\n${context}${extra}`,

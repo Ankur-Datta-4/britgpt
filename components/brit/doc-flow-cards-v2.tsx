@@ -46,6 +46,7 @@ import {
 import {
   BRANDS_COUNT_TOOLTIP,
   FLAVOR_INDEX_TOOLTIPS,
+  buildBritanniaFitReasoning,
   getBrandPositioning,
   resolveBrandKey,
 } from "@/lib/flavor-card-meta";
@@ -923,27 +924,29 @@ export const DocCrossStateCard = () => {
         <span className="tag">overall flavor reads</span>
       </div>
       <div className="card-body">
-        <p className="muted cross-state-lead">
-          Patterns that emerge when state-level data is read together — geographic clusters, seasonal triggers, and age-driven purchase behavior.
-        </p>
-        <div className="cross-state-tabs">
-          {[
-            { id: "zone", label: "Zone-wise" },
-            { id: "weather", label: "Seasonality" },
-            { id: "age", label: "Age & demographic" },
-          ].map((d) => (
-            <button
-              key={d.id}
-              type="button"
-              className={"cross-state-tab " + (dim === d.id ? "sel" : "")}
-              onClick={() => {
-                setDim(d.id);
-                setActiveId(CROSS_STATE_INSIGHTS[d.id][0].id);
-              }}
-            >
-              {d.label}
-            </button>
-          ))}
+        <div className="cross-state-intro">
+          <p className="muted cross-state-lead">
+            Patterns that emerge when state-level data is read together — geographic clusters, seasonal triggers, and age-driven purchase behavior.
+          </p>
+          <div className="cross-state-tabs">
+            {[
+              { id: "zone", label: "Zone-wise" },
+              { id: "weather", label: "Seasonality" },
+              { id: "age", label: "Age & demographic" },
+            ].map((d) => (
+              <button
+                key={d.id}
+                type="button"
+                className={"cross-state-tab " + (dim === d.id ? "sel" : "")}
+                onClick={() => {
+                  setDim(d.id);
+                  setActiveId(CROSS_STATE_INSIGHTS[d.id][0].id);
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {dim === "age" ? (
@@ -1429,6 +1432,13 @@ const TREND_DOT_COLORS = {
 const trendDotColor = (t) => TREND_DOT_COLORS[t] || TREND_DOT_COLORS.Stable;
 
 const FLAVOR_CAT_COLORS = { sweet: "#E0922F", savory: "#C0392B" };
+const MATRIX_HIGHLIGHT_RING = {
+  stroke: "#5B21B6",
+  glow: "#8B5CF6",
+  outerR: 15,
+  gapR: 10,
+  dotR: 7,
+};
 
 const DELIVERABLE_ACTION_LABELS: Record<string, string> = {
   concept_cards: "Concept cards",
@@ -1498,8 +1508,8 @@ const DeliverableConfigDialog = ({
             value={state}
             onChange={(e) => setState(e.target.value)}
           >
-            {DEMO_STATES.map((s) => (
-              <option key={s.state} value={s.state}>{s.state}</option>
+            {DELIVERABLE_STATE_OPTIONS.map((s) => (
+              <option key={s.value} value={s.value}>{s.label}</option>
             ))}
           </select>
         </div>
@@ -1536,40 +1546,170 @@ const DeliverableConfigDialog = ({
   );
 };
 
-const FlavorInfoTip = ({ text }) => (
-  <span className="flavor-info-tip">
-    <button type="button" className="flavor-info-tip__btn" aria-label="More information">
-      i
-    </button>
-    <span className="flavor-info-tip__bubble" role="tooltip">{text}</span>
-  </span>
-);
+const FLAVOR_TIP_MAX_W = 280;
+const FLAVOR_TIP_GAP = 10;
+const FLAVOR_TIP_Z = 1400;
+
+const FlavorInfoTip = ({ text }) => {
+  const btnRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState(null);
+  const [placement, setPlacement] = useState("top");
+
+  const syncPosition = useCallback(() => {
+    const btn = btnRef.current;
+    if (!btn) return;
+    const r = btn.getBoundingClientRect();
+    const spaceAbove = r.top;
+    const spaceBelow = window.innerHeight - r.bottom;
+    const place = spaceAbove > 96 || spaceAbove >= spaceBelow ? "top" : "bottom";
+    const halfW = FLAVOR_TIP_MAX_W / 2;
+    const x = Math.max(halfW + 12, Math.min(window.innerWidth - halfW - 12, r.left + r.width / 2));
+    setPlacement(place);
+    setCoords({
+      x,
+      y: place === "top" ? r.top - FLAVOR_TIP_GAP : r.bottom + FLAVOR_TIP_GAP,
+    });
+  }, []);
+
+  const show = () => {
+    syncPosition();
+    setOpen(true);
+  };
+  const hide = () => setOpen(false);
+
+  useEffect(() => {
+    if (!open) return;
+    syncPosition();
+    const onMove = () => syncPosition();
+    window.addEventListener("resize", onMove);
+    window.addEventListener("scroll", onMove, true);
+    return () => {
+      window.removeEventListener("resize", onMove);
+      window.removeEventListener("scroll", onMove, true);
+    };
+  }, [open, syncPosition]);
+
+  const bubble =
+    open &&
+    coords &&
+    typeof document !== "undefined" &&
+    createPortal(
+      <span
+        className={
+          "flavor-info-tip__bubble flavor-info-tip__bubble--portal flavor-info-tip__bubble--" + placement
+        }
+        role="tooltip"
+        style={{
+          position: "fixed",
+          left: coords.x,
+          top: coords.y,
+          maxWidth: FLAVOR_TIP_MAX_W,
+          zIndex: FLAVOR_TIP_Z,
+        }}
+      >
+        {text}
+      </span>,
+      document.body
+    );
+
+  return (
+    <span
+      className="flavor-info-tip"
+      onMouseEnter={show}
+      onMouseLeave={hide}
+      onFocus={show}
+      onBlur={hide}
+    >
+      <button
+        ref={btnRef}
+        type="button"
+        className="flavor-info-tip__btn"
+        aria-label="More information"
+      >
+        i
+      </button>
+      {bubble}
+    </span>
+  );
+};
+
+const FlavorQualExplain = ({ label, summary, explainText, className = "" }) => {
+  const [open, setOpen] = useState(false);
+  if (!summary) return null;
+
+  return (
+    <div className={"flavor-modal-qual-item " + className}>
+      <div className="fmq-label-row">
+        <span className="fmq-label">{label}</span>
+        {explainText ? (
+          <button
+            type="button"
+            className="fmq-explain-btn"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+          >
+            {open ? "Hide" : "Explain"}
+          </button>
+        ) : null}
+      </div>
+      <p className="fmq-val">{summary}</p>
+      {open && explainText ? (
+        <div className="fmq-explain-panel" role="region">
+          <p className="fmq-explain-panel__text">{explainText}</p>
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 const FlavorBritanniaFitBlock = ({ flavor }) => {
   const brandKey = resolveBrandKey(flavor.brandFit);
   const positioning = getBrandPositioning(flavor.brandFit);
+  const reasoning = useMemo(() => buildBritanniaFitReasoning(flavor), [flavor]);
 
   if (!flavor.brandFit) return null;
 
-  return (
-    <div className="flavor-modal-qual-item flavor-modal-qual-item--fit">
-      <span className="fmq-label">Recommended Britannia brand</span>
-      <p className="fmq-val">
-        <strong className="fmq-brand">{brandKey || flavor.brandFit}</strong>
-        {positioning ? ` — ${positioning}` : null}
-      </p>
-    </div>
+  const summary = (
+    <>
+      <strong className="fmq-brand">{brandKey || flavor.brandFit}</strong>
+      {positioning ? ` — ${positioning}` : null}
+    </>
   );
+
+  const explainText = reasoning
+    ? [reasoning.summary, ...reasoning.bullets].filter(Boolean).join(" ")
+    : flavor.brandFitReasoning || null;
+
+  return (
+    <FlavorQualExplain
+      label="Recommended Britannia brand"
+      summary={summary}
+      explainText={explainText}
+      className="flavor-modal-qual-item--fit"
+    />
+  );
+};
+
+const buildExtensionExplainText = (flavor) => {
+  if (flavor.extensionReasoning) return flavor.extensionReasoning;
+  const parts = [
+    flavor.whyPopular ? `Consumer pull: ${flavor.whyPopular}` : null,
+    flavor.extensions ? `Formats to explore: ${flavor.extensions}.` : null,
+  ].filter(Boolean);
+  return parts.length ? parts.join(" ") : null;
 };
 
 const FlavorProductExtensionsBlock = ({ flavor }) => {
   if (!flavor.extensions) return null;
 
   return (
-    <div className="flavor-modal-qual-item flavor-modal-qual-item--extensions">
-      <span className="fmq-label">Product extension ideas</span>
-      <p className="fmq-val">{flavor.extensions}</p>
-    </div>
+    <FlavorQualExplain
+      label="Product extension ideas"
+      summary={flavor.extensions}
+      explainText={buildExtensionExplainText(flavor)}
+      className="flavor-modal-qual-item--extensions"
+    />
   );
 };
 
@@ -1768,8 +1908,6 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
               <span className="flavor-modal-trend-badge" style={{ background: trendDotColor(flavor.trendType) }}>
                 {flavor.trendType}
               </span>
-              {CROSS_CATEGORY_FLAVORS.has(flavor.name) && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
-              {isCrossRegion(flavor.states || "") && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
             </div>
           </div>
           <div className="flavor-modal-tabs" role="tablist">
@@ -2068,6 +2206,24 @@ const flavorMatchesCategory = (flavorName, categoryFilter) => {
   return cats.has(categoryFilter);
 };
 
+/** Matrix dots with purple highlight ring (BGPT demo flavors). */
+const MATRIX_HIGHLIGHT_FLAVORS = new Set([
+  "Kaju Katli",
+  "Gulab Jamun",
+  "Ras Malai",
+  "Nolen Gur",
+  "Honey",
+  "Gunpowder Podi",
+  "Tandoori Spice",
+  "Achari Spice",
+  "Schezwan",
+]);
+
+const DELIVERABLE_STATE_OPTIONS = [
+  { value: "National", label: "National" },
+  ...DEMO_STATES.map((s) => ({ value: s.state, label: s.state })),
+];
+
 const CROSS_CATEGORY_FLAVORS = new Set([
   "Honey", "Wild Honey", "Mahua Honey", "Kesar Milk", "Turmeric",
   "Coconut Jaggery", "Tamarind", "Schezwan", "Garlic Chilli", "Kokum",
@@ -2275,6 +2431,7 @@ const FlavorAnalysisTable = ({
   stateFilter = "All States",
   scopeFilter = "all",
   flavorSearch = "",
+  onFlavorSelect,
 }) => {
   const [sortKey, setSortKey] = useState("name");
   const [sortDir, setSortDir] = useState("desc");
@@ -2378,12 +2535,17 @@ const FlavorAnalysisTable = ({
                 <td colSpan={12} className="national-table-empty">No flavors match these filters.</td>
               </tr>
             ) : (
-              pageRows.map((f) => {
-                const isCrossCategory = CROSS_CATEGORY_FLAVORS.has(f.name);
-                const crossRegion = isCrossRegion(f.states || "");
-                return (
+              pageRows.map((f) => (
                   <tr key={f.name}>
-                    <td><b>{f.name}</b></td>
+                    <td>
+                      <button
+                        type="button"
+                        className="flavor-table-name-btn"
+                        onClick={() => onFlavorSelect?.(f)}
+                      >
+                        {f.name}
+                      </button>
+                    </td>
                     <td>{f.convVolume || "—"}</td>
                     <td>{f.engVolume || "—"}</td>
                     <td>{f.convGrowth || "—"}</td>
@@ -2395,15 +2557,10 @@ const FlavorAnalysisTable = ({
                     <td><span className="national-index">{f.curiosityIndex ?? "—"}</span></td>
                     <td><span className="national-index">{f.giftingIndex ?? "—"}</span></td>
                     <td>
-                      <div className="prioritize-trend-tags">
-                        <span>{f.trendType}</span>
-                        {isCrossCategory && <span className="flavor-flag flavor-flag--cat">Cross-Category</span>}
-                        {crossRegion && <span className="flavor-flag flavor-flag--reg">Cross-Region</span>}
-                      </div>
+                      <span className="prioritize-trend-tags">{f.trendType}</span>
                     </td>
                   </tr>
-                );
-              })
+                ))
             )}
           </tbody>
         </table>
@@ -2607,7 +2764,44 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
                         setHovered(null);
                       }}
                     >
-                      <circle cx={cx} cy={cy} r={8} fill={FLAVOR_CAT_COLORS[payload.cat]} stroke="#fff" strokeWidth={2.5} opacity={0.92} />
+                      {MATRIX_HIGHLIGHT_FLAVORS.has(payload.name) && (
+                        <>
+                          <circle
+                            cx={cx}
+                            cy={cy}
+                            r={MATRIX_HIGHLIGHT_RING.outerR + 2}
+                            fill="none"
+                            stroke={MATRIX_HIGHLIGHT_RING.glow}
+                            strokeWidth={5}
+                            opacity={0.35}
+                          />
+                          <circle
+                            cx={cx}
+                            cy={cy}
+                            r={MATRIX_HIGHLIGHT_RING.outerR}
+                            fill="none"
+                            stroke={MATRIX_HIGHLIGHT_RING.stroke}
+                            strokeWidth={3.5}
+                          />
+                          <circle
+                            cx={cx}
+                            cy={cy}
+                            r={MATRIX_HIGHLIGHT_RING.gapR}
+                            fill="#fff"
+                            stroke="#fff"
+                            strokeWidth={1}
+                          />
+                        </>
+                      )}
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={MATRIX_HIGHLIGHT_FLAVORS.has(payload.name) ? MATRIX_HIGHLIGHT_RING.dotR : 6.5}
+                        fill={FLAVOR_CAT_COLORS[payload.cat]}
+                        stroke="#fff"
+                        strokeWidth={2}
+                        opacity={MATRIX_HIGHLIGHT_FLAVORS.has(payload.name) ? 1 : 0.72}
+                      />
                     </g>
                   );
                 }}
@@ -2640,6 +2834,13 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
             <i style={{ background: FLAVOR_CAT_COLORS.savory }} />
             Savory
           </span>
+          <span className="brit-priority-matrix__legend-item legend-ring-item">
+            <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
+              <circle cx="11" cy="11" r="9.5" fill="none" stroke={MATRIX_HIGHLIGHT_RING.stroke} strokeWidth="2.5" />
+              <circle cx="11" cy="11" r="5.5" fill={FLAVOR_CAT_COLORS.sweet} stroke="#fff" strokeWidth="1.5" />
+            </svg>
+            Featured flavors
+          </span>
         </div>
 
         <FlavorAnalysisTable
@@ -2647,6 +2848,10 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
           stateFilter={stateFilter}
           scopeFilter={scopeFilter}
           flavorSearch={flavorSearch}
+          onFlavorSelect={(f) => {
+            setSelectedFlavor(f);
+            setHovered(null);
+          }}
         />
       </div>
     </div>

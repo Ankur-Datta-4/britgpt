@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  getGeminiConceptCardPreamble,
+  type ConceptPromptVariant,
+} from "@/lib/concept-card-prompts";
 
 export const runtime = "nodejs";
 
@@ -36,6 +40,8 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const prompt = String(body.prompt || "").trim();
+    const mode = body.mode === "concept_card" ? "concept_card" : "packshot";
+    const variant = (body.variant === "vernacular" ? "vernacular" : "english") as ConceptPromptVariant;
     const variationId = crypto.randomUUID();
     const apiKey = process.env.GEMINI_API_KEY?.trim();
     const modelId = process.env.GEMINI_IMAGE_MODEL?.trim() || DEFAULT_MODEL_ID;
@@ -62,8 +68,12 @@ export async function POST(req: Request) {
             parts: [
               {
                 text: [
-                  "Create a premium FMCG product packshot for Britannia India (16:9).",
-                  "Product pack and props only — no people, no human faces, no hands, no models.",
+                  mode === "concept_card"
+                    ? getGeminiConceptCardPreamble(variant)
+                    : [
+                        "Create a premium FMCG product packshot for Britannia India (16:9).",
+                        "Product pack and props only — no people, no human faces, no hands, no models.",
+                      ].join(" "),
                   "Use the supplied brief exactly. Avoid generic snack imagery.",
                   `Creative variation id: ${variationId}. Use this only to choose a fresh composition; do not render it as text.`,
                   prompt || "Create an image of a Britannia snack pack concept.",

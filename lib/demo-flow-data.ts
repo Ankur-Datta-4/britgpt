@@ -157,6 +157,8 @@ export const NATIONAL_FLAVORS = nationalJson as Array<{
   brandFit: string;
   fitmentScore?: number;
   brandFitReasoning?: string;
+  /** From BGPT "Product Extension Ideas and Exp" — Why These Extensions Would Work */
+  extensionReasoning?: string;
   diyIndex?: number;
   shareabilityIndex?: number;
   cravingIndex?: number;
