@@ -1674,19 +1674,108 @@ function ConceptArtifactCard({ concept, flavor, state }) {
   );
 }
 
-function ConceptCardsPanel({ payload }) {
+const ConceptRegenerateDialog = ({ flavor, state, onClose, onConfirm, busy }) => {
+  const [edits, setEdits] = useState("");
+
+  return (
+    <div className="deliverable-dialog-overlay" onClick={onClose} role="presentation">
+      <div
+        className="deliverable-dialog concept-regen-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="concept-regen-title"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button type="button" className="deliverable-dialog__close" onClick={onClose} aria-label="Close">
+          ✕
+        </button>
+        <h3 id="concept-regen-title" className="deliverable-dialog__title">
+          Regenerate concept cards
+        </h3>
+        <p className="deliverable-dialog__lead muted">
+          Describe copy, tone, language, or visual changes. We&apos;ll regenerate all three cards with your edits.
+        </p>
+        {(flavor || state) && (
+          <div className="deliverable-dialog__field deliverable-dialog__field--locked concept-regen-dialog__context">
+            <span className="deliverable-dialog__label">Brief</span>
+            <div className="deliverable-dialog__locked-val">
+              {[flavor, state].filter(Boolean).join(" · ")}
+            </div>
+          </div>
+        )}
+        <div className="deliverable-dialog__field">
+          <label className="deliverable-dialog__label" htmlFor="concept-regen-edits">
+            Edits &amp; instructions
+          </label>
+          <textarea
+            id="concept-regen-edits"
+            className="deliverable-dialog__textarea"
+            rows={5}
+            value={edits}
+            onChange={(e) => setEdits(e.target.value)}
+            placeholder="e.g. Headlines in Marathi, warmer festive tone, emphasize chai-time, bolder packshot on the right, less health copy…"
+            autoFocus
+          />
+        </div>
+        <div className="deliverable-dialog__actions">
+          <button type="button" className="deliverable-dialog__cancel" onClick={onClose} disabled={busy}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="deliverable-dialog__go"
+            disabled={busy || !edits.trim()}
+            onClick={() => onConfirm?.(edits.trim())}
+          >
+            Regenerate
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+function ConceptCardsPanel({
+  payload,
+  onRegenerate,
+  regenerating = false,
+  regenProgress,
+  actionBusy = false,
+}) {
   const { concepts = [], mode, message, error, flavor, state } = payload || {};
   const created = mode === "created";
   const headerScope = [flavor, state].filter(Boolean).join(" · ");
+  const [regenOpen, setRegenOpen] = useState(false);
+  const busy = actionBusy || regenerating;
 
   return (
-    <div className="card concept-artifact-card artifact-panel">
+    <div className={"card concept-artifact-card artifact-panel" + (regenerating ? " concept-artifact-card--regenerating" : "")}>
       <div className="card-h">
         <h3>Concept cards{headerScope ? ` — ${headerScope}` : ""}</h3>
-        <span className="tag">{created ? `${concepts.length} concepts generated` : "Preview"}</span>
+        <div className="concept-artifact-card__header-actions">
+          {created && onRegenerate && (
+            <button
+              type="button"
+              className="btn-ghost concept-regen-btn"
+              disabled={busy}
+              onClick={() => setRegenOpen(true)}
+            >
+              Regenerate
+            </button>
+          )}
+          <span className="tag">{created ? `${concepts.length} concepts generated` : "Preview"}</span>
+        </div>
       </div>
       <div className="card-body artifact-panel-body">
-        {message && !error && <p className="concept-msg">{message}</p>}
+        {regenerating && (
+          <p className="concept-regen-status" role="status">
+            <span className="concept-regen-status__dots" aria-hidden>
+              <span /><span /><span />
+            </span>
+            {regenProgress || "Regenerating concept cards…"}
+          </p>
+        )}
+        {message && !error && !regenerating && <p className="concept-msg">{message}</p>}
         {error && <p className="concept-err">{error}</p>}
         <div className="concept-stack concept-stack--boards">
           {concepts.map((c) => (
@@ -1700,6 +1789,18 @@ function ConceptCardsPanel({ payload }) {
           state={state}
         />
       </div>
+      {regenOpen && (
+        <ConceptRegenerateDialog
+          flavor={flavor}
+          state={state}
+          busy={busy}
+          onClose={() => setRegenOpen(false)}
+          onConfirm={(instructions) => {
+            setRegenOpen(false);
+            onRegenerate?.({ instructions });
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -1898,9 +1999,26 @@ function HeroFilmPanel({ payload, onOpenDetail }) {
   );
 }
 
-function ActionResultPanel({ payload, onOpenDetail }) {
+function ActionResultPanel({
+  payload,
+  onOpenDetail,
+  onRegenerateConcepts,
+  regenerating,
+  regenProgress,
+  actionBusy,
+}) {
   if (!payload) return null;
-  if (payload.type === "concept_cards") return <ConceptCardsPanel payload={payload} />;
+  if (payload.type === "concept_cards") {
+    return (
+      <ConceptCardsPanel
+        payload={payload}
+        onRegenerate={onRegenerateConcepts}
+        regenerating={regenerating}
+        regenProgress={regenProgress}
+        actionBusy={actionBusy}
+      />
+    );
+  }
   if (payload.type === "create_film") return <HeroFilmPanel payload={payload} onOpenDetail={onOpenDetail} />;
   if (payload.type === "storyboard") return <StoryboardMockPanel payload={payload} />;
   if (

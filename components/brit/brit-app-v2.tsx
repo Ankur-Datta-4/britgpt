@@ -221,40 +221,51 @@ const Sidebar = ({
 /* ============================================================
    Composer
 ============================================================ */
-const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composerKey }) => {
+const ComposerInner = ({ onSubmit, locked, placeholder, onChipAction, sessionKey, threadCount }) => {
   const ta = useRef(null);
-  const [canSend, setCanSend] = useState(false);
-
-  const syncComposer = useCallback(() => {
+  const [text, setText] = useState("");
+  const syncHeight = useCallback(() => {
     const el = ta.current;
-    const txt = el?.value?.trim() ?? "";
-    setCanSend(!disabled && txt.length > 0);
-    if (el) {
-      el.style.height = "auto";
-      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
-    }
-  }, [disabled]);
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+  }, []);
+
+  const onDraftInput = useCallback(
+    (e) => {
+      setText(e.currentTarget.value);
+      requestAnimationFrame(syncHeight);
+    },
+    [syncHeight]
+  );
 
   useEffect(() => {
-    if (ta.current) {
-      ta.current.value = "";
-      ta.current.style.height = "auto";
-    }
-    setCanSend(false);
-    if (!disabled && ta.current) {
-      ta.current.focus();
-    }
-  }, [composerKey, disabled]);
+    setText("");
+    if (ta.current) ta.current.style.height = "auto";
+  }, [sessionKey]);
 
-  const send = () => {
-    const txt = ta.current?.value?.trim() ?? "";
-    if (!txt || disabled) return;
-    onSubmit(txt);
-    if (ta.current) {
-      ta.current.value = "";
-      ta.current.style.height = "auto";
+  useEffect(() => {
+    if (!locked) ta.current?.focus();
+  }, [locked]);
+
+  useEffect(() => {
+    syncHeight();
+  }, [text, syncHeight]);
+
+  useEffect(() => {
+    if (threadCount > 0) {
+      setText("");
+      if (ta.current) ta.current.style.height = "auto";
     }
-    setCanSend(false);
+  }, [threadCount]);
+
+  const send = (e) => {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    if (locked) return;
+    const txt = (ta.current?.value ?? text).trim();
+    if (!txt) return;
+    onSubmit(txt);
   };
 
   const chips = [
@@ -274,11 +285,12 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composer
       >
         <textarea
           ref={ta}
-          defaultValue=""
-          onChange={syncComposer}
-          onInput={syncComposer}
+          value={text}
+          onInput={onDraftInput}
+          onChange={onDraftInput}
           placeholder={placeholder || "Ask a consumer research question…"}
-          disabled={disabled}
+          readOnly={locked}
+          aria-disabled={locked}
           rows={2}
           aria-label="Research prompt"
           onKeyDown={(e) => {
@@ -294,7 +306,7 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composer
               <span
                 key={c.id}
                 className="composer-chip clickable"
-                onClick={() => !disabled && onChipAction?.(c.id)}
+                onClick={() => !locked && onChipAction?.(c.id)}
               >
                 {c.label}
               </span>
@@ -302,9 +314,10 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composer
           </div>
           <button
             type="submit"
-            className="composer-send"
-            disabled={!canSend}
-            title="Send"
+            className={"composer-send " + (locked ? "is-locked" : "is-ready")}
+            onClick={send}
+            onMouseDown={(e) => e.stopPropagation()}
+            title={locked ? "Research is running" : "Send"}
             aria-label="Send message"
           >
             ↑
@@ -384,7 +397,26 @@ function MessageView({ m, ctx }) {
           <FilmJobCard job={m} onClick={ctx.onFilmJobClick} />
         )}
         {m.kind === "action_result" && (
-          <ActionResultPanel payload={m.payload} onOpenDetail={ctx.onOpenDetail} />
+          <ActionResultPanel
+            payload={m.payload}
+            onOpenDetail={ctx.onOpenDetail}
+            onRegenerateConcepts={
+              m.payload?.type === "concept_cards" && ctx.onRegenerateConcepts
+                ? ({ instructions }) =>
+                    ctx.onRegenerateConcepts({
+                      messageId: m.id,
+                      instructions,
+                      flavor: m.payload.flavor,
+                      state: m.payload.state,
+                      brandFit: m.payload.brandFit,
+                      priorInstructions: m.payload.instructions,
+                    })
+                : undefined
+            }
+            regenerating={m.regenerating}
+            regenProgress={m.regenProgress}
+            actionBusy={ctx.actionBusy}
+          />
         )}
         {m.kind === "qa" && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
         {m.kind === "workflow_select" && (
@@ -449,13 +481,19 @@ export default function BritAppV2() {
   }, [phase]);
 
   useEffect(() => {
-    if (messages.length === 0 && phase !== "idle") {
+    const visible = messages.filter(shouldRenderThreadMessage);
+    if (visible.length === 0) {
+      if (phase === "running") setPhase("idle");
+      setActionBusy(false);
+      setFilmBusy(false);
+      if (messages.length === 0) pipelineDoneRef.current = false;
+    } else if (messages.length === 0 && phase !== "idle") {
       setPhase("idle");
       setActionBusy(false);
       setFilmBusy(false);
       pipelineDoneRef.current = false;
     }
-  }, [messages.length, phase]);
+  }, [messages, phase]);
 
   const showToast = useCallback((text) => {
     setToast(text);
@@ -472,9 +510,13 @@ export default function BritAppV2() {
     return () => window.removeEventListener("brit-handoff", onHandoff);
   }, [showToast]);
 
+  const syncMessagesRef = useCallback((next) => {
+    messagesRef.current = cleanMessages(Array.isArray(next) ? next : []);
+  }, []);
+
   useEffect(() => {
-    messagesRef.current = cleanMessages(messages);
-  }, [messages]);
+    syncMessagesRef(messages);
+  }, [messages, syncMessagesRef]);
 
   useEffect(() => {
     setSessions(loadSessionIndex());
@@ -561,7 +603,9 @@ export default function BritAppV2() {
     const script = restoreScript({ id: snap.scriptId, title: snap.scriptTitle });
     scriptRef.current = script;
     setSessionId(snap.id);
-    setMessages(hydrateMessages(snap.messages || []));
+    const hydrated = hydrateMessages(snap.messages || []);
+    syncMessagesRef(hydrated);
+    setMessages(hydrated);
     const restoredPhase = snap.phase === "reco" ? "done" : (snap.phase || "idle");
     setPhase(restoredPhase);
     setParams(snap.params || null);
@@ -574,7 +618,7 @@ export default function BritAppV2() {
     setActionBusy(false);
     setFilmBusy(false);
     setTimeout(() => { persistSkipRef.current = false; }, 50);
-  }, []);
+  }, [syncMessagesRef]);
 
   const loadSession = useCallback((id) => {
     const list = loadSessionIndex();
@@ -589,6 +633,7 @@ export default function BritAppV2() {
   const clearToNewSession = useCallback(() => {
     persistSkipRef.current = true;
     setSessionId(createSessionId());
+    syncMessagesRef([]);
     setMessages([]);
     setPhase("idle");
     setAudienceCohort("millennials");
@@ -643,7 +688,11 @@ export default function BritAppV2() {
 
   const push = (m) => {
     if (isDisabledReportMessage(m)) return;
-    setMessages((ms) => [...ms, { ...m, id: m.id || nextMsgId() }]);
+    setMessages((ms) => {
+      const next = [...ms, { ...m, id: m.id || nextMsgId() }];
+      syncMessagesRef(next);
+      return next;
+    });
   };
   const pushDelayed = (m, ms) => setTimeout(() => push(m), ms);
 
@@ -705,12 +754,11 @@ export default function BritAppV2() {
     setParams({ region: "Pan-India", obj: "Product extension" });
     setPhase("data_config");
 
-    const hasUser = messagesRef.current.some(
+    const hasUser = messages.some(
       (m) => m.role === "user" && m.text?.trim() === prompt
     );
     if (!hasUser) {
       push({ role: "user", text: prompt });
-      messagesRef.current = [...messagesRef.current, { role: "user", text: prompt }];
     }
 
     pushDelayed({
@@ -729,12 +777,11 @@ export default function BritAppV2() {
     setParams({ region: "Pan-India", obj: "Product extension" });
     setPhase("workflow_select");
 
-    const hasUser = messagesRef.current.some(
+    const hasUser = messages.some(
       (m) => m.role === "user" && m.text?.trim() === prompt
     );
     if (!hasUser) {
       push({ role: "user", text: prompt });
-      messagesRef.current = [...messagesRef.current, { role: "user", text: prompt }];
     }
 
     pushDelayed({ role: "asst", kind: "workflow_select", query: prompt }, 350);
@@ -770,15 +817,25 @@ export default function BritAppV2() {
     setPhase("running");
   };
 
-  const handleUserSubmit = useCallback(async (text) => {
+  const handleUserSubmit = async (text) => {
     const q = text?.trim();
     if (!q) return;
 
-    const currentPhase = phaseRef.current;
-    const hasMessages = messagesRef.current.length > 0;
+    const visible = messages.filter(shouldRenderThreadMessage);
+    if (visible.length === 0) {
+      startWorkflowSelect(q);
+      return;
+    }
 
-    if (currentPhase === "running" || actionBusy) {
+    const currentPhase = phase;
+    const hasMessages = messages.length > 0;
+
+    if (currentPhase === "running") {
       showToast("Research is still in progress — hang tight.");
+      return;
+    }
+    if (actionBusy || filmBusy) {
+      showToast("Finishing another task — try again in a moment.");
       return;
     }
 
@@ -807,7 +864,7 @@ export default function BritAppV2() {
     }
 
     startWorkflowSelect(q);
-  }, [actionBusy, showToast, replyWithQA]);
+  };
 
   const updateFilmJob = useCallback((jobId, patch) => {
     setMessages((ms) => ms.map((m) => (m.id === jobId ? { ...m, ...patch } : m)));
@@ -911,6 +968,65 @@ export default function BritAppV2() {
     }
   };
 
+  const onRegenerateConcepts = useCallback(
+    async ({ messageId, instructions, flavor, state, brandFit, priorInstructions }) => {
+      if (actionBusy || !messageId || !instructions?.trim()) return;
+      const merged = priorInstructions?.trim()
+        ? `${priorInstructions.trim()}\n\nRegeneration edits:\n${instructions.trim()}`
+        : instructions.trim();
+
+      push({
+        role: "user",
+        text: `Regenerate concept cards · ${flavor || "flavor"} · ${state || "India"}`,
+      });
+      setActionBusy(true);
+      setMessages((ms) =>
+        ms.map((m) =>
+          m.id === messageId
+            ? { ...m, regenerating: true, regenProgress: "Regenerating concept cards…" }
+            : m
+        )
+      );
+
+      const ctx = actionContext({ state, flavor, brandFit, instructions: merged });
+      try {
+        const payload = await executeAction("concept_cards", ctx, (text) => {
+          setMessages((ms) =>
+            ms.map((m) => (m.id === messageId ? { ...m, regenProgress: text } : m))
+          );
+        });
+        setMessages((ms) =>
+          ms.map((m) =>
+            m.id === messageId
+              ? {
+                  ...m,
+                  kind: "action_result",
+                  payload: {
+                    ...payload,
+                    brandFit: brandFit || payload.brandFit,
+                    instructions: merged,
+                  },
+                  regenerating: false,
+                  regenProgress: undefined,
+                }
+              : m
+          )
+        );
+        showToast("Concept cards regenerated");
+      } catch {
+        setMessages((ms) =>
+          ms.map((m) =>
+            m.id === messageId ? { ...m, regenerating: false, regenProgress: undefined } : m
+          )
+        );
+        showToast("Regeneration failed — try again");
+      } finally {
+        setActionBusy(false);
+      }
+    },
+    [actionBusy, actionContext, push, showToast]
+  );
+
   const onFilmJobClick = useCallback((job) => {
     if (job.kind === "action_result" && job.payload) {
       setDetail({
@@ -964,6 +1080,7 @@ export default function BritAppV2() {
     persistSkipRef.current = true;
     const newId = createSessionId();
     setSessionId(newId);
+    syncMessagesRef([]);
     setMessages([]);
     setPhase("idle");
     setAudienceCohort("millennials");
@@ -1082,6 +1199,7 @@ export default function BritAppV2() {
     onStartResearch: (q) => startDocPipeline(q),
     onWorkflowProceed,
     onRunDeliverable,
+    onRegenerateConcepts,
     onFilmJobClick,
     onOpenDetail: (item) => setDetail(item),
     filmBusy,
@@ -1097,8 +1215,10 @@ export default function BritAppV2() {
   };
 
   const visibleMessages = messages.filter(shouldRenderThreadMessage);
-  const canPickQuestion = (phase === "idle" && visibleMessages.length === 0) || phase === "done";
-  const composerLocked = phase === "running" || actionBusy || filmBusy;
+  const onWelcome = visibleMessages.length === 0;
+  const canPickQuestion = (phase === "idle" && onWelcome) || phase === "done";
+  const hasActiveTimeline = visibleMessages.some((m) => m.kind === "timeline");
+  const composerLocked = phase === "running" && hasActiveTimeline;
 
   return (
     <div className="app">
@@ -1138,11 +1258,11 @@ export default function BritAppV2() {
         </div>
 
         <ComposerInner
-          key={sessionId}
-          composerKey={sessionId}
+          sessionKey={sessionId}
+          threadCount={visibleMessages.length}
           onSubmit={handleUserSubmit}
           onChipAction={handleChipAction}
-          disabled={composerLocked}
+          locked={composerLocked}
           placeholder={
             phase === "workflow_select" ? "Enable a workflow above, then proceed to data configuration…" :
             phase === "data_config" ? "Confirm data configuration above…" :

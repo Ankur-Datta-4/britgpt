@@ -174,13 +174,17 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
           <span className="tag">confirmed</span>
         </div>
         <div className="card-body">
-          <div className="scope-meta">
-            <div><span className="k">Age generation</span><span className="v">{generations.join(", ") || "—"}</span></div>
-            <div><span className="k">Age category</span><span className="v">{ages.join(", ") || "—"}</span></div>
-            <div><span className="k">Lifestyle</span><span className="v">{lifestyles.join(", ") || "—"}</span></div>
-            <div><span className="k">City tier</span><span className="v">{tiers.join(", ") || "—"}</span></div>
-            <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
-            <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
+          <div className="scope-meta-wrap scope-meta-wrap--audience">
+            <div className="scope-meta scope-meta--audience-primary">
+              <div><span className="k">Age generation</span><span className="v">{generations.join(", ") || "—"}</span></div>
+              <div><span className="k">Age category</span><span className="v">{ages.join(", ") || "—"}</span></div>
+              <div><span className="k">Lifestyle</span><span className="v">{lifestyles.join(", ") || "—"}</span></div>
+              <div><span className="k">City tier</span><span className="v">{tiers.join(", ") || "—"}</span></div>
+            </div>
+            <div className="scope-meta scope-meta--audience-stats">
+              <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
+              <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -227,9 +231,11 @@ export const AudienceConfigForm = ({ locked, defaults, onConfirm }) => {
               ))}
             </div>
           </div>
-          <div className="scope-meta">
-            <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
-            <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
+          <div className="scope-meta-wrap scope-meta-wrap--audience">
+            <div className="scope-meta scope-meta--audience-stats">
+              <div><span className="k">Credits</span><span className="v">{FIXED_RUN_STATS.credits}</span></div>
+              <div><span className="k">TAT</span><span className="v">{FIXED_RUN_STATS.tat}</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1338,7 +1344,7 @@ export { DEFAULT_RESEARCH_PROMPT };
 /* ============================================================
    Simple state table (v2)
 ============================================================ */
-const SIMPLE_STATE_PREVIEW_COUNT = 5;
+const SIMPLE_STATE_PREVIEW_COUNT = 3;
 
 export const DocSimpleStateTableCard = () => {
   const [expanded, setExpanded] = useState(false);
@@ -1366,18 +1372,24 @@ export const DocSimpleStateTableCard = () => {
               <tr key={s.state}>
                 <td className="sst-state"><b>{s.state}</b></td>
                 <td className="sst-flavors sst-sweet">
-                  {s.sweet.slice(0, 5).map((f, i) => (
-                    <span key={f} className="sst-pill sst-pill--sweet">
-                      <span className="sst-rank">{i + 1}</span>{f}
-                    </span>
-                  ))}
+                  <p className="sst-flavor-text">
+                    {s.sweet.slice(0, 5).map((f, i) => (
+                      <span key={f}>
+                        {i > 0 ? " · " : ""}
+                        {i + 1}. {f}
+                      </span>
+                    ))}
+                  </p>
                 </td>
                 <td className="sst-flavors sst-savory">
-                  {s.savory.slice(0, 5).map((f, i) => (
-                    <span key={f} className="sst-pill sst-pill--savory">
-                      <span className="sst-rank">{i + 1}</span>{f}
-                    </span>
-                  ))}
+                  <p className="sst-flavor-text">
+                    {s.savory.slice(0, 5).map((f, i) => (
+                      <span key={f}>
+                        {i > 0 ? " · " : ""}
+                        {i + 1}. {f}
+                      </span>
+                    ))}
+                  </p>
                 </td>
               </tr>
             ))}
@@ -1546,11 +1558,11 @@ const DeliverableConfigDialog = ({
   );
 };
 
-const FLAVOR_TIP_MAX_W = 280;
+const FLAVOR_TIP_MAX_W = 260;
 const FLAVOR_TIP_GAP = 10;
-const FLAVOR_TIP_Z = 1400;
+const FLAVOR_TIP_Z = 1500;
 
-const FlavorInfoTip = ({ text }) => {
+const FlavorInfoTip = ({ text, prefer = "auto" }) => {
   const btnRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [coords, setCoords] = useState(null);
@@ -1560,17 +1572,55 @@ const FlavorInfoTip = ({ text }) => {
     const btn = btnRef.current;
     if (!btn) return;
     const r = btn.getBoundingClientRect();
-    const spaceAbove = r.top;
-    const spaceBelow = window.innerHeight - r.bottom;
-    const place = spaceAbove > 96 || spaceAbove >= spaceBelow ? "top" : "bottom";
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const pad = 12;
     const halfW = FLAVOR_TIP_MAX_W / 2;
-    const x = Math.max(halfW + 12, Math.min(window.innerWidth - halfW - 12, r.left + r.width / 2));
+    const spaceAbove = r.top;
+    const spaceBelow = vh - r.bottom;
+    const spaceLeft = r.left;
+    const spaceRight = vw - r.right;
+
+    const pickSide = () => {
+      if (prefer === "left" || prefer === "right") return prefer;
+      if (prefer === "top" || prefer === "bottom") return prefer;
+      if (spaceLeft >= FLAVOR_TIP_MAX_W + pad && r.left > vw * 0.5) return "left";
+      if (spaceRight >= FLAVOR_TIP_MAX_W + pad) return "right";
+      return spaceAbove >= 88 || spaceAbove >= spaceBelow ? "top" : "bottom";
+    };
+
+    let place = pickSide();
+    if (place === "left" && spaceLeft < FLAVOR_TIP_MAX_W * 0.55 + pad) {
+      place = spaceRight >= halfW + pad ? "right" : spaceAbove >= spaceBelow ? "top" : "bottom";
+    }
+    if (place === "right" && spaceRight < FLAVOR_TIP_MAX_W * 0.55 + pad) {
+      place = spaceLeft >= halfW + pad ? "left" : spaceAbove >= spaceBelow ? "top" : "bottom";
+    }
+
+    if (place === "left") {
+      setPlacement("left");
+      setCoords({
+        x: r.left - FLAVOR_TIP_GAP,
+        y: Math.max(pad + 40, Math.min(vh - pad - 40, r.top + r.height / 2)),
+      });
+      return;
+    }
+    if (place === "right") {
+      setPlacement("right");
+      setCoords({
+        x: r.right + FLAVOR_TIP_GAP,
+        y: Math.max(pad + 40, Math.min(vh - pad - 40, r.top + r.height / 2)),
+      });
+      return;
+    }
+
+    const x = Math.max(halfW + pad, Math.min(vw - halfW - pad, r.left + r.width / 2));
     setPlacement(place);
     setCoords({
       x,
       y: place === "top" ? r.top - FLAVOR_TIP_GAP : r.bottom + FLAVOR_TIP_GAP,
     });
-  }, []);
+  }, [prefer]);
 
   const show = () => {
     syncPosition();
@@ -1600,6 +1650,7 @@ const FlavorInfoTip = ({ text }) => {
           "flavor-info-tip__bubble flavor-info-tip__bubble--portal flavor-info-tip__bubble--" + placement
         }
         role="tooltip"
+        spellCheck={false}
         style={{
           position: "fixed",
           left: coords.x,
@@ -2033,14 +2084,17 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
               <div className="flavor-modal-right">
                 <p className="flavor-modal-indices-label">
                   Flavor indices
-                  <FlavorInfoTip text="Index definitions from BGPT Variable Definitions — hover each label for detail." />
+                  <FlavorInfoTip
+                    prefer="left"
+                    text="Index definitions from BGPT Variable Definitions — hover each label for detail."
+                  />
                 </p>
                 {indices.map(([label, val, tip]) => (
                   <div key={label} className="flavor-modal-index-item">
                     <span className="fmi-val">{val ?? "—"}</span>
                     <span className="fmi-label">
                       {label}
-                      <FlavorInfoTip text={tip} />
+                      <FlavorInfoTip prefer="left" text={tip} />
                     </span>
                   </div>
                 ))}

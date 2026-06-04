@@ -224,40 +224,45 @@ const Sidebar = ({
 /* ============================================================
    Composer
 ============================================================ */
-const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composerKey }) => {
+const ComposerInner = ({ onSubmit, locked, placeholder, onChipAction, sessionKey }) => {
   const ta = useRef(null);
-  const [canSend, setCanSend] = useState(false);
+  const [text, setText] = useState("");
+  const trimmed = text.trim();
+  const hasDraft = trimmed.length > 0;
 
-  const syncComposer = useCallback(() => {
+  const syncHeight = useCallback(() => {
     const el = ta.current;
-    const txt = el?.value?.trim() ?? "";
-    setCanSend(!disabled && txt.length > 0);
-    if (el) {
-      el.style.height = "auto";
-      el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
-    }
-  }, [disabled]);
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+  }, []);
+
+  const onDraftInput = useCallback(
+    (e) => {
+      setText(e.currentTarget.value);
+      requestAnimationFrame(syncHeight);
+    },
+    [syncHeight]
+  );
 
   useEffect(() => {
-    if (ta.current) {
-      ta.current.value = "";
-      ta.current.style.height = "auto";
-    }
-    setCanSend(false);
-    if (!disabled && ta.current) {
-      ta.current.focus();
-    }
-  }, [composerKey, disabled]);
+    setText("");
+    if (ta.current) ta.current.style.height = "auto";
+  }, [sessionKey]);
+
+  useEffect(() => {
+    if (!locked) ta.current?.focus();
+  }, [locked]);
+
+  useEffect(() => {
+    syncHeight();
+  }, [text, syncHeight]);
 
   const send = () => {
-    const txt = ta.current?.value?.trim() ?? "";
-    if (!txt || disabled) return;
-    onSubmit(txt);
-    if (ta.current) {
-      ta.current.value = "";
-      ta.current.style.height = "auto";
-    }
-    setCanSend(false);
+    if (locked || !hasDraft) return;
+    onSubmit(trimmed);
+    setText("");
+    if (ta.current) ta.current.style.height = "auto";
   };
 
   const chips = [
@@ -277,11 +282,12 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composer
       >
         <textarea
           ref={ta}
-          defaultValue=""
-          onChange={syncComposer}
-          onInput={syncComposer}
+          value={text}
+          onInput={onDraftInput}
+          onChange={onDraftInput}
           placeholder={placeholder || "Ask a consumer research question…"}
-          disabled={disabled}
+          readOnly={locked}
+          aria-disabled={locked}
           rows={2}
           aria-label="Research prompt"
           onKeyDown={(e) => {
@@ -297,17 +303,17 @@ const ComposerInner = ({ onSubmit, disabled, placeholder, onChipAction, composer
               <span
                 key={c.id}
                 className="composer-chip clickable"
-                onClick={() => !disabled && onChipAction?.(c.id)}
+                onClick={() => !locked && onChipAction?.(c.id)}
               >
                 {c.label}
               </span>
             ))}
           </div>
           <button
-            type="submit"
-            className="composer-send"
-            disabled={!canSend}
-            title="Send"
+            type="button"
+            className={"composer-send " + (locked ? "is-locked" : "is-ready")}
+            onClick={send}
+            title={locked ? "Research is running" : "Send"}
             aria-label="Send message"
           >
             ↑
@@ -388,7 +394,26 @@ function MessageView({ m, ctx }) {
           <FilmJobCard job={m} onClick={ctx.onFilmJobClick} />
         )}
         {m.kind === "action_result" && (
-          <ActionResultPanel payload={m.payload} onOpenDetail={ctx.onOpenDetail} />
+          <ActionResultPanel
+            payload={m.payload}
+            onOpenDetail={ctx.onOpenDetail}
+            onRegenerateConcepts={
+              m.payload?.type === "concept_cards" && ctx.onRegenerateConcepts
+                ? ({ instructions }) =>
+                    ctx.onRegenerateConcepts({
+                      messageId: m.id,
+                      instructions,
+                      flavor: m.payload.flavor,
+                      state: m.payload.state,
+                      brandFit: m.payload.brandFit,
+                      priorInstructions: m.payload.instructions,
+                    })
+                : undefined
+            }
+            regenerating={m.regenerating}
+            regenProgress={m.regenProgress}
+            actionBusy={ctx.actionBusy}
+          />
         )}
         {m.kind === "qa" && <QAResponse answer={m.answer} onPickRelated={ctx.onPickRelated} />}
         {m.kind === "research_reco" && (
@@ -447,13 +472,19 @@ export default function BritApp() {
   }, [phase]);
 
   useEffect(() => {
-    if (messages.length === 0 && phase !== "idle") {
+    const visible = messages.filter(shouldRenderThreadMessage);
+    if (visible.length === 0) {
+      if (phase === "running") setPhase("idle");
+      setActionBusy(false);
+      setFilmBusy(false);
+      if (messages.length === 0) pipelineDoneRef.current = false;
+    } else if (messages.length === 0 && phase !== "idle") {
       setPhase("idle");
       setActionBusy(false);
       setFilmBusy(false);
       pipelineDoneRef.current = false;
     }
-  }, [messages.length, phase]);
+  }, [messages, phase]);
 
   const showToast = useCallback((text) => {
     setToast(text);
@@ -744,11 +775,21 @@ export default function BritApp() {
     const q = text?.trim();
     if (!q) return;
 
+    const visible = messagesRef.current.filter(shouldRenderThreadMessage);
+    if (visible.length === 0) {
+      startWorkflowSelect(q);
+      return;
+    }
+
     const currentPhase = phaseRef.current;
     const hasMessages = messagesRef.current.length > 0;
 
-    if (currentPhase === "running" || actionBusy) {
+    if (currentPhase === "running") {
       showToast("Research is still in progress — hang tight.");
+      return;
+    }
+    if (actionBusy || filmBusy) {
+      showToast("Finishing another task — try again in a moment.");
       return;
     }
 
@@ -772,7 +813,7 @@ export default function BritApp() {
     }
 
     startDocPipeline(q);
-  }, [actionBusy, showToast, replyWithQA]);
+  }, [actionBusy, filmBusy, showToast, replyWithQA]);
 
   const updateFilmJob = useCallback((jobId, patch) => {
     setMessages((ms) => ms.map((m) => (m.id === jobId ? { ...m, ...patch } : m)));
@@ -875,6 +916,65 @@ export default function BritApp() {
       setActionBusy(false);
     }
   };
+
+  const onRegenerateConcepts = useCallback(
+    async ({ messageId, instructions, flavor, state, brandFit, priorInstructions }) => {
+      if (actionBusy || !messageId || !instructions?.trim()) return;
+      const merged = priorInstructions?.trim()
+        ? `${priorInstructions.trim()}\n\nRegeneration edits:\n${instructions.trim()}`
+        : instructions.trim();
+
+      push({
+        role: "user",
+        text: `Regenerate concept cards · ${flavor || "flavor"} · ${state || "India"}`,
+      });
+      setActionBusy(true);
+      setMessages((ms) =>
+        ms.map((m) =>
+          m.id === messageId
+            ? { ...m, regenerating: true, regenProgress: "Regenerating concept cards…" }
+            : m
+        )
+      );
+
+      const ctx = actionContext({ state, flavor, brandFit, instructions: merged });
+      try {
+        const payload = await executeAction("concept_cards", ctx, (text) => {
+          setMessages((ms) =>
+            ms.map((m) => (m.id === messageId ? { ...m, regenProgress: text } : m))
+          );
+        });
+        setMessages((ms) =>
+          ms.map((m) =>
+            m.id === messageId
+              ? {
+                  ...m,
+                  kind: "action_result",
+                  payload: {
+                    ...payload,
+                    brandFit: brandFit || payload.brandFit,
+                    instructions: merged,
+                  },
+                  regenerating: false,
+                  regenProgress: undefined,
+                }
+              : m
+          )
+        );
+        showToast("Concept cards regenerated");
+      } catch {
+        setMessages((ms) =>
+          ms.map((m) =>
+            m.id === messageId ? { ...m, regenerating: false, regenProgress: undefined } : m
+          )
+        );
+        showToast("Regeneration failed — try again");
+      } finally {
+        setActionBusy(false);
+      }
+    },
+    [actionBusy, actionContext, push, showToast]
+  );
 
   const onFilmJobClick = useCallback((job) => {
     if (job.kind === "action_result" && job.payload) {
@@ -1050,6 +1150,7 @@ export default function BritApp() {
     onPickRelated: (q) => handleUserSubmit(q),
     onStartResearch: (q) => startDocPipeline(q),
     onRunDeliverable,
+    onRegenerateConcepts,
     onFilmJobClick,
     onOpenDetail: (item) => setDetail(item),
     filmBusy,
@@ -1066,7 +1167,9 @@ export default function BritApp() {
 
   const visibleMessages = messages.filter(shouldRenderThreadMessage);
   const canPickQuestion = (phase === "idle" && visibleMessages.length === 0) || phase === "done";
-  const composerLocked = phase === "running" || actionBusy || filmBusy;
+  const onWelcome = visibleMessages.length === 0;
+  const hasActiveTimeline = visibleMessages.some((m) => m.kind === "timeline");
+  const composerLocked = !onWelcome && phase === "running" && hasActiveTimeline;
 
   return (
     <div className="app">
@@ -1106,11 +1209,10 @@ export default function BritApp() {
         </div>
 
         <ComposerInner
-          key={sessionId}
-          composerKey={sessionId}
+          sessionKey={sessionId}
           onSubmit={handleUserSubmit}
           onChipAction={handleChipAction}
-          disabled={composerLocked}
+          locked={composerLocked}
           placeholder={
             phase === "data_config" ? "Confirm data configuration above…" :
             phase === "audience_config" ? "Confirm audience above to run research…" :

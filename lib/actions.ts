@@ -353,6 +353,8 @@ export const runAction = async (
       type: "concept_cards",
       flavor: ctx.flavor,
       state: ctx.state || ctx.params?.region,
+      brandFit: ctx.brandFit,
+      instructions: ctx.instructions,
       ...(await generateConceptCards(ctx, onProgress)),
     };
   }
