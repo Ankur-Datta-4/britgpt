@@ -7,7 +7,7 @@ import {
 } from "@/lib/veo-video";
 
 export const runtime = "nodejs";
-export const maxDuration = 360;
+export const maxDuration = 300;
 
 export const GET = async () => {
   return NextResponse.json({
