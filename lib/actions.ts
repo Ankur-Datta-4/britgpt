@@ -167,7 +167,7 @@ const fallback: Record<
       "Use regional visual cues from the selected state",
       "End with Britannia brand lock-up",
     ],
-    nextSteps: ["Approve storyboard", "Route to production"],
+    nextSteps: ["Approve storyboard", "Route to Hogarth for asset production"],
     status: "ready",
     eta: "~6 min",
   },

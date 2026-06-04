@@ -1521,8 +1521,8 @@ const StoryboardMockPanel = ({ payload }) => {
           ))}
         </div>
         <DeliverableHandoff
-          label="Send to FPD"
-          target="FPD"
+          label="Send to Hogarth"
+          target="Hogarth"
           flavor={flavor}
           state={state}
         />
@@ -1576,8 +1576,8 @@ const CreativeBriefPanel = ({ payload }) => {
           ))}
         </div>
         <DeliverableHandoff
-          label="Send to FPD"
-          target="FPD"
+          label="Send to Hogarth"
+          target="Hogarth"
           flavor={flavor}
           state={state}
         />
