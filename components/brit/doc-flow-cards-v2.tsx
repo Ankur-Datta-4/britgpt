@@ -31,6 +31,8 @@ import {
   STATE_WINNING_FLAVORS,
   FLAVOR_MACHINE,
   NATIONAL_FLAVORS,
+  FLAVOR_KEY_INSIGHTS,
+  hasFlavorKeyInsight,
   getStateInsight,
   getStateMetrics,
   CROSS_STATE_INSIGHTS,
@@ -44,7 +46,6 @@ import {
 import {
   BRANDS_COUNT_TOOLTIP,
   FLAVOR_INDEX_TOOLTIPS,
-  buildBritanniaFitReasoning,
   getBrandPositioning,
   resolveBrandKey,
 } from "@/lib/flavor-card-meta";
@@ -53,6 +54,11 @@ import {
   hasVerbatimWall,
   FLAVORS_WITH_VERBATIM_WALL,
 } from "@/lib/verbatim-feed";
+import {
+  buildFlavorConvTrendChartData,
+  formatConvTrendK,
+  hasFlavorConvTrend,
+} from "@/lib/flavor-conv-trend";
 
 const openDetail = (item) => {
   window.dispatchEvent(new CustomEvent("brit-detail", { detail: item }));
@@ -1540,42 +1546,29 @@ const FlavorInfoTip = ({ text }) => (
 );
 
 const FlavorBritanniaFitBlock = ({ flavor }) => {
-  const [showReasoning, setShowReasoning] = useState(false);
   const brandKey = resolveBrandKey(flavor.brandFit);
   const positioning = getBrandPositioning(flavor.brandFit);
-  const reasoning = useMemo(() => buildBritanniaFitReasoning(flavor), [flavor]);
 
   if (!flavor.brandFit) return null;
 
   return (
     <div className="flavor-modal-qual-item flavor-modal-qual-item--fit">
-      <span className="fmq-label">Britannia fit</span>
+      <span className="fmq-label">Recommended Britannia brand</span>
       <p className="fmq-val">
         <strong className="fmq-brand">{brandKey || flavor.brandFit}</strong>
-        {positioning ? ` — ${positioning}` : ` — ${flavor.brandFit}`}
+        {positioning ? ` — ${positioning}` : null}
       </p>
-      {reasoning && (
-        <div className="flavor-fit-reasoning-wrap">
-          <button
-            type="button"
-            className="flavor-fit-reasoning-btn"
-            onClick={() => setShowReasoning((v) => !v)}
-            aria-expanded={showReasoning}
-          >
-            {showReasoning ? "Hide reasoning" : "Reasoning"}
-          </button>
-          {showReasoning && (
-            <div className="flavor-fit-reasoning-panel" role="region" aria-label="Britannia fit reasoning">
-              <p className="flavor-fit-reasoning-lead">{reasoning.summary}</p>
-              <ul className="flavor-fit-reasoning-list">
-                {reasoning.bullets.map((b) => (
-                  <li key={b}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+    </div>
+  );
+};
+
+const FlavorProductExtensionsBlock = ({ flavor }) => {
+  if (!flavor.extensions) return null;
+
+  return (
+    <div className="flavor-modal-qual-item flavor-modal-qual-item--extensions">
+      <span className="fmq-label">Product extension ideas</span>
+      <p className="fmq-val">{flavor.extensions}</p>
     </div>
   );
 };
@@ -1650,7 +1643,7 @@ const FlavorVerbatimWall = ({ flavorName }) => {
   }, [flavorName]);
 
   if (loading) {
-    return <p className="verbatim-wall-status">Loading social verbatim feed…</p>;
+    return <div className="verbatim-wall-skeleton" aria-busy="true" aria-label="Loading verbatim wall" />;
   }
   if (error) {
     return <p className="verbatim-wall-status verbatim-wall-status--err">{error}</p>;
@@ -1695,7 +1688,9 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
   const [showPendingIntegrations, setShowPendingIntegrations] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const showKeyInsightTab = hasFlavorKeyInsight(flavor.name);
   const showVerbatimTab = hasVerbatimWall(flavor.name);
+  const keyInsightText = FLAVOR_KEY_INSIGHTS[flavor.name];
 
   useEffect(() => {
     setMounted(true);
@@ -1711,6 +1706,11 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
   }, [flavor.name]);
 
   useEffect(() => {
+    if (activeTab === "insight" && !showKeyInsightTab) setActiveTab("overview");
+    if (activeTab === "verbatim" && !showVerbatimTab) setActiveTab("overview");
+  }, [activeTab, showKeyInsightTab, showVerbatimTab]);
+
+  useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose?.();
     };
@@ -1718,10 +1718,14 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  const trendData = useMemo(
-    () => buildTrendData([{ flavor: flavor.name, convVolume: flavor.convVolume, convGrowth: flavor.convGrowth }]),
-    [flavor]
-  );
+  const trendData = useMemo(() => {
+    const fromSheet = buildFlavorConvTrendChartData(flavor.name);
+    if (fromSheet) return fromSheet;
+    return buildTrendData([
+      { flavor: flavor.name, convVolume: flavor.convVolume, convGrowth: flavor.convGrowth },
+    ]);
+  }, [flavor]);
+  const trendUsesSheetData = hasFlavorConvTrend(flavor.name);
   const brandCount = getBrandCount(flavor.name);
 
   const deliverables = [
@@ -1735,16 +1739,16 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
     ["DIY Index", flavor.diyIndex, FLAVOR_INDEX_TOOLTIPS["DIY Index"]],
     ["Shareability", flavor.shareabilityIndex, FLAVOR_INDEX_TOOLTIPS.Shareability],
     ["Consumption Intent", flavor.cravingIndex, FLAVOR_INDEX_TOOLTIPS["Consumption Intent"]],
-    ["Comfort", flavor.comfortIndex, FLAVOR_INDEX_TOOLTIPS.Comfort],
-    ["Curiosity", flavor.curiosityIndex, FLAVOR_INDEX_TOOLTIPS.Curiosity],
+    ["Advocacy", flavor.comfortIndex, FLAVOR_INDEX_TOOLTIPS.Advocacy],
+    ["Health–Indulgence", flavor.curiosityIndex, FLAVOR_INDEX_TOOLTIPS["Health–Indulgence"]],
+    ["Gifting", flavor.giftingIndex, FLAVOR_INDEX_TOOLTIPS.Gifting],
   ];
 
   const qualFields = [
     ["Why the flavor is popular", flavor.whyPopular],
     ["States most popular in", flavor.states],
     ["When the flavor trends", flavor.whenTrends],
-    ["Product extensions", flavor.extensions],
-  ].filter(([, v]) => v);
+  ].filter((row): row is [string, string] => Boolean(row && row[1]));
 
   const modal = (
     <div className="flavor-modal-overlay" onClick={onClose} role="presentation">
@@ -1778,7 +1782,20 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
             >
               Overview
             </button>
-            {showVerbatimTab && (
+            {showKeyInsightTab ? (
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === "insight"}
+                className={"flavor-modal-tab " + (activeTab === "insight" ? "sel" : "")}
+                onClick={() => setActiveTab("insight")}
+              >
+                Key insight
+              </button>
+            ) : (
+              <span className="flavor-modal-tab flavor-modal-tab--spacer" aria-hidden />
+            )}
+            {showVerbatimTab ? (
               <button
                 type="button"
                 role="tab"
@@ -1788,12 +1805,19 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
               >
                 Verbatim wall
               </button>
+            ) : (
+              <span className="flavor-modal-tab flavor-modal-tab--spacer" aria-hidden />
             )}
           </div>
         </div>
 
         <div className="flavor-modal-scroll">
-          {activeTab === "overview" ? (
+          <div className="flavor-modal-panels">
+          <div
+            className={"flavor-modal-panel flavor-modal-panel--overview " + (activeTab === "overview" ? "is-active" : "")}
+            role="tabpanel"
+            hidden={activeTab !== "overview"}
+          >
             <div className="flavor-modal-body flavor-modal-body--split">
               <div className="flavor-modal-left">
                 <div className="flavor-modal-core-metrics">
@@ -1826,27 +1850,53 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
                     </div>
                   ))}
                   <FlavorBritanniaFitBlock flavor={flavor} />
+                  <FlavorProductExtensionsBlock flavor={flavor} />
                 </div>
 
                 <div className="flavor-modal-trend-chart">
-                  <p className="flavor-modal-chart-label">Conversation volume · L1Y trend</p>
-                  <ResponsiveContainer width="100%" height={150}>
-                    <LineChart data={trendData} margin={{ top: 8, right: 16, left: 0, bottom: 4 }}>
+                  <p className="flavor-modal-chart-label">
+                    Conversation volume (K)
+                    {trendUsesSheetData ? " · May '25 – May '26" : " · L1Y trend"}
+                  </p>
+                  <div className="flavor-modal-chart-slot">
+                  <ResponsiveContainer width="100%" height={168}>
+                    <LineChart data={trendData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
                       <CartesianGrid stroke="#E6E1D8" strokeDasharray="3 4" vertical={false} />
-                      <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#8A8478" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 10, fill: "#8A8478" }} axisLine={false} tickLine={false} width={40} />
+                      <XAxis
+                        dataKey="month"
+                        interval={trendUsesSheetData ? 1 : 0}
+                        tick={{ fontSize: 9, fill: "#8A8478" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 10, fill: "#8A8478" }}
+                        axisLine={false}
+                        tickLine={false}
+                        width={44}
+                        tickFormatter={trendUsesSheetData ? formatConvTrendK : formatTrendVolume}
+                        domain={trendUsesSheetData ? ["auto", "auto"] : undefined}
+                      />
                       <Tooltip
                         contentStyle={{ background: "var(--panel)", border: "1px solid var(--line)", borderRadius: 8, fontSize: 12 }}
-                        formatter={(v) => [v, "Conv. Volume"]}
+                        formatter={(v) => [
+                          trendUsesSheetData ? formatConvTrendK(Number(v)) : formatTrendVolume(Number(v)),
+                          "Conv. volume",
+                        ]}
+                        labelFormatter={(label) => String(label)}
                       />
                       <Line type="monotone" dataKey={flavor.name} stroke="#B4232A" strokeWidth={2} dot={false} />
                     </LineChart>
                   </ResponsiveContainer>
+                  </div>
                 </div>
               </div>
 
               <div className="flavor-modal-right">
-                <p className="flavor-modal-indices-label">Flavor indices</p>
+                <p className="flavor-modal-indices-label">
+                  Flavor indices
+                  <FlavorInfoTip text="Index definitions from BGPT Variable Definitions — hover each label for detail." />
+                </p>
                 {indices.map(([label, val, tip]) => (
                   <div key={label} className="flavor-modal-index-item">
                     <span className="fmi-val">{val ?? "—"}</span>
@@ -1858,14 +1908,30 @@ const FlavorDetailModal = ({ flavor, onClose, onRunDeliverable, busy }) => {
                 ))}
               </div>
             </div>
-          ) : (
+          </div>
+          <div
+            className={"flavor-modal-panel flavor-modal-panel--insight " + (activeTab === "insight" ? "is-active" : "")}
+            role="tabpanel"
+            hidden={activeTab !== "insight" || !showKeyInsightTab}
+          >
+            <div className="flavor-modal-insight-pane">
+              <p className="flavor-modal-insight-kicker">Key insight · BGPT</p>
+              <p className="flavor-modal-insight-body">{keyInsightText || "—"}</p>
+            </div>
+          </div>
+          <div
+            className={"flavor-modal-panel flavor-modal-panel--verbatim " + (activeTab === "verbatim" ? "is-active" : "")}
+            role="tabpanel"
+            hidden={activeTab !== "verbatim" || !showVerbatimTab}
+          >
             <div className="flavor-modal-verbatim-pane">
               <p className="flavor-modal-verbatim-intro">
-                Live social posts from Flavor Insights — same verbatim wall pattern as RRP. Click <strong>Reasoning</strong> on Overview for Britannia fit logic.
+                Consumer verbatim wall from Flavor Insights — same grid pattern as RRP.
               </p>
               <FlavorVerbatimWall flavorName={flavor.name} />
             </div>
-          )}
+          </div>
+          </div>
         </div>
 
         <div className="flavor-modal-actions">
@@ -2205,7 +2271,6 @@ const FlavorAnalysisFilters = ({
 );
 
 const FlavorAnalysisTable = ({
-  onFlavorSelect,
   categoryFilter = "both",
   stateFilter = "All States",
   scopeFilter = "all",
@@ -2228,7 +2293,7 @@ const FlavorAnalysisTable = ({
   const sorted = useMemo(() => {
     const rows = [...filtered];
     const dir = sortDir === "asc" ? 1 : -1;
-    const indexKeys = ["diyIndex", "shareabilityIndex", "cravingIndex", "comfortIndex", "curiosityIndex"];
+    const indexKeys = ["diyIndex", "shareabilityIndex", "cravingIndex", "comfortIndex", "curiosityIndex", "giftingIndex"];
     const trendOrder = { Established: 0, "Regional Classic": 1, Seasonal: 2, Emerging: 3, Stable: 4, Fad: 5 };
     rows.sort((a, b) => {
       if (sortKey === "name") return a.name.localeCompare(b.name) * dir;
@@ -2300,38 +2365,24 @@ const FlavorAnalysisTable = ({
               <SortTh k="engGrowth" label="Eng. Growth" />
               <SortTh k="diyIndex" label="DIY" />
               <SortTh k="shareabilityIndex" label="Shareability" />
-              <SortTh k="cravingIndex" label="Craving" />
-              <SortTh k="comfortIndex" label="Comfort" />
-              <SortTh k="curiosityIndex" label="Curiosity" />
+              <SortTh k="cravingIndex" label="Consumption Intent" />
+              <SortTh k="comfortIndex" label="Advocacy" />
+              <SortTh k="curiosityIndex" label="Health–Indulgence" />
+              <SortTh k="giftingIndex" label="Gifting" />
               <SortTh k="trendType" label="Trend" />
             </tr>
           </thead>
           <tbody>
             {pageRows.length === 0 ? (
               <tr>
-                <td colSpan={11} className="national-table-empty">No flavors match these filters.</td>
+                <td colSpan={12} className="national-table-empty">No flavors match these filters.</td>
               </tr>
             ) : (
               pageRows.map((f) => {
                 const isCrossCategory = CROSS_CATEGORY_FLAVORS.has(f.name);
                 const crossRegion = isCrossRegion(f.states || "");
                 return (
-                  <tr
-                    key={f.name}
-                    className={onFlavorSelect ? "clickable-row" : ""}
-                    onClick={() => onFlavorSelect?.(f)}
-                    tabIndex={onFlavorSelect ? 0 : undefined}
-                    onKeyDown={
-                      onFlavorSelect
-                        ? (e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              onFlavorSelect(f);
-                            }
-                          }
-                        : undefined
-                    }
-                  >
+                  <tr key={f.name}>
                     <td><b>{f.name}</b></td>
                     <td>{f.convVolume || "—"}</td>
                     <td>{f.engVolume || "—"}</td>
@@ -2342,6 +2393,7 @@ const FlavorAnalysisTable = ({
                     <td><span className="national-index">{f.cravingIndex ?? "—"}</span></td>
                     <td><span className="national-index">{f.comfortIndex ?? "—"}</span></td>
                     <td><span className="national-index">{f.curiosityIndex ?? "—"}</span></td>
+                    <td><span className="national-index">{f.giftingIndex ?? "—"}</span></td>
                     <td>
                       <div className="prioritize-trend-tags">
                         <span>{f.trendType}</span>
@@ -2595,10 +2647,6 @@ export const DocFlavorMatrixCard = ({ onRunDeliverable, busy }) => {
           stateFilter={stateFilter}
           scopeFilter={scopeFilter}
           flavorSearch={flavorSearch}
-          onFlavorSelect={(row) => {
-            const full = NATIONAL_FLAVORS.find((f) => f.name === row.name) || row;
-            setSelectedFlavor(full);
-          }}
         />
       </div>
     </div>
