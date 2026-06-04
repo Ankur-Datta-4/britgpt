@@ -1312,7 +1312,7 @@ const StoryboardSceneVisual = ({ scene, videoUrl, veoStatus, veoError }) => {
       <div className="artifact-stack-visual storyboard-scene-visual storyboard-scene-visual--loading">
         <div className="storyboard-scene-veo-loader">
           <span className="storyboard-scene-veo-spinner" aria-hidden />
-          <p className="storyboard-scene-veo-loader-title">Rendering with Veo</p>
+          <p className="storyboard-scene-veo-loader-title">Generating video </p>
           <p className="storyboard-scene-veo-loader-sub">
             Scene {scene.beat} · {scene.timing} · ~2–4 min
           </p>
@@ -1434,7 +1434,7 @@ const StoryboardMockPanel = ({ payload }) => {
         }
 
         setSceneVeoStatus((s) => ({ ...s, [scene.beat]: "generating" }));
-        setVeoQueueNote(`Rendering scene ${scene.beat} of ${scenes.length} with Veo…`);
+        setVeoQueueNote(`Rendering scene ${scene.beat} of ${scenes.length} `);
 
         try {
           const res = await fetch("/api/veo", {
